@@ -1,105 +1,162 @@
-cmake_minimum_required(VERSION 3.22)
+cmake_minimum_required(VERSION 4.0.1)
 
-# Set the compiler prefix
-if(DEFINED ENV{PREFIX})
-  set(PREFIX "$ENV{PREFIX}")
-endif()
+set(SGDK_BUILD_TOOLS FALSE CACHE BOOL "Build (*some) SGDK tools (note: requires ability to build 32-bit target, from an environment with make available)")
 
-# Set the compiler/assembler name
-set(CMAKE_C_COMPILER ${PREFIX}gcc)
-set(CMAKE_ASM_COMPILER ${PREFIX}gcc)
-set(CMAKE_AR ${PREFIX}ar)
-set(CMAKE_TRY_COMPILE_TARGET_TYPE "STATIC_LIBRARY")
+# Project for SGDK
+project(md C CXX ASM)
 
-project(md C ASM)
+include(cmake/SGDKSupport.cmake)
 
 include(ExternalProject)
-ExternalProject_Add(
-  BINTOS
-  SOURCE_DIR ${PROJECT_SOURCE_DIR}/tools/bintos/src
-  BINARY_DIR ${PROJECT_SOURCE_DIR}/tools/bintos/src/build
-  INSTALL_COMMAND install bintos ${PROJECT_SOURCE_DIR}/bin
-  BUILD_ALWAYS TRUE)
-ExternalProject_Add(
-  XGMTOOL
-  SOURCE_DIR ${PROJECT_SOURCE_DIR}/tools/xgmtool/src
-  BINARY_DIR ${PROJECT_SOURCE_DIR}/tools/xgmtool/src/build
-  INSTALL_COMMAND install xgmtool ${PROJECT_SOURCE_DIR}/bin
-  BUILD_ALWAYS TRUE)
-ExternalProject_Add(
-  SJASM
-  CONFIGURE_COMMAND ""
-  DOWNLOAD_COMMAND ""
-  BUILD_COMMAND make -C ${PROJECT_SOURCE_DIR}/tools/sjasm/src
-  INSTALL_COMMAND install ${PROJECT_SOURCE_DIR}/tools/sjasm/src/sjasm ${PROJECT_SOURCE_DIR}/bin
-  BUILD_ALWAYS TRUE)
+if(NOT EXISTS "${BINTOS_BIN}" OR ${SGDK_BUILD_TOOLS})
+  message("Building bintos.")
+  ExternalProject_Add(
+    bintos
+    SOURCE_DIR ${SGDK}/tools/bintos/src
+    BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/bintos.dir/build
+    INSTALL_COMMAND install bintos ${SGDK}/bin
+    BUILD_ALWAYS TRUE
+  )
+else()
+  message("Using pre-built bintos.")
+  add_custom_target(bintos)
+endif()
 
-include_directories(${PROJECT_SOURCE_DIR}/inc)
-include_directories(${PROJECT_SOURCE_DIR}/res)
-include_directories(${PROJECT_SOURCE_DIR}/src)
-include_directories(${PROJECT_SOURCE_DIR})
+if(NOT EXISTS "${XGMTOOL_BIN}" OR ${SGDK_BUILD_TOOLS})
+  message("Building xgmtool.")
+  ExternalProject_Add(
+    xgmtool
+    SOURCE_DIR ${SGDK}/tools/xgmtool/src
+    BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/xgmtool.dir/build
+    INSTALL_COMMAND install xgmtool ${SGDK}/bin
+    BUILD_ALWAYS TRUE
+  )
+else()
+  message("Using pre-built xgmtool.")
+  add_custom_target(xgmtool)
+endif()
 
-set(RESCOMP java -jar ${PROJECT_SOURCE_DIR}/bin/rescomp.jar)
-set(ASMZ80 ${PROJECT_SOURCE_DIR}/bin/sjasm -q)
-set(BINTOS_EXE ${PROJECT_SOURCE_DIR}/bin/bintos)
+if(NOT EXISTS "${SJASM_BIN}" OR ${SGDK_BUILD_TOOLS})
+  message("Building sjasm.")
+  ExternalProject_Add(
+    sjasm
+    CONFIGURE_COMMAND ""
+    DOWNLOAD_COMMAND ""
+    BUILD_COMMAND make -C ${SGDK}/tools/sjasm/src
+    INSTALL_COMMAND install ${SGDK}/tools/sjasm/src/sjasm ${SGDK}/bin
+    BUILD_ALWAYS TRUE
+  )
+else()
+  message("Using pre-built sjasm.")
+  add_custom_target(sjasm)
+endif()
 
-add_compile_options(
-  -DSGDK_GCC
-  -m68000
-  -Wall
-  -Wextra
-  -Wno-main
-  -Wno-shift-negative-value
-  -Wno-unused-parameter
-  -fno-builtin
-  -nostdlib
-  -nodefaultlibs)
-
-add_compile_options(
-  "$<$<CONFIG:Release,>:-fuse-linker-plugin;-fno-web;-fno-gcse;-fomit-frame-pointer;-ffat-lto-objects;-flto>"
-  "$<$<CONFIG:Debug>:-O0;-DDEBUG=1>"
-  "$<$<COMPILE_LANGUAGE:ASM>:-xassembler-with-cpp;-Wa,-I${PROJECT_SOURCE_DIR};-Wa,--register-prefix-optional,--bitwise-or>"
-)
-
-# If CMAKE_BUILD_TYPE is not set
-add_compile_options("$<$<CONFIG:>:-O3>")
-
+## SGDK C library
 # Gather sources
+file(GLOB_RECURSE SRC_LIB_INCLUDES ${CMAKE_CURRENT_SOURCE_DIR}/inc/*.[hi])
 file(GLOB_RECURSE SRC_LIB_C src/*.c)
 string(REPLACE "src/boot/rom_head.c" "" SRC_LIB_C "${SRC_LIB_C}")
+string(REPLACE "src/cppsupport/syscalls.c" "" SRC_LIB_C "${SRC_LIB_C}")
 file(GLOB_RECURSE SRC_LIB_S src/*.s)
 string(REPLACE "src/boot/sega.s" "" SRC_LIB_S "${SRC_LIB_S}")
 file(GLOB_RECURSE SRC_LIB_S80 src/*.s80)
-string(REGEX REPLACE "[.]s80" ".s;" Z80SRC ${SRC_LIB_S80})
 file(GLOB_RECURSE RES_LIB_RES res/*.res)
-string(REGEX REPLACE "[.]res" ".s;" RESSRC ${RES_LIB_RES})
 
-# Rules to build Z80 source code
-foreach(z80_source ${Z80SRC})
-  get_filename_component(file ${z80_source} NAME_WE)
-  get_filename_component(dir ${z80_source} DIRECTORY)
-  set(file ${dir}/${file})
-  add_custom_command(
-    OUTPUT ${z80_source}
-    COMMAND ${ASMZ80} -i${PROJECT_SOURCE_DIR}/inc/snd ${file}.s80 ${file}.out &&
-            ${BINTOS_EXE} ${file}.out ${file}.s
-    DEPENDS ${file}.s80 BINTOS SJASM
-    BYPRODUCTS ${file}.out ${file}.h)
-endforeach()
+add_library(md STATIC)
+set_target_properties(md
+  PROPERTIES
+    STATIC_LIBRARY_OPTIONS "$<$<BOOL:${LTO_PLUGIN}>:--plugin=${LTO_PLUGIN}>"
+    OUTPUT_NAME_RELEASE "md"
+    OUTPUT_NAME_DEBUG "md_debug"
+)
 
-# Rules to build resources
-foreach(res_source ${RESSRC})
-  string(REGEX REPLACE "[.]s" ".h" res_header ${res_source})
-  string(REGEX REPLACE "[.]s" ".res" res ${res_source})
-  add_custom_command(
-    OUTPUT ${res_source} ${res_header}
-    COMMAND ${RESCOMP} ${res}
-    DEPENDS ${res} XGMTOOL)
-endforeach()
+target_include_directories(md
+  PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/inc>
+    $<INSTALL_INTERFACE:include>
+)
+target_include_directories(md
+  PRIVATE
+    ${CMAKE_SOURCE_DIR}/src
+)
 
-add_library(md STATIC ${SRC_LIB_C} ${SRC_LIB_S} ${Z80SRC} ${RESSRC})
-set_target_properties(
-  md
-  PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib
-             OUTPUT_NAME "md"
-             DEBUG_OUTPUT_NAME "md_debug")
+target_sources(md
+  INTERFACE
+  FILE_SET HEADERS BASE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/inc" FILES
+    ${SRC_LIB_INCLUDES}
+)
+target_sources(md
+  PRIVATE
+    ${SRC_LIB_C}
+    ${SRC_LIB_S}
+)
+mdtarget_z80_sources(md PUBLIC ${SRC_LIB_S80})
+mdtarget_res_sources(md PUBLIC ${RES_LIB_RES})
+
+## C++ library
+add_library(mdcpp STATIC)
+set_target_properties(mdcpp
+  PROPERTIES
+    OUTPUT_NAME_RELEASE "mdcpp"
+    OUTPUT_NAME_DEBUG "mdcpp_debug"
+)
+
+target_link_libraries(mdcpp
+  PUBLIC
+    md
+)
+
+target_sources(mdcpp
+  PRIVATE
+    src/ext/cppsupport/cplusplus.cpp
+    src/ext/cppsupport/syscalls.c
+)
+
+## Installation
+# CMake files
+install(
+    DIRECTORY cmake/
+    DESTINATION lib/cmake
+)
+
+# Tools
+install(
+    DIRECTORY bin/
+    DESTINATION bin
+)
+
+# Targets
+install(
+  TARGETS md mdcpp
+  EXPORT SGDKTargets
+  ARCHIVE DESTINATION lib
+  PUBLIC_HEADER DESTINATION include
+  FILE_SET HEADERS
+  FILE_SET z80_headers
+  FILE_SET res_headers
+)
+install(
+  EXPORT SGDKTargets
+  FILE SGDKTargets.cmake
+  NAMESPACE SGDK::
+  DESTINATION lib/cmake
+)
+
+# find_package support
+include(CMakePackageConfigHelpers)
+write_basic_package_version_file(
+    "${CMAKE_CURRENT_BINARY_DIR}/SGDKConfigVersion.cmake"
+    VERSION 2.12
+    COMPATIBILITY AnyNewerVersion
+)
+configure_package_config_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/SGDKConfig.cmake.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/SGDKConfig.cmake"
+    INSTALL_DESTINATION lib/cmake
+)
+install(
+    FILES
+      "${CMAKE_CURRENT_BINARY_DIR}/SGDKConfig.cmake"
+      "${CMAKE_CURRENT_BINARY_DIR}/SGDKConfigVersion.cmake"
+    DESTINATION lib/cmake
+)

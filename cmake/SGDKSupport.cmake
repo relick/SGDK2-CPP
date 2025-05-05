@@ -1,0 +1,74 @@
+cmake_minimum_required(VERSION 4.0.1)
+
+# Rules to build Z80 source code
+function(mdtarget_z80_sources target header_mode) # ARGN .s80 files
+  set(z80_out_dir "${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/${target}.dir/z80")
+
+  set(processed_src)
+  set(processed_headers)
+  foreach(z80_source IN ITEMS ${ARGN})
+    # message("Generating z80->m68k command for ${z80_source}...")
+    cmake_path(RELATIVE_PATH z80_source BASE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" OUTPUT_VARIABLE z80_relative_source)
+    cmake_path(REMOVE_EXTENSION z80_relative_source OUTPUT_VARIABLE z80_relative_stem)
+    set(out_stem ${z80_out_dir}/${z80_relative_stem})
+    set(m68k_asm ${out_stem}.s)
+    set(c_header ${out_stem}.h)
+    set(z80_bin ${out_stem}.o80)
+    # message("Building to ${m68k_asm}")
+
+    add_custom_command(
+      OUTPUT ${m68k_asm} ${c_header}
+      COMMAND ${ASMZ80_CMD} -i${SGDK}/inc -i${SGDK}/inc/snd ${z80_source} ${z80_bin} &&
+              ${BINTOS_CMD} ${z80_bin} ${m68k_asm}
+      DEPENDS ${z80_source} bintos # sjasm
+      BYPRODUCTS ${z80_bin}
+    )
+
+    list(APPEND processed_src ${m68k_asm})
+    list(APPEND processed_headers ${c_header})
+  endforeach()
+
+  target_include_directories(${target} PRIVATE ${z80_out_dir})
+  target_sources(${target} PRIVATE ${processed_src})
+  target_sources(${target}
+    ${header_mode}
+    FILE_SET z80_headers TYPE HEADERS BASE_DIRS "${z80_out_dir}" FILES
+      ${processed_headers}
+  )
+
+endfunction()
+
+# Rules to build resources
+function(mdtarget_res_sources target header_mode) # ARGN .res files
+  set(res_out_dir "${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/${target}.dir/res")
+
+  set(processed_src)
+  set(processed_headers)
+  foreach(res_source IN ITEMS ${ARGN})
+    # message("Generating res->m68k command for ${res_source}...")
+    cmake_path(RELATIVE_PATH res_source BASE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" OUTPUT_VARIABLE res_relative_source)
+    cmake_path(REMOVE_EXTENSION res_relative_source OUTPUT_VARIABLE res_relative_stem)
+    set(out_stem ${res_out_dir}/${res_relative_stem})
+    set(m68k_asm ${out_stem}.s)
+    set(c_header ${out_stem}.h)
+    # message("Building to ${m68k_asm}")
+
+    add_custom_command(
+      OUTPUT ${m68k_asm} ${c_header}
+      COMMAND ${RESCOMP_CMD} ${res_source} ${m68k_asm}
+      DEPENDS ${res_source} xgmtool
+    )
+
+    list(APPEND processed_src ${m68k_asm})
+    list(APPEND processed_headers ${c_header})
+  endforeach()
+
+  target_include_directories(${target} PRIVATE ${res_out_dir})
+  target_sources(${target} PRIVATE ${processed_src})
+  target_sources(${target}
+    ${header_mode}
+    FILE_SET res_headers TYPE HEADERS BASE_DIRS ${res_out_dir} FILES
+      ${processed_headers}
+  )
+
+endfunction()
