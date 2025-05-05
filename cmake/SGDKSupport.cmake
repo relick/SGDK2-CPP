@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 4.0.1)
 
 # Rules to build Z80 source code
-function(mdtarget_z80_sources target header_mode) # ARGN .s80 files
+function(md_target_z80_sources target header_mode) # ARGN: .s80 files
   set(z80_out_dir "${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/${target}.dir/z80")
 
   set(processed_src)
@@ -39,7 +39,7 @@ function(mdtarget_z80_sources target header_mode) # ARGN .s80 files
 endfunction()
 
 # Rules to build resources
-function(mdtarget_res_sources target header_mode) # ARGN .res files
+function(md_target_res_sources target header_mode) # ARGN: .res files
   set(res_out_dir "${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/${target}.dir/res")
 
   set(processed_src)

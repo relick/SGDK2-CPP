@@ -5,11 +5,11 @@ SET "SGDK_ROOT=%cd%"
 @ECHO ON
 
 cmake -S . -B build --fresh --toolchain=cmake/SGDKToolchain.cmake --install-prefix "%SGDK_ROOT%\install" -DCMAKE_BUILD_TYPE=Debug
-cmake --build build -- -v
+cmake --build build
 cmake --install build
 
 cmake -S . -B build --fresh --toolchain=cmake/SGDKToolchain.cmake --install-prefix "%SGDK_ROOT%\install" -DCMAKE_BUILD_TYPE=Release
-cmake --build build -- -v
+cmake --build build
 cmake --install build
 
 @ECHO.
