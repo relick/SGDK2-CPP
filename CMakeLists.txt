@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 4.0.1)
 
 set(SGDK_BUILD_TOOLS FALSE CACHE BOOL "Build (*some) SGDK tools (note: requires ability to build 32-bit target, from an environment with make available)")
 set(SGDK_ENABLE_NEWLIB FALSE CACHE BOOL "Use newlib with SGDK. Affects C only, as C++ always uses newlib.")
+set(SGDK_INSTALL_WIN_TOOLCHAIN FALSE CACHE BOOL "Copy the Windows gcc toolchain to the SGDK install, allowing the install to exist fully independently of the source.")
 
 # Project for SGDK
 project(md C CXX ASM)
@@ -163,14 +164,14 @@ target_sources(mdcpp
 ## Installation
 # CMake files
 install(
-    DIRECTORY cmake/
-    DESTINATION lib/cmake
+  DIRECTORY cmake/
+  DESTINATION cmake
 )
 
 # Tools
 install(
-    DIRECTORY bin/
-    DESTINATION bin
+  DIRECTORY bin/
+  DESTINATION bin
 )
 
 # Targets
@@ -187,24 +188,49 @@ install(
   EXPORT SGDKTargets
   FILE SGDKTargets.cmake
   NAMESPACE SGDK::
-  DESTINATION lib/cmake
+  DESTINATION cmake
 )
+
+if(CMAKE_HOST_WIN32)
+  # Install the toolchain if requested, but either way make an include that will find it later
+  if(SGDK_INSTALL_WIN_TOOLCHAIN)
+    file(
+      WRITE "${CMAKE_CURRENT_BINARY_DIR}/SGDKFindWindowsToolchain.cmake"
+      "set(SGDK_TOOLCHAIN \"\${SGDK}/${SGDK_TOOLCHAIN_NAME}\")"
+    )
+    install(
+      DIRECTORY ${SGDK_TOOLCHAIN_NAME}/
+      DESTINATION ${SGDK_TOOLCHAIN_NAME}
+    )
+  else()
+    file(
+      WRITE "${CMAKE_CURRENT_BINARY_DIR}/SGDKFindWindowsToolchain.cmake"
+      "set(SGDK_TOOLCHAIN \"${CMAKE_CURRENT_SOURCE_DIR}/${SGDK_TOOLCHAIN_NAME}\")"
+    )
+  endif()
+
+  install(
+    FILES
+      "${CMAKE_CURRENT_BINARY_DIR}/SGDKFindWindowsToolchain.cmake"
+    DESTINATION cmake
+  )
+endif()
 
 # find_package support
 include(CMakePackageConfigHelpers)
 write_basic_package_version_file(
-    "${CMAKE_CURRENT_BINARY_DIR}/SGDKConfigVersion.cmake"
-    VERSION 2.12
-    COMPATIBILITY AnyNewerVersion
+  "${CMAKE_CURRENT_BINARY_DIR}/SGDKConfigVersion.cmake"
+  VERSION 2.12
+  COMPATIBILITY AnyNewerVersion
 )
 configure_package_config_file(
-    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/SGDKConfig.cmake.in"
-    "${CMAKE_CURRENT_BINARY_DIR}/SGDKConfig.cmake"
-    INSTALL_DESTINATION lib/cmake
+  "${CMAKE_CURRENT_SOURCE_DIR}/cmake/SGDKConfig.cmake.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/SGDKConfig.cmake"
+  INSTALL_DESTINATION cmake
 )
 install(
-    FILES
-      "${CMAKE_CURRENT_BINARY_DIR}/SGDKConfig.cmake"
-      "${CMAKE_CURRENT_BINARY_DIR}/SGDKConfigVersion.cmake"
-    DESTINATION lib/cmake
+  FILES
+    "${CMAKE_CURRENT_BINARY_DIR}/SGDKConfig.cmake"
+    "${CMAKE_CURRENT_BINARY_DIR}/SGDKConfigVersion.cmake"
+  DESTINATION cmake
 )

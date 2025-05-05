@@ -11,10 +11,27 @@ endif()
 
 # Paths
 set(SGDK ${CMAKE_CURRENT_LIST_DIR})
-cmake_path(GET SGDK PARENT_PATH SGDK) # Set SGDK to the root SGDK folder
+cmake_path(GET SGDK PARENT_PATH SGDK) # Set SGDK to either the root or install folder, depending on which toolchain file is included
 set(SGDK_BIN ${SGDK}/bin)
-set(SGDK_TOOLCHAIN ${SGDK}/m68k-elf-toolchain)
-set(SGDK_TOOLCHAIN_PREFIX ${SGDK_TOOLCHAIN}/bin/m68k-elf)
+if(CMAKE_HOST_WIN32)
+  set(SGDK_TOOLCHAIN_NAME "m68k-elf-toolchain")
+
+  # The pre-built windows toolchain is stored in the original SGDK root.
+  if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/SGDKFindWindowsToolchain.cmake")
+    # This must be an install folder
+    include("${CMAKE_CURRENT_LIST_DIR}/SGDKFindWindowsToolchain.cmake")
+  else()
+    # This must be the SGDK root
+    set(SGDK_TOOLCHAIN ${SGDK}/${SGDK_TOOLCHAIN_NAME})
+  endif()
+
+  set(SGDK_TOOLCHAIN_PREFIX ${SGDK_TOOLCHAIN}/bin/m68k-elf)
+  
+  # Specify this root to CMake
+  set(CMAKE_SYSROOT ${SGDK_TOOLCHAIN})
+else()
+  set(SGDK_TOOLCHAIN_PREFIX m68k-elf)
+endif()
 
 # Tool binaries and commands
 set(OBJCPY_BIN ${SGDK_TOOLCHAIN_PREFIX}-objcopy${BINARY_EXT})
@@ -29,9 +46,6 @@ set(CONVSYM_CMD ${CONVSYM_BIN})
 set(RESCOMP_CMD java -jar ${RESCOMP_BIN})
 set(ASMZ80_CMD ${SJASM_BIN} -q)
 set(BINTOS_CMD ${BINTOS_BIN})
-
-# Specify a root to CMake
-set(CMAKE_SYSROOT ${SGDK_TOOLCHAIN})
 
 # Set the compilers and tools for CMake
 set(CMAKE_C_COMPILER ${SGDK_TOOLCHAIN_PREFIX}-gcc${BINARY_EXT})
