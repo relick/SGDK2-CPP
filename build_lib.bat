@@ -1,7 +1,9 @@
 SET "GDK=%cd:\=/%"
 SET "GDK_WIN=%cd%"
-SET PATH=%GDK_WIN%\bin;%PATH%
+SET PATH=%GDK_WIN%\bin;%GDK_WIN%\m68k-elf-toolchain\bin;%PATH%
 
+make -f %GDK_WIN%\makelib.gen clean-cppsupport
+make -f %GDK_WIN%\makelib.gen cppsupport
 make -f %GDK_WIN%\makelib.gen clean-release
 make -f %GDK_WIN%\makelib.gen release
 make -f %GDK_WIN%\makelib.gen clean-debug

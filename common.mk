@@ -1,8 +1,12 @@
 # Common definitions
 
+M68K_PREFIX := m68k-elf
+
 ifeq ($(GDK),)
 	BIN := bin
 	LIB := lib
+	M68K_TOOLCHAIN := $(M68K_PREFIX)-toolchain
+	M68K_BIN := $(M68K_TOOLCHAIN)/bin
 
 	SRC_LIB := src
 	RES_LIB := res
@@ -10,6 +14,8 @@ ifeq ($(GDK),)
 else ifeq ($(GDK),.)
 	BIN := bin
 	LIB := lib
+	M68K_TOOLCHAIN := $(M68K_PREFIX)-toolchain
+	M68K_BIN := $(M68K_TOOLCHAIN)/bin
 
 	SRC_LIB := src
 	RES_LIB := res
@@ -17,6 +23,8 @@ else ifeq ($(GDK),.)
 else
 	BIN := $(GDK)/bin
 	LIB := $(GDK)/lib
+	M68K_TOOLCHAIN := $(GDK)/$(M68K_PREFIX)-toolchain
+	M68K_BIN := $(M68K_TOOLCHAIN)/bin
 
 	SRC_LIB := $(GDK)/src
 	RES_LIB := $(GDK)/res
@@ -30,30 +38,32 @@ ifeq ($(OS),Windows_NT)
 	CP := $(BIN)/cp
 	MKDIR := $(BIN)/mkdir
 
-	AR := $(BIN)/ar
-	CC := $(BIN)/gcc
-	LD:= $(BIN)/ld
-	NM:= $(BIN)/nm
-	OBJCPY := $(BIN)/objcopy
+	AR := $(M68K_BIN)/$(M68K_PREFIX)-ar
+	CC := $(M68K_BIN)/$(M68K_PREFIX)-gcc
+	CXX := $(M68K_BIN)/$(M68K_PREFIX)-g++
+	LD := $(M68K_BIN)/$(M68K_PREFIX)-ld
+	NM := $(M68K_BIN)/$(M68K_PREFIX)-nm
+	OBJCPY := $(M68K_BIN)/$(M68K_PREFIX)-objcopy
 	CONVSYM := $(BIN)/convsym
 	ASMZ80 := $(BIN)/sjasm
 	MACCER := $(BIN)/mac68k
 	BINTOS := $(BIN)/bintos
-	LTO_PLUGIN := --plugin=liblto_plugin.dll
+	GCC_VERSION := $(shell $(CC) -dumpversion)
+	LTO_PLUGIN := --plugin=$(M68K_TOOLCHAIN)/libexec/gcc/$(M68K_PREFIX)/$(GCC_VERSION)/liblto_plugin.dll
 	LIBGCC := $(LIB)/libgcc.a
 else
 	# Native Linux and Docker
-	PREFIX ?= m68k-elf-
 	SHELL := sh
 	RM := rm
 	CP := cp
 	MKDIR := mkdir
 
-	AR := $(PREFIX)ar
-	CC := $(PREFIX)gcc
-	LD := $(PREFIX)ld
-	NM := $(PREFIX)nm
-	OBJCPY := $(PREFIX)objcopy
+	AR := $(M68K_PREFIX)-ar
+	CC := $(M68K_PREFIX)-gcc
+	CXX := $(M68K_PREFIX)-g++
+	LD := $(M68K_PREFIX)-ld
+	NM := $(M68K_PREFIX)-nm
+	OBJCPY := $(M68K_PREFIX)-objcopy
 	CONVSYM := convsym
 	ASMZ80 := sjasm
 	MACCER := mac68k

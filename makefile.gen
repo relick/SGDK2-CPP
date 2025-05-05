@@ -39,6 +39,11 @@ DEP_DIR = $(OUT_DIR)/_deps
 OUT_DIR_LIB := $(GDK)/$(OUT_DIR)
 
 
+SRC_CPP = $(wildcard *.cpp)
+SRC_CPP += $(wildcard $(SRC_DIR)/*.cpp)
+SRC_CPP += $(wildcard $(SRC_DIR)/*/*.cpp)
+SRC_CPP += $(wildcard $(SRC_DIR)/*/*/*.cpp)
+SRC_CPP := $(SRC_CPP)
 SRC_C = $(wildcard *.c)
 SRC_C += $(wildcard $(SRC_DIR)/*.c)
 SRC_C += $(wildcard $(SRC_DIR)/*/*.c)
@@ -62,6 +67,8 @@ SRC_S80 := $(SRC_S80)
 
 RES_RES = $(wildcard *.res)
 RES_RES += $(wildcard $(RES_DIR)/*.res)
+RES_RES += $(wildcard $(RES_DIR)/*/*.res)
+RES_RES += $(wildcard $(RES_DIR)/*/*/*.res)
 RES_RES := $(RES_RES)
 
 OBJS = $(RES_RES:.res=.o)
@@ -69,19 +76,23 @@ OBJS += $(SRC_S80:.s80=.o)
 OBJS += $(SRC_ASM:.asm=.o)
 OBJS += $(SRC_S:.s=.o)
 OBJS += $(SRC_C:.c=.o)
+OBJS += $(SRC_CPP:.cpp=.o)
 OBJS := $(addprefix $(OUT_DIR)/, $(OBJS))
 
-LSTS := $(SRC_C:.c=.lst)
+LSTS = $(SRC_C:.c=.lst)
+LSTS += $(SRC_CPP:.cpp=.lst)
 LSTS := $(addprefix $(OUT_DIR)/, $(LSTS))
 
 DEPS = $(RES_RES:.res=.d)
 DEPS += $(SRC_S:.s=.d)
 DEPS += $(SRC_C:.c=.d)
+DEPS += $(SRC_CPP:.cpp=.d)
 DEPS := $(addprefix $(DEP_DIR)/, $(DEPS))
 
-INCS := -I. -I$(INC_DIR) -I$(RES_DIR) -I$(OUT_DIR) -isystem$(INC_LIB) -isystem$(OUT_DIR_LIB)
+INCS := -I$(SRC_DIR) -I$(INC_DIR) -I$(RES_DIR) -I$(OUT_DIR) -isystem$(INC_LIB) -isystem$(OUT_DIR_LIB)
 DEFAULT_FLAGS := $(EXTRA_FLAGS) -DSGDK_GCC -m68000 -fdiagnostics-color=always -Wall -Wextra -Wno-shift-negative-value -Wno-main -Wno-unused-parameter -fno-builtin -ffunction-sections -fdata-sections -fms-extensions -B$(BIN)
-Z80_FLAGS := -i. -i$(SRC_DIR) -i$(INC_DIR) -i$(RES_DIR) -i$(OUT_DIR) -i$(SRC_LIB) -i$(INC_LIB) -i$(INC_LIB)/snd -i$(OUT_DIR_LIB)
+CXX_EXTRA_FLAGS := -std=c++26 -fno-rtti -fno-exceptions -fno-non-call-exceptions -fno-use-cxa-atexit -fno-common -fno-threadsafe-statics -fno-unwind-tables
+Z80_FLAGS := -i$(SRC_DIR) -i$(INC_DIR) -i$(RES_DIR) -i$(OUT_DIR) -i$(SRC_LIB) -i$(INC_LIB) -i$(INC_LIB)/snd -i$(OUT_DIR_LIB)
 
 ifeq ($(BUILD_TYPE),debug)
 	# debug
@@ -102,6 +113,10 @@ else
 	AFLAGS := -x assembler-with-cpp -Wa,--register-prefix-optional,--bitwise-or $(FLAGS)
 	LIBMD := $(LIB)/libmd.a
 endif
+
+LIBSYS := $(LIB)/libsys.a
+LIBCPP := $(LIB)/libcpp.a
+LIB_FLAGS := $(LIBMD) -L$(LIB) -lgcc -lc $(LIBSYS) -lm $(LIBCPP) -lstdc++
 
 
 .PHONY: default
@@ -170,7 +185,7 @@ $(OUT_DIR)/symbol.txt: $(OUT_DIR)/rom.out
 
 $(OUT_DIR)/rom.out: $(OUT_DIR)/sega.o $(OUT_DIR)/cmd_ $(LIBMD)
 	@$(MKDIR) -p $(dir $@)
-	$(CC) -m68000 -B$(BIN) -n -T $(GDK)/md.ld -nostdlib $(OUT_DIR)/sega.o @$(OUT_DIR)/cmd_ $(LIBMD) $(LIBGCC) -o $(OUT_DIR)/rom.out -Wl,--gc-sections -flto -flto=auto -ffat-lto-objects
+	$(CC) -m68000 -B$(BIN) -n -T $(GDK)/md.ld -nostdlib $(OUT_DIR)/sega.o @$(OUT_DIR)/cmd_ $(LIB_FLAGS) -o $(OUT_DIR)/rom.out -Wl,--gc-sections -flto -flto=auto -ffat-lto-objects
 	@$(RM) $(OUT_DIR)/cmd_
 
 $(OUT_DIR)/cmd_: $(OBJS)
@@ -205,6 +220,10 @@ $(OUT_DIR)/%.o: %.c $(DEP_DIR)/%.d
 	@$(MKDIR) -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
 
+$(OUT_DIR)/%.o: %.cpp $(DEP_DIR)/%.d
+	@$(MKDIR) -p $(dir $@)
+	$(CXX) $(CFLAGS) $(CXX_EXTRA_FLAGS) -c $< -o $@
+
 $(OUT_DIR)/%.o: %.s $(DEP_DIR)/%.d
 	@$(MKDIR) -p $(dir $@)
 	$(CC) $(AFLAGS) -c $< -o $@
@@ -229,11 +248,19 @@ $(OUT_DIR)/%.lst: %.c $(DEP_DIR)/%.d
 	@$(MKDIR) -p $(dir $@)
 	$(CC) $(CFLAGS) -S -c $< -o $@
 
+$(OUT_DIR)/%.lst: %.cpp $(DEP_DIR)/%.d
+	@$(MKDIR) -p $(dir $@)
+	$(CXX) $(CFLAGS) $(CXX_EXTRA_FLAGS) -S -c $< -o $@
+
 
 # deps files
 $(DEP_DIR)/%.d: %.c
 	@$(MKDIR) -p $(dir $@)
 	$(CC) $(CFLAGS) $< -E -MG -MM -MP -MT $(OUT_DIR)/$*.o -MF $(DEP_DIR)/$*.d
+
+$(DEP_DIR)/%.d: %.cpp
+	@$(MKDIR) -p $(dir $@)
+	$(CXX) $(CFLAGS) $(CXX_EXTRA_FLAGS) $< -E -MG -MM -MP -MT $(OUT_DIR)/$*.o -MF $(DEP_DIR)/$*.d
 
 $(DEP_DIR)/%.d: %.s
 	@$(MKDIR) -p $(dir $@)

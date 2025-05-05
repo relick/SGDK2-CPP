@@ -21,6 +21,10 @@ else ifeq ($(MAKECMDGOALS),Asm)
   	BUILD_TYPE := asm
 else ifeq ($(MAKECMDGOALS),clean-asm)
   	BUILD_TYPE := asm
+else ifeq ($(MAKECMDGOALS),cppsupport)
+  	BUILD_TYPE := cppsupport
+else ifeq ($(MAKECMDGOALS),clean-cppsupport)
+  	BUILD_TYPE := cppsupport
 endif
 
 OUT_DIR := out/$(BUILD_TYPE)
@@ -71,6 +75,7 @@ endif
 
 .PHONY: default
 .PHONY: all
+.PHONY: cppsupport
 .PHONY: release
 .PHONY: Release
 .PHONY: debug
@@ -78,18 +83,21 @@ endif
 .PHONY: asm
 .PHONY: Asm
 .PHONY: clean
+.PHONY: clean-cppsupport
 .PHONY: clean-release
 .PHONY: clean-debug
 .PHONY: clean-asm
 .PHONY: clean-all
 
-default: release
-all: release
+default: all
+all: cppsupport release debug
 clean: clean-all
 
 Release: release
 Debug: debug
 Asm: asm
+
+cppsupport: $(LIB)/libsys.a $(LIB)/libcpp.a
 
 release: $(LIB)/libmd.a
 
@@ -100,6 +108,7 @@ asm: $(OBJS_LIB) $(LSTS_LIB)
 clean-all:
 	$(RM) -r -f out
 
+clean-cppsupport: clean-task
 clean-release: clean-task
 clean-debug: clean-task
 clean-asm: clean-task
@@ -122,6 +131,17 @@ $(OUT_DIR)/libmd.a: $(OUT_DIR)/cmd_
 $(OUT_DIR)/cmd_: $(OBJS_LIB)
 	$(ECHO) "$(OBJS_LIB)" > $(OUT_DIR)/cmd_
 
+$(LIB)/libsys.a: $(OUT_DIR)/libsys.a
+	$(CP) $(OUT_DIR)/libsys.a $(LIB)/libsys.a
+
+$(OUT_DIR)/libsys.a: $(OUT_DIR)/syscalls.o
+	$(AR) rcs $@ $(LTO_PLUGIN) $^
+
+$(LIB)/libcpp.a: $(OUT_DIR)/libcpp.a
+	$(CP) $(OUT_DIR)/libcpp.a $(LIB)/libcpp.a
+
+$(OUT_DIR)/libcpp.a: $(OUT_DIR)/cppsupport.o
+	$(AR) rcs $@ $(LTO_PLUGIN) $^
 
 # source compilation
 $(OUT_DIR)/%.o: %.c
@@ -159,3 +179,11 @@ $(OUT_DIR)/%.o: $(OUT_DIR)/%.rs
 $(OUT_DIR)/%.s: $(OUT_DIR)/%.o80
 	@$(MKDIR) -p $(dir $@)
 	$(BINTOS) $<
+
+$(OUT_DIR)/cppsupport.o: $(SRC_LIB)/ext/cppsupport/cplusplus.cpp
+	@$(MKDIR) -p $(dir $@)
+	$(CXX) $(CFLAGS_LIB) -c $< -o $@
+
+$(OUT_DIR)/syscalls.o: $(SRC_LIB)/ext/cppsupport/syscalls.c
+	@$(MKDIR) -p $(dir $@)
+	$(CC) $(CFLAGS_LIB) -c $< -o $@
