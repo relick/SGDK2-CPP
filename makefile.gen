@@ -185,7 +185,7 @@ $(OUT_DIR)/symbol.txt: $(OUT_DIR)/rom.out
 
 $(OUT_DIR)/rom.out: $(OUT_DIR)/sega.o $(OUT_DIR)/cmd_ $(LIBMD)
 	@$(MKDIR) -p $(dir $@)
-	$(CC) -m68000 -B$(BIN) -n -T $(GDK)/md.ld -nostdlib $(OUT_DIR)/sega.o @$(OUT_DIR)/cmd_ $(LIB_FLAGS) -o $(OUT_DIR)/rom.out -Wl,--gc-sections -flto -flto=auto -ffat-lto-objects
+	$(CC) -m68000 -B$(BIN) -n -T $(GDK)/md.ld -nostartfiles $(OUT_DIR)/sega.o @$(OUT_DIR)/cmd_ $(LIB_FLAGS) -o $(OUT_DIR)/rom.out -Wl,--gc-sections -flto -flto=auto -ffat-lto-objects
 	@$(RM) $(OUT_DIR)/cmd_
 
 $(OUT_DIR)/cmd_: $(OBJS)
