@@ -76,8 +76,13 @@ function(apply_common_properties target)
       gcc
   )
 
-  # Add includes for install, and build
-  target_include_directories(${target} PUBLIC $<INSTALL_INTERFACE:include>)
+  # Add include dirs for interface, marking them as system includes
+  target_include_directories(${target} SYSTEM
+    INTERFACE
+      $<BUILD_INTERFACE:inc>
+      $<INSTALL_INTERFACE:include>
+  )
+  # Add includes for building and installing. Note BASE_DIRS will add inc as an include path
   target_sources(${target}
     PUBLIC
     FILE_SET HEADERS BASE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/inc" FILES
