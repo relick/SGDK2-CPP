@@ -105,8 +105,9 @@
  *  \brief
  *      Set it to 1 if you want to use newlib with SGDK.<br>
  *      That will disable any standard methods from SGDK to replace them by newlib library implementation.
+ *      Required for C++.
  */
-#define ENABLE_NEWLIB           0
+#define ENABLE_NEWLIB           1
 
 /**
  *  \brief
