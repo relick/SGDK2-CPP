@@ -10,6 +10,8 @@
 #ifndef _TYPES_H_
 #define _TYPES_H_
 
+#include "config.h"
+
 /**
  *  \brief
  *      FALSE define (equivalent to 0).
@@ -75,6 +77,7 @@
 #define MAX_S32 0x7FFFFFFF
 #endif
 
+#if (ENABLE_NEWLIB == 0) // newlib disabled, use built in integers
 
 /**
  *  \typedef s8
@@ -107,6 +110,44 @@ typedef unsigned short u16;
  *      32 bits unsigned integer (equivalent to unsigned long).
  */
 typedef unsigned long u32;
+
+#else // newlib enabled, use fixed-width integers
+
+#include <stdint.h>
+
+ /**
+  *  \typedef s8
+  *      8 bits signed integer (equivalent to char).
+  */
+typedef int8_t s8;
+/**
+ *  \typedef s16
+ *      16 bits signed integer (equivalent to short).
+ */
+typedef int16_t s16;
+/**
+ *  \typedef s32
+ *      32 bits signed integer (equivalent to long).
+ */
+typedef int32_t s32;
+
+/**
+ *  \typedef u8
+ *      8 bits unsigned integer (equivalent to unsigned char).
+ */
+typedef uint8_t u8;
+/**
+ *  \typedef u16
+ *      16 bits unsigned integer (equivalent to unsigned short).
+ */
+typedef uint16_t u16;
+/**
+ *  \typedef u32
+ *      32 bits unsigned integer (equivalent to unsigned long).
+ */
+typedef uint32_t u32;
+
+#endif // newlib enabled
 
 #if !defined(__cplusplus) && (!defined(__STDC_VERSION__) || (__STDC_VERSION__ < 202300L))
 

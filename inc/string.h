@@ -10,11 +10,18 @@
  * This unit provides basic null terminated string operations and type conversions.
  */
 
-#if (ENABLE_NEWLIB != 0) && !defined(_NEWLIB_STRING_H_)
+#if (ENABLE_NEWLIB != 0)
+
+#if !defined(_NEWLIB_STRING_H_)
 #define _NEWLIB_STRING_H_
 #include_next <string.h> // Include string.h from newlib
 #undef _STRING_H_        // Will be defined again just below
-#endif
+#endif // !defined(_NEWLIB_STRING_H_)
+
+#include <stdarg.h> // Include stdarg.h from newlib
+#include <stdio.h> // Include stdio.h from newlib
+
+#endif // (ENABLE_NEWLIB != 0)
 
 #ifndef _STRING_H_
 #define _STRING_H_

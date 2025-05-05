@@ -7,6 +7,9 @@
 #include "tab_cnv.h"
 #include "vdp.h"
 
+#if (ENABLE_NEWLIB != 0)
+#include <stdlib.h> // Include stdlib.h from newlib
+#endif
 
 const fix16 trigtab_f16[90 + 1] =
 {

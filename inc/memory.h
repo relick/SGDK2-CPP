@@ -289,6 +289,8 @@ void memsetU32(u32 *to, u32 value, u16 len);
  * The underlying type of the objects pointed by both the source and destination pointers are irrelevant for this function; The result is a binary copy of the data.
  */
 void memcpy(void *to, const void *from, u16 len);
+#else  // ENABLE_NEWLIB
+#include <string.h>
 #endif  // ENABLE_NEWLIB
 
 /**
