@@ -13,6 +13,11 @@
 #ifndef _DMA_H_
 #define _DMA_H_
 
+#if defined(__cplusplus)
+extern "C"
+{
+#endif
+
 
 /**
  *  \brief
@@ -538,5 +543,9 @@ void DMA_doVRamCopy(u16 from, u16 to, u16 len, s16 step);
  */
 void DMA_waitCompletion(void);
 
+
+#if defined(__cplusplus)
+} // extern "C"
+#endif
 
 #endif // _DMA_H_

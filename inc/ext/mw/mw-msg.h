@@ -18,6 +18,11 @@
 #ifndef _MW_MSG_H_
 #define _MW_MSG_H_
 
+#if defined(__cplusplus)
+extern "C"
+{
+#endif
+
 #include "types.h"
 
 #if (MODULE_MEGAWIFI != 0)
@@ -383,7 +388,8 @@ struct mw_reuse_payload {
 
 #endif // MODULE_MEGAWIFI
 
-#endif //_MW_MSG_H_
+#if defined(__cplusplus)
+} // extern "C"
+#endif
 
-/** \} */
-
+#endif // _MW_MSG_H_

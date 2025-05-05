@@ -22,6 +22,11 @@
 #ifndef __TASK_H__
 #define __TASK_H__
 
+#if defined(__cplusplus)
+extern "C"
+{
+#endif
+
 #include "task_cst.h"
 
 
@@ -74,4 +79,8 @@ bool TSK_superPend(s16 wait);
  */
 void TSK_superPost(bool immediate);
 
-#endif /*__TASK_H__*/
+#if defined(__cplusplus)
+} // extern "C"
+#endif
+
+#endif // __TASK_H__

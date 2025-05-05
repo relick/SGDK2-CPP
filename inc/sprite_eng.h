@@ -14,6 +14,11 @@
 #ifndef _SPRITE_ENG_H_
 #define _SPRITE_ENG_H_
 
+#if defined(__cplusplus)
+extern "C"
+{
+#endif
+
 #include "vdp_tile.h"
 #include "vdp_spr.h"
 #include "pal.h"
@@ -1013,7 +1018,10 @@ void SPR_logProfil(void);
  */
 void SPR_logSprites(void);
 
+#if defined(__cplusplus)
+} // extern "C"
+#endif
 
 #endif // _SPRITE_ENG_H_
 
-#endif
+#endif // !LEGACY_SPRITE_ENGINE

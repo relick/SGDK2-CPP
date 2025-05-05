@@ -1,6 +1,11 @@
 #ifndef MINIMUS_H_
 #define MINIMUS_H_
 
+#if defined(__cplusplus)
+extern "C"
+{
+#endif
+
 // SGDK replacement for stdint.h
 #include "types.h"
 
@@ -26,4 +31,8 @@ void minimusic_init(const void *, uint16_t);
 void minimusic_sendcmd(uint8_t);
 uint8_t minimusic_get_status(void);
 
+#if defined(__cplusplus)
+} // extern "C"
 #endif
+
+#endif // MINIMUS_H_

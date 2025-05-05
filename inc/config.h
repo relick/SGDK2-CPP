@@ -10,6 +10,11 @@
 #ifndef _CONFIG_
 #define _CONFIG_
 
+#if defined(__cplusplus)
+extern "C"
+{
+#endif
+
 
 /**
  *  \brief
@@ -164,5 +169,9 @@
  */
 #define MODULE_CONSOLE          1
 
+
+#if defined(__cplusplus)
+} // extern "C"
+#endif
 
 #endif // _CONFIG_

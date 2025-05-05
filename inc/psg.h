@@ -10,6 +10,11 @@
 #ifndef _PSG_H_
 #define _PSG_H_
 
+#if defined(__cplusplus)
+extern "C"
+{
+#endif
+
 /**
  *  \brief
  *      PSG port address.
@@ -149,5 +154,9 @@ void PSG_setFrequency(u8 channel, u16 value);
  */
 void PSG_setNoise(u8 type, u8 frequency);
 
+
+#if defined(__cplusplus)
+} // extern "C"
+#endif
 
 #endif // _PSG_H_

@@ -27,6 +27,11 @@
 #ifndef _MEGAWIFI_H_
 #define _MEGAWIFI_H_
 
+#if defined(__cplusplus)
+extern "C"
+{
+#endif
+
 #if (MODULE_EVERDRIVE == 1)
 	#include "ext/mw/ssf.h"
 #else
@@ -1009,7 +1014,8 @@ static inline enum lsd_status mw_cmd_recv(mw_cmd *rep, void *ctx,
 	return lsd_recv(rep->packet, sizeof(mw_cmd), ctx, recv_cb);
 }
 
-#endif /*_MEGAWIFI_H_*/
+#if defined(__cplusplus)
+} // extern "C"
+#endif
 
-/** \} */
-
+#endif // _MEGAWIFI_H_

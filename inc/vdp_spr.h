@@ -15,6 +15,11 @@
 #ifndef _VDP_SPR_H_
 #define _VDP_SPR_H_
 
+#if defined(__cplusplus)
+extern "C"
+{
+#endif
+
 /**
  *  \brief
  *      Maximum size of Sprite Attribute Table (128 in VRAM but limited to 80 in VDP anyway)
@@ -444,5 +449,9 @@ void VDP_setSpriteTile(u16 index, u16 tile);
  *      Index of the sprite to modify attributes (should be < SAT_MAX_SIZE).
  */
 u16 VDP_getSpriteTile(u16 index);
+
+#if defined(__cplusplus)
+} // extern "C"
+#endif
 
 #endif // _VDP_SPR_H_

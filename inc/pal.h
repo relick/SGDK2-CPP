@@ -16,6 +16,11 @@
 #ifndef _PAL_H_
 #define _PAL_H_
 
+#if defined(__cplusplus)
+extern "C"
+{
+#endif
+
 #define VDPPALETTE_REDSFT           1
 #define VDPPALETTE_GREENSFT         5
 #define VDPPALETTE_BLUESFT          9
@@ -496,5 +501,9 @@ void PAL_waitFadeCompletion(void);
  */
 void PAL_interruptFade(void);
 
+
+#if defined(__cplusplus)
+} // extern "C"
+#endif
 
 #endif // _VDP_PAL_H_

@@ -26,6 +26,11 @@
 #ifndef _MAP_H_
 #define _MAP_H_
 
+#if defined(__cplusplus)
+extern "C"
+{
+#endif
+
 
 #include "vdp.h"
 #include "vdp_tile.h"
@@ -415,5 +420,9 @@ void MAP_setDataPatchCallback(Map* map, MapDataPatchCallback *CB);
  */
 void MAP_overridePlaneSize(Map* map, u16 w, u16 h);
 
+
+#if defined(__cplusplus)
+} // extern "C"
+#endif
 
 #endif // _MAP_H_

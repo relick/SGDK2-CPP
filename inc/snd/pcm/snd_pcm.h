@@ -17,6 +17,11 @@
 #ifndef _SND_PCM_H_
 #define _SND_PCM_H_
 
+#if defined(__cplusplus)
+extern "C"
+{
+#endif
+
 #include "types.h"
 
 
@@ -106,5 +111,9 @@ void SND_PCM_startPlay(const u8 *sample, const u32 len, const SoundPcmSampleRate
  *      No effect if no sample was currently playing.
  */
 void SND_PCM_stopPlay(void);
+
+#if defined(__cplusplus)
+} // extern "C"
+#endif
 
 #endif // _SND_PCM_H_

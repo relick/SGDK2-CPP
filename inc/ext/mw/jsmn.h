@@ -24,6 +24,11 @@
 #ifndef JSMN_H
 #define JSMN_H
 
+#if defined(__cplusplus)
+extern "C"
+{
+#endif
+
 #include "types.h"
 
 #if (MODULE_MEGAWIFI != 0)
@@ -472,4 +477,8 @@ JSMN_API void jsmn_init(jsmn_parser *parser) {
 
 #endif // MODULE_MEGAWIFI
 
-#endif /* JSMN_H */
+#if defined(__cplusplus)
+} // extern "C"
+#endif
+
+#endif // JSMN_H

@@ -10,6 +10,11 @@
 #ifndef _FONT_H_
 #define _FONT_H_
 
+#if defined(__cplusplus)
+extern "C"
+{
+#endif
+
 
 // contains definition of the base font
 #include "vdp.h"
@@ -17,5 +22,9 @@
 #include "vdp_tile.h"
 #include "res/libres.h"
 
+
+#if defined(__cplusplus)
+} // extern "C"
+#endif
 
 #endif // _FONT_H_

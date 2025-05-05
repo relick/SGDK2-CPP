@@ -19,6 +19,11 @@
 #ifndef _SND_PCM4_H_
 #define _SND_PCM4_H_
 
+#if defined(__cplusplus)
+extern "C"
+{
+#endif
+
 #include "types.h"
 
 
@@ -133,5 +138,9 @@ void SND_PCM4_setVolume(const SoundPCMChannel channel, const u8 volume);
  *      The returned value is comprised between 0 (quiet) to 15 (loud).
  */
 u8   SND_PCM4_getVolume(const SoundPCMChannel channel);
+
+#if defined(__cplusplus)
+} // extern "C"
+#endif
 
 #endif // _SND_PCM4_H_

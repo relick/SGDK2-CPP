@@ -62,6 +62,11 @@
 #ifndef _SAVEMAN_H_
 #define _SAVEMAN_H_
 
+#if defined(__cplusplus)
+extern "C"
+{
+#endif
+
 #include "types.h"
 
 /**
@@ -178,4 +183,8 @@ int16_t sm_delete(uint8_t slot);
  */
 int16_t sm_clear(uint8_t num_slots);
 
+#if defined(__cplusplus)
+} // extern "C"
 #endif
+
+#endif // _SAVEMAN_H_

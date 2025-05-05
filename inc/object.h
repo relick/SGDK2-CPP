@@ -24,6 +24,11 @@
 #ifndef _OBJECT_H_
 #define _OBJECT_H_
 
+#if defined(__cplusplus)
+extern "C"
+{
+#endif
+
 #include "pool.h"
 
 
@@ -167,5 +172,9 @@ void OBJ_setUpdateMethod(Object* object, ObjectCallback* updateMethod);
  */
 void OBJ_setEndMethod(Object* object, ObjectCallback* endMethod);
 
+
+#if defined(__cplusplus)
+} // extern "C"
+#endif
 
 #endif // _OBJECT_H_

@@ -20,6 +20,11 @@
 #ifndef _MEMORY_H_
 #define _MEMORY_H_
 
+#if defined(__cplusplus)
+extern "C"
+{
+#endif
+
 // asics memory address definitions
 #include "memory_base.h"
 
@@ -326,5 +331,9 @@ void memcpy(void *to, const void *from, u16 len);
  */
 #define fastMemcpyU32(to, from, len)    _Pragma("GCC error \"This method is deprecated, use memcpy(..) instead.\"")
 
+
+#if defined(__cplusplus)
+} // extern "C"
+#endif
 
 #endif // _MEMORY_H_

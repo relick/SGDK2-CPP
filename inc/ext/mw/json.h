@@ -20,6 +20,11 @@
 #ifndef _JSON_H_
 #define _JSON_H_
 
+#if defined(__cplusplus)
+extern "C"
+{
+#endif
+
 #include "types.h"
 
 #if (MODULE_MEGAWIFI != 0)
@@ -120,7 +125,8 @@ int json_bool_get(const char *json_str, const jsmntok_t *json_tok, int obj_idx);
 
 #endif // MODULE_MEGAWIFI
 
-#endif /*_JSON_H_*/
+#if defined(__cplusplus)
+} // extern "C"
+#endif
 
- /** \} */
-
+#endif // _JSON_H_

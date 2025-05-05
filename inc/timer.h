@@ -11,6 +11,11 @@
 #ifndef _TIMER_H_
 #define _TIMER_H_
 
+#if defined(__cplusplus)
+extern "C"
+{
+#endif
+
 
 /**
  *  \brief
@@ -128,5 +133,9 @@ void waitTick(u32 tick);
  */
 void waitMs(u32 ms);
 
+
+#if defined(__cplusplus)
+} // extern "C"
+#endif
 
 #endif // _TIMER_H_

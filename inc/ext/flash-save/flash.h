@@ -29,6 +29,11 @@
 #ifndef __FLASH_H__
 #define __FLASH_H__
 
+#if defined(__cplusplus)
+extern "C"
+{
+#endif
+
 // I usually include stdint.h, but SGDK defines some stdint types here:
 #include "types.h"
 
@@ -161,4 +166,8 @@ int16_t flash_copy(uint32_t dst, uint32_t src, uint16_t len);
  */
 int16_t flash_sector_limits(uint32_t addr, uint32_t *start, uint32_t *next);
 
+#if defined(__cplusplus)
+} // extern "C"
 #endif
+
+#endif // __FLASH_H__

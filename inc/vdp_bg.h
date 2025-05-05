@@ -13,6 +13,11 @@
 #ifndef _VDP_BG_H_
 #define _VDP_BG_H_
 
+#if defined(__cplusplus)
+extern "C"
+{
+#endif
+
 #include "bmp.h"
 #include "vdp.h"
 #include "vdp_tile.h"
@@ -719,5 +724,9 @@ bool VDP_drawImage(VDPPlane plane, const Image *image, u16 x, u16 y);
  */
 bool VDP_drawImageEx(VDPPlane plane, const Image *image, u16 basetile, u16 x, u16 y, bool loadpal, bool dma);
 
+
+#if defined(__cplusplus)
+} // extern "C"
+#endif
 
 #endif // _VDP_BG_H_

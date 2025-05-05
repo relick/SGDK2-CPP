@@ -10,6 +10,11 @@
 #ifndef _TOOLS_H_
 #define _TOOLS_H_
 
+#if defined(__cplusplus)
+extern "C"
+{
+#endif
+
 #include "bmp.h"
 #include "vdp.h"
 #include "vdp_tile.h"
@@ -446,5 +451,9 @@ void qsort_s32(s32 *data, u16 left, u16 right);
 void qsort_obj(void** data, u16 len, _comparatorCallback* cb);
 
 
+
+#if defined(__cplusplus)
+} // extern "C"
+#endif
 
 #endif // _TOOLS_H_

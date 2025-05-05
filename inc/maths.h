@@ -11,6 +11,11 @@
 #ifndef _MATHS_H_
 #define _MATHS_H_
 
+#if defined(__cplusplus)
+extern "C"
+{
+#endif
+
 #include "types.h"
 
 
@@ -1010,5 +1015,9 @@ u32 V2D_S32_getApproximatedDistance(V2s32* v);
 
 // Deprecated functions
 #define getApproximatedDistanceV(dx, dy)     _Pragma("GCC error \"This method is deprecated, use V2D_S32_getApproximatedDistance(..) instead.\"")
+
+#if defined(__cplusplus)
+} // extern "C"
+#endif
 
 #endif // _MATHS_H_

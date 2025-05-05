@@ -19,6 +19,11 @@
 #ifndef _SSF_H_
 #define _SSF_H
 
+#if defined(__cplusplus)
+extern "C"
+{
+#endif
+
 #include "config.h"
 #include "types.h"
 
@@ -144,5 +149,9 @@ void uart_init(void);
 #define uart_reset_fifos()	while(0)
 void ssf_set_rom_bank(u8 bank, u8 val);
 #endif 
-#endif /*_SSF_H_*/
 
+#if defined(__cplusplus)
+} // extern "C"
+#endif
+
+#endif // _SSF_H_

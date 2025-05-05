@@ -13,6 +13,11 @@
 #ifndef _VDP_TILE_H_
 #define _VDP_TILE_H_
 
+#if defined(__cplusplus)
+extern "C"
+{
+#endif
+
 
 #include "vdp.h"
 #include "dma.h"
@@ -1082,5 +1087,9 @@ bool VDP_setMap(VDPPlane plane, const TileMap *tilemap, u16 basetile, u16 x, u16
  */
 bool VDP_setMapEx(VDPPlane plane, const TileMap *tilemap, u16 basetile, u16 x, u16 y, u16 xm, u16 ym, u16 wm, u16 hm);
 
+
+#if defined(__cplusplus)
+} // extern "C"
+#endif
 
 #endif // _VDP_TILE_H_

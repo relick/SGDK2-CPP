@@ -16,6 +16,11 @@
 #ifndef _SND_DPCM2_H_
 #define _SND_DPCM2_H_
 
+#if defined(__cplusplus)
+extern "C"
+{
+#endif
+
 #define SND_isPlaying_2ADPCM    _Pragma("GCC error \"This method is deprecated, use SND_DPCM2_isPlaying instead.\"")
 #define SND_startPlay_2ADPCM    _Pragma("GCC error \"This method is deprecated, use SND_DPCM2_startPlay instead.\"")
 #define SND_stopPlay_2ADPCM     _Pragma("GCC error \"This method is deprecated, use SND_DPCM2_stopPlay instead.\"")
@@ -84,5 +89,9 @@ void SND_DPCM2_startPlay(const u8 *sample, const u32 len, const SoundPCMChannel 
  *      SOUND_PCM_CH2    = channel 2<br>
  */
 void SND_DPCM2_stopPlay(const SoundPCMChannel channel);
+
+#if defined(__cplusplus)
+} // extern "C"
+#endif
 
 #endif // _SND_DPCM2_H_

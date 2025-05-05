@@ -24,6 +24,11 @@
 #ifndef _SRAM_H_
 #define _SRAM_H_
 
+#if defined(__cplusplus)
+extern "C"
+{
+#endif
+
 
 #include "mapper.h"
 
@@ -106,5 +111,9 @@ void SRAM_writeWord(u32 offset, u16 val);
  */
 void SRAM_writeLong(u32 offset, u32 val);
 
+
+#if defined(__cplusplus)
+} // extern "C"
+#endif
 
 #endif // _SRAM_H_

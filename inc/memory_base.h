@@ -11,6 +11,11 @@
 #ifndef _MEMORY_BASE_H_
 #define _MEMORY_BASE_H_
 
+#if defined(__cplusplus)
+extern "C"
+{
+#endif
+
 /**
  *  \brief
  *      Define start of ROM region
@@ -33,5 +38,9 @@
  */
 #define MEMORY_HIGH     (0xE1000000 - STACK_SIZE)
 
+
+#if defined(__cplusplus)
+} // extern "C"
+#endif
 
 #endif // _MEMORY_BASE_H_

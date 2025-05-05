@@ -10,6 +10,11 @@
 #ifndef _TYPES_H_
 #define _TYPES_H_
 
+#if defined(__cplusplus)
+extern "C"
+{
+#endif
+
 #include "config.h"
 
 /**
@@ -415,5 +420,9 @@ u16 ror16(u16 value, u16 number);
  */
 u32 ror32(u32 value, u16 number);
 
+
+#if defined(__cplusplus)
+} // extern "C"
+#endif
 
 #endif // _TYPES_H_

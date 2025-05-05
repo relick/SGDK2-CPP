@@ -18,6 +18,13 @@
  *  be automatically reset before text is displayed (see assert macro below).
  */
 
+#pragma once
+
+#if defined(__cplusplus)
+extern "C"
+{
+#endif
+
 // *****************************************************************************
 //
 //  Includes
@@ -32,8 +39,6 @@
 #include "string.h"
 #include "maths.h"
 #include "dma.h"
-
-#pragma once
 
 // *****************************************************************************
 //
@@ -394,3 +399,7 @@ V2u16 CON_getCursorPosition();
 int CON_write(const char *fmt, ...)  __attribute__ ((format (printf, 1, 2)));
 
 #endif // MODULE_CONSOLE
+
+#if defined(__cplusplus)
+} // extern "C"
+#endif

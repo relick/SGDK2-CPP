@@ -34,6 +34,11 @@
 #ifndef _MAPPER_H_
 #define _MAPPER_H_
 
+#if defined(__cplusplus)
+extern "C"
+{
+#endif
+
 
 #include "config.h"
 #include "types.h"
@@ -182,5 +187,9 @@ bool SYS_getNextFarAccessRegion();
  *  \see SYS_getFarDataEx
  */
 void SYS_setNextFarAccessRegion(bool high);
+
+#if defined(__cplusplus)
+} // extern "C"
+#endif
 
 #endif // _MAPPER_H_

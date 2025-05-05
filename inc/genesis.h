@@ -1,6 +1,11 @@
 #ifndef _GENESIS_H_
 #define _GENESIS_H_
 
+#if defined(__cplusplus)
+extern "C"
+{
+#endif
+
 #define SGDK_VERSION    2.12
 
 #include "types.h"
@@ -88,5 +93,9 @@
 #define logo_lib sgdk_logo
 #define font_lib font_default
 #define font_pal_lib font_pal_default
+
+#if defined(__cplusplus)
+} // extern "C"
+#endif
 
 #endif // _GENESIS_H_

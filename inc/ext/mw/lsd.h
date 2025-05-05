@@ -44,6 +44,11 @@
 #ifndef _LSD_H_
 #define _LSD_H_
 
+#if defined(__cplusplus)
+extern "C"
+{
+#endif
+
 #if (MODULE_MEGAWIFI == 1 && MODULE_EVERDRIVE == 0)
 	#include "ext/mw/16c550.h"
 #elif (MODULE_MEGAWIFI == 1 && MODULE_EVERDRIVE == 1)
@@ -181,6 +186,8 @@ void lsd_line_sync(void);
 
 #endif // MODULE_MEGAWIFI
 
-#endif //_LSD_H_
+#if defined(__cplusplus)
+} // extern "C"
+#endif
 
-/** \} */
+#endif // _LSD_H_

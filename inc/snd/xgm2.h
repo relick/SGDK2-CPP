@@ -14,6 +14,11 @@
 #ifndef _XGM2_H_
 #define _XGM2_H_
 
+#if defined(__cplusplus)
+extern "C"
+{
+#endif
+
 
 /**
  *  \brief
@@ -394,5 +399,9 @@ u8 XGM2_getDebugMissedFrames(void);
  */
 u8 XGM2_getDebugProcessDuration(const u16 ind);
 
+
+#if defined(__cplusplus)
+} // extern "C"
+#endif
 
 #endif // _XGM2_H_

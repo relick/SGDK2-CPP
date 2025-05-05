@@ -26,6 +26,11 @@
 #ifndef _STRING_H_
 #define _STRING_H_
 
+#if defined(__cplusplus)
+extern "C"
+{
+#endif
+
 #if (ENABLE_NEWLIB == 0) || !defined(ENABLE_NEWLIB)
 
 /**
@@ -337,6 +342,10 @@ void FF16_toStr(fastfix16 value, char *str, u16 numdec);
  *  \see fastFix32ToStr
  */
 void FF32_toStr(fastfix32 value, char *str, u16 numdec);
+
+#if defined(__cplusplus)
+} // extern "C"
+#endif
 
 #endif // _STRING_H_
 

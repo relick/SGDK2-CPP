@@ -10,6 +10,11 @@
 #ifndef _YM2612_H_
 #define _YM2612_H_
 
+#if defined(__cplusplus)
+extern "C"
+{
+#endif
+
 /**
  *  \brief
  *      YM2612 base port address.
@@ -83,5 +88,9 @@ void YM2612_enableDAC(void);
  */
 void YM2612_disableDAC(void);
 
+
+#if defined(__cplusplus)
+} // extern "C"
+#endif
 
 #endif // _YM2612_H_

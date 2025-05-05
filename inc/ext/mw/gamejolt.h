@@ -24,6 +24,11 @@
 #ifndef _GAMEJOLT_H_
 #define _GAMEJOLT_H_
 
+#if defined(__cplusplus)
+extern "C"
+{
+#endif
+
 #include "types.h"
 
 #if (MODULE_MEGAWIFI != 0)
@@ -539,7 +544,8 @@ char *gj_request(const char **path, uint8_t num_paths, const char **key,
 
 #endif // MODULE_MEGAWIFI
 
-#endif /*_GAMEJOLT_H_*/
+#if defined(__cplusplus)
+} // extern "C"
+#endif
 
-/** \} */
-
+#endif // _GAMEJOLT_H_

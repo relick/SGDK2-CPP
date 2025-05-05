@@ -37,6 +37,11 @@
 #ifndef _POOL_H_
 #define _POOL_H_
 
+#if defined(__cplusplus)
+extern "C"
+{
+#endif
+
 
 /**
  *  \brief
@@ -167,5 +172,9 @@ void** POOL_getFirst(Pool* pool);
  */
 s16 POOL_find(Pool* pool, void* object);
 
+
+#if defined(__cplusplus)
+} // extern "C"
+#endif
 
 #endif // _POOL_H_

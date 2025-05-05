@@ -10,6 +10,11 @@
 #ifndef _16C550_H_
 #define _16C550_H_
 
+#if defined(__cplusplus)
+extern "C"
+{
+#endif
+
 #include "types.h"
 
 #if (MODULE_MEGAWIFI == 1 && MODULE_EVERDRIVE == 0)
@@ -187,7 +192,8 @@ void uart_init(void);
 
 #endif // MODULE_MEGAWIFI
 
-#endif /*_16C550_H_*/
+#if defined(__cplusplus)
+} // extern "C"
+#endif
 
-/** \} */
-
+#endif // _16C550_H_
