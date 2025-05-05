@@ -121,6 +121,25 @@ static u16 cpuFrameLoad;
 static u32 frameCnt;
 static u32 lastSubTick;
 
+// C++ global constructor execution
+#if defined(__cplusplus)
+
+extern void(*__CTOR_LIST__)();
+void __do_global_constructors()
+{
+    void (**constructor)() = &__CTOR_LIST__;
+    u16 total = *(u16*)constructor;
+    ++constructor;
+    while (total)
+    {
+        (*constructor)();
+        --total;
+        ++constructor;
+    }
+}
+
+#endif
+
 #if LEGACY_ERROR_HANDLER
 
 static void addValueU8(char *dst, char *str, u8 value)
@@ -575,6 +594,11 @@ void NO_INLINE _start_entry()
             VDP_init();
         }
     }
+#endif
+
+#if defined(__cplusplus)
+    // call C++ global constructors
+    __do_global_constructors();
 #endif
 
     // let's the fun go on !
