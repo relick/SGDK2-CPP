@@ -70,28 +70,37 @@ function(apply_common_properties target)
       STATIC_LIBRARY_OPTIONS "$<$<BOOL:${LTO_PLUGIN}>:--plugin=${LTO_PLUGIN}>"
   )
 
+  # Only common library is libgcc
   target_link_libraries(${target}
     PUBLIC
       gcc
   )
 
-  target_include_directories(${target}
-    PUBLIC
-      $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/inc>
-      $<INSTALL_INTERFACE:include>
-  )
-
+  # Add includes for install, and build
+  target_include_directories(${target} PUBLIC $<INSTALL_INTERFACE:include>)
   target_sources(${target}
-    INTERFACE
+    PUBLIC
     FILE_SET HEADERS BASE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/inc" FILES
       ${SRC_LIB_INCLUDES}
   )
+
+  # Create a custom target for extra includes for z80 assembly, without polluting the main target
+  set(inc_target_z80 "${target}.z80includes")
+  add_custom_target(${inc_target_z80})
+  set_property(TARGET ${inc_target_z80}
+    PROPERTY
+    INCLUDE_DIRECTORIES
+      ${CMAKE_CURRENT_SOURCE_DIR}/src
+      ${CMAKE_CURRENT_SOURCE_DIR}/inc/snd
+  )
+  
+  # Add sources
   target_sources(${target}
     PRIVATE
       ${SRC_LIB_C}
       ${SRC_LIB_S}
   )
-  md_target_z80_sources(${target} PUBLIC ${SRC_LIB_S80})
+  md_target_z80_sources_with_inc(${target} ${inc_target_z80} PUBLIC ${SRC_LIB_S80})
   md_target_res_sources(${target} PUBLIC ${RES_LIB_RES})
 endfunction()
 
