@@ -231,8 +231,8 @@ static void updatePartic(_particule *part, s16 num)
             // re-init paticule
             p->pos.x = baseposx;
             p->pos.y = baseposy;
-            p->mov.x = FIX16(1) - (random() & (FIX16_FRAC_MASK << 1));
-            p->mov.y = FIX16(2) + (random() & (FIX16_FRAC_MASK << 3));
+            p->mov.x = FIX16(1) - (U16_rand() & (FIX16_FRAC_MASK << 1));
+            p->mov.y = FIX16(2) + (U16_rand() & (FIX16_FRAC_MASK << 3));
         }
         else if (p->pos.y <= FIX16(0))
         {
@@ -241,8 +241,8 @@ static void updatePartic(_particule *part, s16 num)
                 // re-init paticule
                 p->pos.x = baseposx;
                 p->pos.y = baseposy;
-                p->mov.x = FIX16(1) - (random() & (FIX16_FRAC_MASK << 1));
-                p->mov.y = FIX16(2) + (random() & (FIX16_FRAC_MASK << 3));
+                p->mov.x = FIX16(1) - (U16_rand() & (FIX16_FRAC_MASK << 1));
+                p->mov.y = FIX16(2) + (U16_rand() & (FIX16_FRAC_MASK << 3));
             }
             else
             {

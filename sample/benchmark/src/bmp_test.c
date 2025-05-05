@@ -405,8 +405,8 @@ u16 executeBMPTest(u16 *scores)
         // init image positions
         for(j = 0; j < 5; j++)
         {
-            pts[j].x = random() % (256 - 128);
-            pts[j].y = random() % (160 - 64);
+            pts[j].x = U16_rand() % (256 - 128);
+            pts[j].y = U16_rand() % (160 - 64);
         }
 
         pos = pts;
@@ -446,8 +446,8 @@ u16 executeBMPTest(u16 *scores)
         // init image positions
         for(j = 0; j < 8; j++)
         {
-            pts[j].x = random() % (256 - 128);
-            pts[j].y = random() % (160 - 64);
+            pts[j].x = U16_rand() % (256 - 128);
+            pts[j].y = U16_rand() % (160 - 64);
         }
 
         pos = pts;
@@ -489,8 +489,8 @@ u16 executeBMPTest(u16 *scores)
         // init image positions
         for(j = 0; j < 10; j++)
         {
-            pts[j].x = random() % (256 - 128);
-            pts[j].y = random() % (160 - 64);
+            pts[j].x = U16_rand() % (256 - 128);
+            pts[j].y = U16_rand() % (160 - 64);
         }
 
         pos = pts;
@@ -531,8 +531,8 @@ u16 executeBMPTest(u16 *scores)
         // init image positions
         for(j = 0; j < 10; j++)
         {
-            pts[j].x = random() % (256 - 64);
-            pts[j].y = random() % (160 - 32);
+            pts[j].x = U16_rand() % (256 - 64);
+            pts[j].y = U16_rand() % (160 - 32);
         }
 
         pos = pts;
@@ -572,8 +572,8 @@ u16 executeBMPTest(u16 *scores)
         // init image positions
         for(j = 0; j < 25; j++)
         {
-            pts[j].x = random() % (256 - 64);
-            pts[j].y = random() % (160 - 32);
+            pts[j].x = U16_rand() % (256 - 64);
+            pts[j].y = U16_rand() % (160 - 32);
         }
 
         pos = pts;
@@ -615,8 +615,8 @@ u16 executeBMPTest(u16 *scores)
         // init image positions
         for(j = 0; j < 30; j++)
         {
-            pts[j].x = random() % (256 - 64);
-            pts[j].y = random() % (160 - 32);
+            pts[j].x = U16_rand() % (256 - 64);
+            pts[j].y = U16_rand() % (160 - 32);
         }
 
         pos = pts;
@@ -707,11 +707,11 @@ static void initPixels(Pixel *pixels, u16 num)
 
     while(i--)
     {
-        const u16 r = random();
+        const u16 r = U16_rand();
 
         p->pt.x = (r >> 8) & 0xFF;
         p->pt.y = (r & 0x7F) + ((r >> 4) & 0x1F);
-        p->col = random() & 0xF;
+        p->col = U16_rand() & 0xF;
         p->col |= p->col << 4;
         p++;
     }
@@ -724,8 +724,8 @@ static void initLines(Line *lines, u16 num, u16 clipped)
 
     while(i--)
     {
-        const u16 r1 = random();
-        const u16 r2 = random();
+        const u16 r1 = U16_rand();
+        const u16 r2 = U16_rand();
 
         l->pt1.x = r1 >> 8;
         if (clipped) l->pt1.y = (r1 & 0x7F) + ((r1 >> 4) & 0x1F);
@@ -733,7 +733,7 @@ static void initLines(Line *lines, u16 num, u16 clipped)
         l->pt2.x = r2 >> 8;
         if (clipped) l->pt2.y = (r2 & 0x7F) + ((r2 >> 4) & 0x1F);
         else l->pt2.y = (r2 & 0xFF) - 64;
-        l->col = random() & 0xF;
+        l->col = U16_rand() & 0xF;
         l->col |= l->col << 4;
         l++;
     }
@@ -756,7 +756,7 @@ static void initPolys(Vect2D_s16 *pts, Polygone *polys, u16 numPts, u16 num)
 
                 while(j--)
                 {
-                    const u16 r = random();
+                    const u16 r = U16_rand();
 
                     c->x = r >> 8;
                     // allow to handle clip
@@ -768,7 +768,7 @@ static void initPolys(Vect2D_s16 *pts, Polygone *polys, u16 numPts, u16 num)
 
             p->pts = curPts;
             p->numPts = numPts;
-            p->col = random() & 0xF;
+            p->col = U16_rand() & 0xF;
             p->col |= p->col << 4;
 
             // next
@@ -781,7 +781,7 @@ static void initPolys(Vect2D_s16 *pts, Polygone *polys, u16 numPts, u16 num)
         while(i--)
         {
             // dynamic number of points (minimum = 3, maximum = 6)
-            numPts = (random() & 3) + 3;
+            numPts = (U16_rand() & 3) + 3;
 
             do
             {
@@ -790,7 +790,7 @@ static void initPolys(Vect2D_s16 *pts, Polygone *polys, u16 numPts, u16 num)
 
                 while(j--)
                 {
-                    const u16 r = random();
+                    const u16 r = U16_rand();
 
                     c->x = r >> 8;
                     // allow to handle clip
@@ -802,7 +802,7 @@ static void initPolys(Vect2D_s16 *pts, Polygone *polys, u16 numPts, u16 num)
 
             p->pts = curPts;
             p->numPts = numPts;
-            p->col = random() & 0xF;
+            p->col = U16_rand() & 0xF;
             p->col |= p->col << 4;
 
             // next

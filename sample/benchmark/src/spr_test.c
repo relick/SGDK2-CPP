@@ -918,8 +918,8 @@ static void initPartic(u16 num)
         Sprite* s = *sprite;
         MovingObject* o = (MovingObject*) s->data;
 
-        o->mov.x = FIX16(2) - (random() & (FIX16_FRAC_MASK << 2));
-        o->mov.y = FIX16(2) + (random() & (FIX16_FRAC_MASK << 3));
+        o->mov.x = FIX16(2) - (U16_rand() & (FIX16_FRAC_MASK << 2));
+        o->mov.y = FIX16(2) + (U16_rand() & (FIX16_FRAC_MASK << 3));
         o->pos.x = baseposx + o->mov.x;
         o->pos.y = baseposy + o->mov.y;
         o->timer = i & 1;
@@ -960,8 +960,8 @@ static void updatePartic(u16 num, u16 preloadedTiles, u16 realloc)
             }
 
             // re-init particle
-            o->mov.x = FIX16(2) - (random() & (FIX16_FRAC_MASK << 2));
-            o->mov.y = FIX16(2) + (random() & (FIX16_FRAC_MASK << 3));
+            o->mov.x = FIX16(2) - (U16_rand() & (FIX16_FRAC_MASK << 2));
+            o->mov.y = FIX16(2) + (U16_rand() & (FIX16_FRAC_MASK << 3));
             o->pos.x = baseposx + o->mov.x;
             o->pos.y = baseposy + o->mov.y;
         }
@@ -970,8 +970,8 @@ static void updatePartic(u16 num, u16 preloadedTiles, u16 realloc)
 //            if (o->mov.y > -(gravity << 4))
 //            {
 //                // re-init particle
-//                o->mov.x = FIX16(2) - (random() & (FIX16_FRAC_MASK << 2));
-//                o->mov.y = FIX16(2) + (random() & (FIX16_FRAC_MASK << 3));
+//                o->mov.x = FIX16(2) - (U16_rand() & (FIX16_FRAC_MASK << 2));
+//                o->mov.y = FIX16(2) + (U16_rand() & (FIX16_FRAC_MASK << 3));
 //                o->pos.x = baseposx + o->mov.x;
 //                o->pos.y = baseposy + o->mov.y;
 //            }
@@ -1213,12 +1213,12 @@ static void initPos(u16 num)
         Sprite* s = *sprite;
         MovingObject* o = (MovingObject*) s->data;
 
-        o->pos.x = FIX16(32 + (random() & 0xFF));
-        o->pos.y = FIX16((random() & 0x7F));
-        if (random() & 1) o->mov.x = (random() & 0xF) + FIX16(1);
-        else o->mov.x = -((random() & 0xF) + FIX16(1));
-        if (random() & 1) o->mov.y = (random() & 0x7) + FIX16(0.7);
-        else o->mov.y = -((random() & 0x7) + FIX16(0.7));
+        o->pos.x = FIX16(32 + (U16_rand() & 0xFF));
+        o->pos.y = FIX16((U16_rand() & 0x7F));
+        if (U16_rand() & 1) o->mov.x = (U16_rand() & 0xF) + FIX16(1);
+        else o->mov.x = -((U16_rand() & 0xF) + FIX16(1));
+        if (U16_rand() & 1) o->mov.y = (U16_rand() & 0x7) + FIX16(0.7);
+        else o->mov.y = -((U16_rand() & 0x7) + FIX16(0.7));
 
         sprite++;
     }

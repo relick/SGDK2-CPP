@@ -541,7 +541,7 @@ static void buildShuffledList()
         while(remaining)
         {
             // random list copy
-            u16* ind = &indexes[random() % remaining];
+            u16* ind = &indexes[U16_rand() % remaining];
 
             dstInv[*ind] = dst - shuffledIndexes;
             *dst++ = *ind;
@@ -574,7 +574,7 @@ static void buildShuffledList()
     for(i = 0; i < numMusic; i++)
         KLog_S2("Element ", i, " = ", list[i]);
 
-    qsort(list, numMusic, compareList);
+    qsort_obj(list, numMusic, compareList);
 
     KLog("After sort:");
     for(i = 0; i < numMusic; i++)
@@ -1437,7 +1437,7 @@ static void initBGScroll()
 	while(i--)
 	{
 		*sf++ = FIX16(0);
-		do ns = -((random() & 0x3F) + 10);
+		do ns = -((U16_rand() & 0x3F) + 10);
 		while(ns == s);
 		*ss++ = ns;
 		s = ns;

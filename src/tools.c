@@ -34,7 +34,7 @@ void setRandomSeed(u16 seed)
     randomSeedSet = TRUE;
 }
 
-u16 random()
+u16 U16_rand()
 {
     randbase ^= (randbase >> 5);
     randbase ^= (randbase << 9);

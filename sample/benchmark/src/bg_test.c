@@ -25,8 +25,8 @@ u16 executeBGTest(u16 *scores)
     pos = xy;
     for(i = 0; i < 1000; i++)
     {
-        pos->x = random() % (40-13);
-        pos->y = random() % (28-2);
+        pos->x = U16_rand() % (40-13);
+        pos->y = U16_rand() % (28-2);
         pos->y += 2;
         pos++;
     }
@@ -145,8 +145,8 @@ u16 executeBGTest(u16 *scores)
     pos = xy;
     for(i = 0; i < 1000; i++)
     {
-        pos->x = random() % (40-16);
-        pos->y = random() % (28-(8+2));
+        pos->x = U16_rand() % (40-16);
+        pos->y = U16_rand() % (28-(8+2));
         pos->y += 2;
         pos++;
     }
@@ -330,8 +330,8 @@ u16 executeBGTest(u16 *scores)
     pos = xy;
     for(i = 0; i < 1000; i++)
     {
-        pos->x = random() % (40-8);
-        pos->y = random() % (28-(4+2));
+        pos->x = U16_rand() % (40-8);
+        pos->y = U16_rand() % (28-(4+2));
         pos->y += 2;
         pos++;
     }

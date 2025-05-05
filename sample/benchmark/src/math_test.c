@@ -3,9 +3,9 @@
 #include "inc/main.h"
 
 
-#define RAND_32         (random() | (random() << 16))
-#define RAND_16         (random())
-#define RAND_8          (random() & 0xFF)
+#define RAND_32         (U16_rand() | (U16_rand() << 16))
+#define RAND_16         (U16_rand())
+#define RAND_8          (U16_rand() & 0xFF)
 #define FIX_RAND_32     0x957FBE6
 #define FIX_RAND_16     0x1DE7
 #define FIX_RAND_8      0xCE
@@ -579,9 +579,9 @@ u16 executeMathsAdvTest(u16 *scores)
     // init points coordinates
     for(i = 0; i < 1024; i++)
     {
-        src_3D[i].x = random();
-        src_3D[i].y = random();
-        src_3D[i].z = random();
+        src_3D[i].x = U16_rand();
+        src_3D[i].y = U16_rand();
+        src_3D[i].z = U16_rand();
     }
 
     M3D_reset();

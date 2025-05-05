@@ -110,7 +110,7 @@ static u16 loadStarField(u16 vramIndex)
         scroll_PLAN_B_F[i] = FIX16(0);
         do
         {
-            ns = -((random() & 0x7F) + 10);
+            ns = -((U16_rand() & 0x7F) + 10);
         }
         while (ns == s);
         scroll_speed[i] = ns;

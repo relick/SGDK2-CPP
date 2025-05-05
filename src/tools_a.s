@@ -3,7 +3,7 @@
 ;// by Stephane Dallongeville @2016
 ;// original implementation by (c) 2014 Dale Whinham
 ;//
-;// void qsort(void** src, u16 size, _comparatorCallback* cb);
+;// void qsort_obj(void** src, u16 size, _comparatorCallback* cb);
 ;// ---------------------------------------------------------------
 
 #include "asm_mac.i"
