@@ -75,10 +75,6 @@ target_include_directories(md
     $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/inc>
     $<INSTALL_INTERFACE:include>
 )
-target_include_directories(md
-  PRIVATE
-    ${CMAKE_SOURCE_DIR}/src
-)
 
 target_sources(md
   INTERFACE
