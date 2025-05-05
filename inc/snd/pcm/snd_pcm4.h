@@ -19,6 +19,9 @@
 #ifndef _SND_PCM4_H_
 #define _SND_PCM4_H_
 
+#include "types.h"
+
+
 #define SND_isPlaying_4PCM_ENV      _Pragma("GCC error \"This method is deprecated, use SND_PCM4_isPlaying instead.\"")
 #define SND_startPlay_4PCM_ENV      _Pragma("GCC error \"This method is deprecated, use SND_PCM4_startPlay instead.\"")
 #define SND_stopPlay_4PCM_ENV       _Pragma("GCC error \"This method is deprecated, use SND_PCM4_stopPlay instead.\"")

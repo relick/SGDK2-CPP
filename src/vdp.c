@@ -876,7 +876,7 @@ bool NO_INLINE VDP_waitVInt()
 #endif
 
     // background user task ? --> switch to it (automatically switch back to front task on v-int)
-    if (task_pc != NULL) TSK_userYield();
+    if (((void*)task_pc) != NULL) TSK_userYield();
     // otherwise we just wait for next VInt
     else while (vtimer == t);
 
@@ -894,7 +894,7 @@ bool NO_INLINE VDP_waitVBlank(bool forceNext)
     const u16 vcnt = GET_VCOUNTER;
     const u16 blank = *pw & VDP_VBLANK_FLAG;
     // have an user task (multitasking) ?
-    const bool yield_to_user = (task_pc != NULL);
+    const bool yield_to_user = (((void*)task_pc) != NULL);
     // VDP enable
     const bool enabled = VDP_isEnable();
     // save it (used to diplay frame load)

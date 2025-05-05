@@ -74,7 +74,7 @@ bool NO_INLINE SND_PCM_isPlaying(void)
     return ret;
 }
 
-void NO_INLINE SND_PCM_startPlay(const u8 *sample, const u32 len, const SoundPcmSampleRate rate, const SoundPanning pan, const u8 loop)
+void NO_INLINE SND_PCM_startPlay(const u8 *sample, const u32 len, const SoundPcmSampleRate rate, const SoundPanning pan, const bool loop)
 {
     vu8 *pb;
     u32 addr;

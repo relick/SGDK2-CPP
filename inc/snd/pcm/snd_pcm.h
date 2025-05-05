@@ -17,6 +17,9 @@
 #ifndef _SND_PCM_H_
 #define _SND_PCM_H_
 
+#include "types.h"
+
+
 /**
  *  \brief
  *      PCM sample rate values

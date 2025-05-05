@@ -29,7 +29,11 @@
  *      NULL define (equivalent to 0).
  */
 #ifndef NULL
-#define NULL    0
+#if defined(__cplusplus) || (defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 202300L))
+#define NULL nullptr
+#else
+#define NULL ((void*)0)
+#endif
 #endif
 
 #ifndef MIN_U8
@@ -192,7 +196,7 @@ typedef s16 p16;
 #define size_t      u32
 #endif
 #if !defined(ptrdiff_t)
-#define ptrdiff_t   u32
+#define ptrdiff_t   s32
 #endif
 
 

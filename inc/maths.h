@@ -11,6 +11,7 @@
 #ifndef _MATHS_H_
 #define _MATHS_H_
 
+#include "types.h"
 
 
 // 1° step is enough for FIX16
@@ -299,6 +300,8 @@ typedef Mat2D_ff32 M2ff32;
 //  Basic math functions
 ///////////////////////////////////////////////
 
+#if !defined(__cplusplus)
+
 /**
  *  \brief
  *      Returns the lowest value between X an Y.
@@ -325,6 +328,7 @@ typedef Mat2D_ff32 M2ff32;
 #define abs(X)          (((X) < 0)?-(X):(X))
 #endif  // ENABLE_NEWLIB
 
+#endif // __cplusplus
 
 /**
  *  \brief
