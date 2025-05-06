@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 4.0.1)
+cmake_minimum_required(VERSION 4.0)
 
 message(STATUS "Using SGDK toolchain at '${CMAKE_TOOLCHAIN_FILE}'")
 

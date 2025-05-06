@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 4.0.1)
+include_guard(GLOBAL)
 
 # Rules to build Z80 source code
 function(md_target_z80_sources target header_mode) # ARGN: .s80 files
