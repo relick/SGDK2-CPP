@@ -87,3 +87,73 @@ function(md_target_res_sources target header_mode) # ARGN: .res files
   )
 
 endfunction()
+
+# Create a ROM target using preferred SGDK library
+function(md_add_rom target mdlib rom_head_c sega_s)
+  ## Create target using given name, linking with chosen mdlib.
+  # This will generate the .out, although the setup for that is further below.
+  # This target can be added to by the user, with sources, options, properties etc.
+  add_executable(${target})
+  target_link_libraries(${target} PUBLIC ${mdlib})
+
+  ## Set up the boot files
+  # Build rom_head.c into an object
+  set(target_rom_head "${target}.rom_head")
+  add_library(${target_rom_head} OBJECT ${rom_head_c})
+  target_link_libraries(${target_rom_head} PRIVATE ${mdlib})
+
+  # Generate rom_head.bin. Because sega.s will try to include "out/rom_head.bin", the bin
+  # needs to be created within a folder called "out", and the root of that folder will be passed
+  # as an include for building sega.s
+  set(out_rom_head_dir "${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/${target}.rom_head.dir")
+  file(MAKE_DIRECTORY "${out_rom_head_dir}/out")
+  set(out_rom_head_bin "${out_rom_head_dir}/out/rom_head.bin")
+  add_custom_command(
+    OUTPUT ${out_rom_head_bin}
+    COMMAND ${OBJCPY_CMD} -O binary "$<TARGET_OBJECTS:${target_rom_head}>" "${out_rom_head_bin}"
+    DEPENDS ${target_rom_head}
+  )
+  set(target_out_rom_head "${target}.out.rom_head")
+  add_custom_target(${target_out_rom_head} DEPENDS ${out_rom_head_bin})
+
+  # Build sega.s into an object
+  set(target_boot "${target}.boot")
+  add_library(${target_boot} OBJECT ${sega_s})
+  target_link_libraries(${target_boot} PUBLIC ${mdlib})
+  add_dependencies(${target_boot} ${target_out_rom_head})
+  # Allow "out/rom_head.bin" to be found, by using this include directory.
+  target_compile_options(${target_boot} PRIVATE "-Wa,-I${out_rom_head_dir}")
+
+  ## Set up the executable
+  # Link against sega.s
+  target_link_libraries(${target} PRIVATE ${target_boot})
+
+  # Apply linker script, link options, and use .out suffix.
+  set_target_properties(${target}
+    PROPERTIES
+      SUFFIX ".out"
+      LINK_DEPENDS ${SGDK_LINKER_SCRIPT}
+  )
+  target_link_options(${target}
+    PRIVATE
+      -n
+      -T${SGDK_LINKER_SCRIPT}
+      "LINKER:--gc-sections"
+       -flto
+       -flto=auto
+       -ffat-lto-objects
+  )
+
+  # Final ROM generation (objcopy and pad)
+  set(rom_bin "${CMAKE_CURRENT_BINARY_DIR}/${target}.bin")
+  add_custom_command(
+    OUTPUT ${rom_bin}
+    COMMAND ${OBJCPY_CMD} -O binary "$<TARGET_FILE:${target}>" "${rom_bin}" &&
+            ${SIZEBND_CMD} "${rom_bin}" -sizealign 131072 -checksum
+    DEPENDS ${target}
+  )
+
+  # Make rom target, that ensures the binary is built
+  add_custom_target(${target}.rom ALL DEPENDS ${rom_bin})
+
+endfunction()
