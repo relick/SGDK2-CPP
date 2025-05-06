@@ -19,5 +19,8 @@ cmake --install build
 echo 
 echo "-------------------------------------------"
 echo "SGDK is now ready!"
-echo "Add \`set(CMAKE_TOOLCHAIN_FILE \"$SGDK_INSTALL/cmake/SGDKToolchain.cmake\" CACHE STRING \"\")\` to the start of your project's CMakeLists.txt to get started."
+echo "-------------------------------------------"
+echo "Set up SGDK in your project by adding `--toolchain \"$SGDK_INSTALL/cmake/SGDKToolchain.cmake\"` to your CMake configure command."
+echo "This can be handled automatically by adding `$SGDK_INSTALL/cmake/CMakeGamePresets.json` as an include in your CMakePresets.json."
+echo "-------------------------------------------"
 read -p "Press return to exit..."

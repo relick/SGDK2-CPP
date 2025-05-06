@@ -25,6 +25,9 @@ cmake --install build
 @ECHO.
 @ECHO -------------------------------------------
 @ECHO SGDK is now ready!
-@ECHO Add `set(CMAKE_TOOLCHAIN_FILE "%SGDK_INSTALL%\cmake\SGDKToolchain.cmake" CACHE STRING "")` to the start of your project's CMakeLists.txt to get started.
+@ECHO -------------------------------------------
+@ECHO Set up SGDK in your project by adding `--toolchain "%SGDK_INSTALL%\cmake\SGDKToolchain.cmake"` to your CMake configure command.
+@ECHO This can be handled automatically by adding `%SGDK_INSTALL%\cmake\CMakeGamePresets.json` as an include in your CMakePresets.json.
+@ECHO -------------------------------------------
 @ECHO Press any key to exit...
 @PAUSE >nul

@@ -1,0 +1,66 @@
+{
+  "version": 10,
+  "cmakeMinimumRequired": {
+    "major": 4,
+    "minor": 0,
+    "patch": 1
+  },
+  "configurePresets": [
+    {
+      "name": "sgdk",
+      "description": "Configure with SGDK",
+      "hidden": true,
+      "toolchainFile": "${fileDir}/SGDKToolchain.cmake"
+    },
+    {
+      "name": "release",
+      "description": "Configure with Release",
+      "hidden": false,
+      "inherits": ["sgdk"],
+      "binaryDir": "${sourceDir}/build/release",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+      "name": "debug",
+      "description": "Configure with Debug",
+      "hidden": false,
+      "inherits": ["sgdk"],
+      "binaryDir": "${sourceDir}/build/debug",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "relwithdebinfo",
+      "description": "Configure with RelWithDebInfo",
+      "hidden": false,
+      "inherits": ["sgdk"],
+      "binaryDir": "${sourceDir}/build/relwithdebinfo",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+        "name": "release",
+        "description": "Build with Release",
+        "inheritConfigureEnvironment": true,
+        "configurePreset": "release"
+    },
+    {
+        "name": "debug",
+        "description": "Build with Debug",
+        "inheritConfigureEnvironment": true,
+        "configurePreset": "debug"
+    },
+    {
+        "name": "relwithdebinfo",
+        "description": "Build with RelWithDebInfo",
+        "inheritConfigureEnvironment": true,
+        "configurePreset": "relwithdebinfo"
+    }
+  ]
+}
