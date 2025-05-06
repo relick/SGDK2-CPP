@@ -58,29 +58,65 @@ endif()
 file(GLOB_RECURSE SRC_LIB_INCLUDES ${CMAKE_CURRENT_SOURCE_DIR}/inc/*.[hi])
 file(GLOB_RECURSE SRC_LIB_C src/*.c)
 string(REPLACE "src/boot/rom_head.c" "" SRC_LIB_C "${SRC_LIB_C}")
-string(REPLACE "src/cppsupport/syscalls.c" "" SRC_LIB_C "${SRC_LIB_C}")
+string(REPLACE "src/cpp/syscalls.c" "" SRC_LIB_C "${SRC_LIB_C}")
 file(GLOB_RECURSE SRC_LIB_S src/*.s)
 string(REPLACE "src/boot/sega.s" "" SRC_LIB_S "${SRC_LIB_S}")
 file(GLOB_RECURSE SRC_LIB_S80 src/*.s80)
 file(GLOB_RECURSE RES_LIB_RES res/*.res)
 
-# Common properties between C and C++
-function(apply_common_properties target)
-  add_library(SGDK::${target} ALIAS ${target})
+# Generate a library for each language
+function(add_SGDK_library target language)
+  # Only want to make one target's header sets public, as this will cause them to be installed.
+  # If they're all public, then the install copies the same files more than once
+  if(NOT DEFINED SGDK_installed_headers)
+    set(SGDK_installed_headers TRUE PARENT_SCOPE)
+    set(headers_scope PUBLIC)
+  else()
+    set(headers_scope PRIVATE)
+  endif()
 
+  if(language STREQUAL "CXX")
+    set(enable_newlib 1)
+    set(enable_cpp 1)
+  elseif(language STREQUAL "C")
+    set(enable_newlib "$<BOOL:${SGDK_ENABLE_NEWLIB}>")
+    set(enable_cpp 0)
+  else()
+    message(FATAL_ERROR "Only C and CXX supported as SGDK library languages.")
+  endif()
+
+  add_library(${target} STATIC)
+  add_library(SGDK::${target} ALIAS ${target})
   set_target_properties(${target}
     PROPERTIES
       STATIC_LIBRARY_OPTIONS "$<$<BOOL:${LTO_PLUGIN}>:--plugin=${LTO_PLUGIN}>"
+      OUTPUT_NAME_RELEASE "${target}"
+      OUTPUT_NAME_RELWITHDEBINFO "${target}_relwithdebinfo"
+      OUTPUT_NAME_DEBUG "${target}_debug"
   )
+
+  target_link_libraries(${target}
+    PUBLIC
+      gcc
+      c
+      $<${enable_newlib}:m>
+      $<${enable_cpp}:stdc++>
+  )
+
+  target_link_options(${target}
+    INTERFACE
+      $<IF:${enable_newlib},-nostartfiles,-nostdlib>
+  )
+
   target_compile_options(${target}
     PUBLIC
       ${SGDK_DEFAULT_COMPILE_OPTIONS}
   )
 
-  # Only common library is libgcc
-  target_link_libraries(${target}
+  target_compile_definitions(${target}
     PUBLIC
-      gcc
+      SGDK_GCC
+      ENABLE_NEWLIB=${enable_newlib}
   )
 
   # Add include dirs for interface, marking them as system includes
@@ -91,93 +127,50 @@ function(apply_common_properties target)
   )
   # Add includes for building and installing. Note BASE_DIRS will add inc as an include path
   target_sources(${target}
-    PUBLIC
+    ${headers_scope}
     FILE_SET HEADERS BASE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/inc" FILES
       ${SRC_LIB_INCLUDES}
   )
 
-  # Create a custom target for extra includes for z80 assembly, without polluting the main target
-  set(inc_target_z80 "${target}.z80includes")
-  add_custom_target(${inc_target_z80})
-  set_property(TARGET ${inc_target_z80}
-    PROPERTY
-    INCLUDE_DIRECTORIES
-      ${CMAKE_CURRENT_SOURCE_DIR}/src
-      ${CMAKE_CURRENT_SOURCE_DIR}/inc/snd
-  )
-  
-  # Add sources
+  ## Add sources
+  # m68k files
   target_sources(${target}
     PRIVATE
       ${SRC_LIB_C}
       ${SRC_LIB_S}
+      
+      $<${enable_cpp}:
+        src/cpp/cplusplus.cpp
+        src/cpp/syscalls.c
+      >
   )
-  md_target_z80_sources_with_inc(${target} ${inc_target_z80} PUBLIC ${SRC_LIB_S80})
-  md_target_res_sources(${target} PUBLIC ${RES_LIB_RES})
+  
+  # Create a list of extra includes for z80 assembly files, to avoid polluting the main target
+  set(z80_includes "${CMAKE_CURRENT_SOURCE_DIR}/src" "${CMAKE_CURRENT_SOURCE_DIR}/inc/snd")
+
+  # z80 files
+  md_target_z80_sources_with_extra_includes(${target} z80_includes ${headers_scope} ${SRC_LIB_S80})
+
+  # Resource files
+  md_target_res_sources(${target} ${headers_scope} ${RES_LIB_RES})
+
 endfunction()
 
-## SGDK C library
-add_library(md STATIC)
-apply_common_properties(md)
-set_target_properties(md
-  PROPERTIES
-    OUTPUT_NAME_RELEASE "md"
-    OUTPUT_NAME_RELWITHDEBINFO "md_relwithdebinfo"
-    OUTPUT_NAME_DEBUG "md_debug"
-)
-
-target_compile_options(md
-  INTERFACE
-    $<IF:$<BOOL:${SGDK_ENABLE_NEWLIB}>,-nostartfiles,-nostdlib>
-)
-
-target_compile_definitions(md
-  PUBLIC
-    SGDK_GCC
-    $<$<BOOL:${SGDK_ENABLE_NEWLIB}>:ENABLE_NEWLIB=1>
-)
-
-## C++ library
-add_library(mdcpp STATIC)
-apply_common_properties(mdcpp)
-set_target_properties(mdcpp
-  PROPERTIES
-    OUTPUT_NAME_RELEASE "mdcpp"
-    OUTPUT_NAME_RELWITHDEBINFO "mdcpp_relwithdebinfo"
-    OUTPUT_NAME_DEBUG "mdcpp_debug"
-)
-
-target_link_libraries(mdcpp
-  INTERFACE
-    c
-    m
-    stdc++
-)
-
-target_compile_options(mdcpp
-  PUBLIC
-    ${SGDK_DEFAULT_COMPILE_OPTIONS}
-  INTERFACE
-    -nostartfiles
-)
-
-target_compile_definitions(mdcpp
-  PUBLIC
-    SGDK_GCC
-    ENABLE_NEWLIB=1
-)
-
-target_sources(mdcpp
-  PRIVATE
-    src/ext/cppsupport/cplusplus.cpp
-    src/ext/cppsupport/syscalls.c
-)
+## SGDK libraries
+add_SGDK_library(md C)
+add_SGDK_library(mdcpp CXX)
 
 ## Installation
 # CMake files
 install(
   DIRECTORY cmake/
   DESTINATION cmake
+)
+
+# Linker script
+install(
+  FILES ${SGDK_LINKER_SCRIPT}
+  DESTINATION .
 )
 
 # Tools
@@ -208,16 +201,16 @@ if(CMAKE_HOST_WIN32)
   if(SGDK_INSTALL_WIN_TOOLCHAIN)
     file(
       WRITE "${CMAKE_CURRENT_BINARY_DIR}/SGDKFindWindowsToolchain.cmake"
-      "set(SGDK_TOOLCHAIN \"\${SGDK}/${SGDK_TOOLCHAIN_NAME}\")"
+      "set(SGDK_TOOLCHAIN \"\${SGDK}/${SGDK_WIN32_TOOLCHAIN_FOLDER}\")"
     )
     install(
-      DIRECTORY ${SGDK_TOOLCHAIN_NAME}/
-      DESTINATION ${SGDK_TOOLCHAIN_NAME}
+      DIRECTORY ${SGDK_WIN32_TOOLCHAIN_FOLDER}/
+      DESTINATION ${SGDK_WIN32_TOOLCHAIN_FOLDER}
     )
   else()
     file(
       WRITE "${CMAKE_CURRENT_BINARY_DIR}/SGDKFindWindowsToolchain.cmake"
-      "set(SGDK_TOOLCHAIN \"${CMAKE_CURRENT_SOURCE_DIR}/${SGDK_TOOLCHAIN_NAME}\")"
+      "set(SGDK_TOOLCHAIN \"${CMAKE_CURRENT_SOURCE_DIR}/${SGDK_WIN32_TOOLCHAIN_FOLDER}\")"
     )
   endif()
 

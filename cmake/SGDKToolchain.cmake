@@ -24,7 +24,7 @@ set(SGDK_BIN ${SGDK}/bin)
 set(SGDK_LINKER_SCRIPT ${SGDK}/md.ld)
 
 if(CMAKE_HOST_WIN32)
-  set(SGDK_TOOLCHAIN_NAME "m68k-elf-toolchain")
+  set(SGDK_WIN32_TOOLCHAIN_FOLDER "m68k-elf-toolchain")
 
   # Find where the pre-built toolchain exists
   if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/SGDKFindWindowsToolchain.cmake")
@@ -32,7 +32,7 @@ if(CMAKE_HOST_WIN32)
     include("${CMAKE_CURRENT_LIST_DIR}/SGDKFindWindowsToolchain.cmake")
   else()
     # This must be the SGDK source, the folder exists here
-    set(SGDK_TOOLCHAIN ${SGDK}/${SGDK_TOOLCHAIN_NAME})
+    set(SGDK_TOOLCHAIN ${SGDK}/${SGDK_WIN32_TOOLCHAIN_FOLDER})
   endif()
 
   set(SGDK_TOOLCHAIN_PREFIX ${SGDK_TOOLCHAIN}/bin/m68k-elf)
