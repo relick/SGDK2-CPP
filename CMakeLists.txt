@@ -66,9 +66,15 @@ file(GLOB_RECURSE RES_LIB_RES res/*.res)
 
 # Common properties between C and C++
 function(apply_common_properties target)
+  add_library(SGDK::${target} ALIAS ${target})
+
   set_target_properties(${target}
     PROPERTIES
       STATIC_LIBRARY_OPTIONS "$<$<BOOL:${LTO_PLUGIN}>:--plugin=${LTO_PLUGIN}>"
+  )
+  target_compile_options(${target}
+    PUBLIC
+      ${SGDK_DEFAULT_COMPILE_OPTIONS}
   )
 
   # Only common library is libgcc
@@ -116,6 +122,7 @@ apply_common_properties(md)
 set_target_properties(md
   PROPERTIES
     OUTPUT_NAME_RELEASE "md"
+    OUTPUT_NAME_RELWITHDEBINFO "md_relwithdebinfo"
     OUTPUT_NAME_DEBUG "md_debug"
 )
 
@@ -126,6 +133,7 @@ target_compile_options(md
 
 target_compile_definitions(md
   PUBLIC
+    SGDK_GCC
     $<$<BOOL:${SGDK_ENABLE_NEWLIB}>:ENABLE_NEWLIB=1>
 )
 
@@ -135,6 +143,7 @@ apply_common_properties(mdcpp)
 set_target_properties(mdcpp
   PROPERTIES
     OUTPUT_NAME_RELEASE "mdcpp"
+    OUTPUT_NAME_RELWITHDEBINFO "mdcpp_relwithdebinfo"
     OUTPUT_NAME_DEBUG "mdcpp_debug"
 )
 
@@ -145,13 +154,16 @@ target_link_libraries(mdcpp
     stdc++
 )
 
-target_compile_options(md
+target_compile_options(mdcpp
+  PUBLIC
+    ${SGDK_DEFAULT_COMPILE_OPTIONS}
   INTERFACE
     -nostartfiles
 )
 
-target_compile_definitions(md
+target_compile_definitions(mdcpp
   PUBLIC
+    SGDK_GCC
     ENABLE_NEWLIB=1
 )
 

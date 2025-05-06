@@ -3,6 +3,9 @@ cmake_minimum_required(VERSION 4.0.1)
 set(CMAKE_SYSTEM_NAME Generic)
 set(CMAKE_SYSTEM_PROCESSOR m68000)
 
+set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Build type - default is Release")
+set(CMAKE_CONFIGURATION_TYPES "Debug;RelWithDebInfo;Release" CACHE STRING "Valid configurations are Debug, RelWithDebInfo, and Release" FORCE)
+
 if(CMAKE_HOST_WIN32)
   set(BINARY_EXT .exe)
 else()
@@ -53,36 +56,49 @@ set(CMAKE_CXX_COMPILER ${SGDK_TOOLCHAIN_PREFIX}-g++${BINARY_EXT})
 set(CMAKE_ASM_COMPILER ${SGDK_TOOLCHAIN_PREFIX}-gcc${BINARY_EXT})
 set(CMAKE_AR ${SGDK_TOOLCHAIN_PREFIX}-ar${BINARY_EXT})
 
-# Set universal compiler flags
-set(SGDK_COMMON_FLAGS "-DSGDK_GCC -m68000 -Wall -Wextra -Wno-array-bounds -Wno-shift-negative-value -Wno-unused-parameter -fno-builtin -fms-extensions -ffunction-sections -fdata-sections -B${SGDK_TOOLCHAIN}/bin")
-set(SGDK_COMMON_FLAGS_DEBUG_BASE "-DDEBUG=1")
-set(SGDK_COMMON_FLAGS_RELEASE_BASE "-fuse-linker-plugin -fno-web -fno-gcse -fno-tree-loop-ivcanon -fomit-frame-pointer -flto -flto=auto -ffat-lto-objects")
-set(SGDK_COMMON_FLAGS_DEBUG "-O1 ${SGDK_COMMON_FLAGS_DEBUG_BASE}")
-set(SGDK_COMMON_FLAGS_RELWITHDEBINFO "-O3 ${SGDK_COMMON_FLAGS_RELEASE_BASE} ${SGDK_COMMON_FLAGS_DEBUG_BASE}")
-set(SGDK_COMMON_FLAGS_RELEASE "-O3 ${SGDK_COMMON_FLAGS_RELEASE_BASE}")
-set(SGDK_COMMON_FLAGS_MINSIZEREL "-Os ${SGDK_COMMON_FLAGS_RELEASE_BASE}")
+# Declare default compiler and assembler flags
+set(SGDK_COMMON_FLAGS "-m68000 -Wall -Wextra -Wno-array-bounds -Wno-shift-negative-value -Wno-unused-parameter -fno-builtin -fms-extensions -ffunction-sections -fdata-sections -B${SGDK}/bin")
 set(SGDK_COMMON_CXX_FLAGS "-fno-rtti -fno-exceptions -fno-non-call-exceptions -fno-use-cxa-atexit -fno-common -fno-threadsafe-statics -fno-unwind-tables")
 set(SGDK_COMMON_ASM_FLAGS "-x\ assembler-with-cpp -Wa,--register-prefix-optional,--bitwise-or")
 
+set(SGDK_FLAGS_DEBUG_BASE -DDEBUG=1)
+set(SGDK_FLAGS_RELEASE_BASE -fuse-linker-plugin -fno-web -fno-gcse -fno-tree-loop-ivcanon -fomit-frame-pointer -flto -flto=auto -ffat-lto-objects)
+set(SGDK_FLAGS_DEBUG -O1 ${SGDK_FLAGS_DEBUG_BASE})
+set(SGDK_FLAGS_RELWITHDEBINFO -O3 ${SGDK_FLAGS_RELEASE_BASE} ${SGDK_FLAGS_DEBUG_BASE})
+set(SGDK_FLAGS_RELEASE -O3 ${SGDK_FLAGS_RELEASE_BASE})
+
+set(SGDK_C_CXX_FLAGS_DEBUG ${SGDK_FLAGS_DEBUG} -ggdb -g)
+set(SGDK_C_CXX_FLAGS_RELWITHDEBINFO ${SGDK_FLAGS_RELWITHDEBINFO} -ggdb -g)
+set(SGDK_C_CXX_FLAGS_RELEASE ${SGDK_FLAGS_RELEASE})
+
+set(SGDK_ASM_FLAGS_DEBUG ${SGDK_FLAGS_DEBUG})
+set(SGDK_ASM_FLAGS_RELWITHDEBINFO ${SGDK_FLAGS_RELWITHDEBINFO})
+set(SGDK_ASM_FLAGS_RELEASE ${SGDK_FLAGS_RELEASE})
+
+# Targets should manually set their own lang/config flags, though game projects shouldn't really need to.
+# SGDK_DEFAULT_COMPILE_OPTIONS can be used with target_compile_options to conveniently add all flags if ever necessary.
+set(SGDK_DEFAULT_COMPILE_OPTIONS_BASE_C "$<$<CONFIG:Debug>:$<JOIN:${SGDK_C_CXX_FLAGS_DEBUG},;>>" "$<$<CONFIG:RelWithDebInfo>:$<JOIN:${SGDK_C_CXX_FLAGS_RELWITHDEBINFO},;>>" "$<$<CONFIG:Release>:$<JOIN:${SGDK_C_CXX_FLAGS_RELEASE},;>>")
+set(SGDK_DEFAULT_COMPILE_OPTIONS_BASE_ASM "$<$<CONFIG:Debug>:$<JOIN:${SGDK_ASM_FLAGS_DEBUG},;>>" "$<$<CONFIG:RelWithDebInfo>:$<JOIN:${SGDK_ASM_FLAGS_RELWITHDEBINFO},;>>" "$<$<CONFIG:Release>:$<JOIN:${SGDK_ASM_FLAGS_RELEASE},;>>")
+set(SGDK_DEFAULT_COMPILE_OPTIONS $<$<COMPILE_LANGUAGE:C,CXX>:${SGDK_DEFAULT_COMPILE_OPTIONS_BASE_C}> $<$<COMPILE_LANGUAGE:ASM>:${SGDK_DEFAULT_COMPILE_OPTIONS_BASE_ASM}>)
+# set(SGDK_DEFAULT_COMPILE_OPTIONS "$<JOIN:${SGDK_DEFAULT_COMPILE_OPTIONS_BASE}, >")
+
+# Set CMake global flags
 set(CMAKE_C_FLAGS_INIT "${SGDK_COMMON_FLAGS}")
-set(CMAKE_C_FLAGS_DEBUG_INIT "${SGDK_COMMON_FLAGS_DEBUG} -ggdb -g")
-set(CMAKE_C_FLAGS_RELWITHDEBINFO_INIT "${SGDK_COMMON_FLAGS_RELWITHDEBINFO} -ggdb -g")
-set(CMAKE_C_FLAGS_RELEASE_INIT "${SGDK_COMMON_FLAGS_RELEASE}")
-set(CMAKE_C_FLAGS_MINSIZEREL_INIT "${SGDK_COMMON_FLAGS_MINSIZEREL}")
+set(CMAKE_C_FLAGS_DEBUG "" CACHE STRING "Flags used by the C compiler during DEBUG builds." FORCE)
+set(CMAKE_C_FLAGS_RELWITHDEBINFO "" CACHE STRING "Flags used by the C compiler during RELWITHDEBINFO builds." FORCE)
+set(CMAKE_C_FLAGS_RELEASE "" CACHE STRING "Flags used by the C compiler during RELEASE builds." FORCE)
 set(CMAKE_C_STANDARD 23)
 
 set(CMAKE_CXX_FLAGS_INIT "${SGDK_COMMON_FLAGS} ${SGDK_COMMON_CXX_FLAGS}")
-set(CMAKE_CXX_FLAGS_DEBUG_INIT "${SGDK_COMMON_FLAGS_DEBUG} -ggdb -g")
-set(CMAKE_CXX_FLAGS_RELWITHDEBINFO_INIT "${SGDK_COMMON_FLAGS_RELWITHDEBINFO} -ggdb -g")
-set(CMAKE_CXX_FLAGS_RELEASE_INIT "${SGDK_COMMON_FLAGS_RELEASE}")
-set(CMAKE_CXX_FLAGS_MINSIZEREL_INIT "${SGDK_COMMON_FLAGS_MINSIZEREL}")
+set(CMAKE_CXX_FLAGS_DEBUG "" CACHE STRING "Flags used by the CXX compiler during DEBUG builds." FORCE)
+set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "" CACHE STRING "Flags used by the CXX compiler during RELWITHDEBINFO builds." FORCE)
+set(CMAKE_CXX_FLAGS_RELEASE "" CACHE STRING "Flags used by the CXX compiler during RELEASE builds." FORCE)
 set(CMAKE_CXX_STANDARD 26)
 
 set(CMAKE_ASM_FLAGS_INIT "${SGDK_COMMON_ASM_FLAGS} ${SGDK_COMMON_FLAGS}")
-set(CMAKE_ASM_FLAGS_DEBUG_INIT "${SGDK_COMMON_FLAGS_DEBUG}")
-set(CMAKE_ASM_FLAGS_RELWITHDEBINFO_INIT "${SGDK_COMMON_FLAGS_RELWITHDEBINFO}")
-set(CMAKE_ASM_FLAGS_RELEASE_INIT "${SGDK_COMMON_FLAGS_RELEASE}")
-set(CMAKE_ASM_FLAGS_MINSIZEREL_INIT "${SGDK_COMMON_FLAGS_MINSIZEREL}")
+set(CMAKE_ASM_FLAGS_DEBUG "" CACHE STRING "Flags used by the ASM compiler during DEBUG builds." FORCE)
+set(CMAKE_ASM_FLAGS_RELWITHDEBINFO "" CACHE STRING "Flags used by the ASM compiler during RELWITHDEBINFO builds." FORCE)
+set(CMAKE_ASM_FLAGS_RELEASE "" CACHE STRING "Flags used by the ASM compiler during RELEASE builds." FORCE)
 
 # Declare the LTO plugin location
 if(CMAKE_HOST_WIN32)
