@@ -1,0 +1,11 @@
+{
+  "version": 10,
+  "cmakeMinimumRequired": {
+    "major": 4,
+    "minor": 0,
+    "patch": 1
+  },
+  "include": [
+    "../../../install/cmake/CMakeGamePresets.json"
+  ]
+}
