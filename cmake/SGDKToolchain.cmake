@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 4.0.1)
 
+message(STATUS "Using SGDK toolchain at '${CMAKE_TOOLCHAIN_FILE}'")
+
 ## CMake toolchain setup
 set(CMAKE_SYSTEM_NAME Generic)
 set(CMAKE_SYSTEM_PROCESSOR m68000)
