@@ -1,30 +1,37 @@
 cmake_minimum_required(VERSION 4.0.1)
 
+## CMake toolchain setup
 set(CMAKE_SYSTEM_NAME Generic)
 set(CMAKE_SYSTEM_PROCESSOR m68000)
 
 set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Build type - default is Release")
 set(CMAKE_CONFIGURATION_TYPES "Debug;RelWithDebInfo;Release" CACHE STRING "Valid configurations are Debug, RelWithDebInfo, and Release" FORCE)
 
-if(CMAKE_HOST_WIN32)
-  set(BINARY_EXT .exe)
-else()
-  set(BINARY_EXT)
-endif()
+# Let CMake know whether we want host or target paths to be found
+set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
 
-# Paths
-set(SGDK ${CMAKE_CURRENT_LIST_DIR})
-cmake_path(GET SGDK PARENT_PATH SGDK) # Set SGDK to either the root or install folder, depending on which toolchain file is included
+## Paths
+# Required to find the package
+set(SGDK_DIR ${CMAKE_CURRENT_LIST_DIR})
+
+# Set ${SGDK} to either the source or install folder, depending on which toolchain file is included
+cmake_path(GET SGDK_DIR PARENT_PATH SGDK)
+
 set(SGDK_BIN ${SGDK}/bin)
+set(SGDK_LINKER_SCRIPT ${SGDK}/md.ld)
+
 if(CMAKE_HOST_WIN32)
   set(SGDK_TOOLCHAIN_NAME "m68k-elf-toolchain")
 
-  # The pre-built windows toolchain is stored in the original SGDK root.
+  # Find where the pre-built toolchain exists
   if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/SGDKFindWindowsToolchain.cmake")
     # This must be an install folder
     include("${CMAKE_CURRENT_LIST_DIR}/SGDKFindWindowsToolchain.cmake")
   else()
-    # This must be the SGDK root
+    # This must be the SGDK source, the folder exists here
     set(SGDK_TOOLCHAIN ${SGDK}/${SGDK_TOOLCHAIN_NAME})
   endif()
 
@@ -32,21 +39,39 @@ if(CMAKE_HOST_WIN32)
   
   # Specify this root to CMake
   set(CMAKE_SYSROOT ${SGDK_TOOLCHAIN})
+  
+  # Specify LTO plugin location
+  execute_process(
+    COMMAND ${CMAKE_C_COMPILER} -dumpversion
+    OUTPUT_VARIABLE GCC_VERSION
+  )
+  set(LTO_PLUGIN ${SGDK_TOOLCHAIN}/libexec/gcc/m68k-elf/${GCC_VERSION}/liblto_plugin.dll)
 else()
   set(SGDK_TOOLCHAIN_PREFIX m68k-elf)
+  set(LTO_PLUGIN)
 endif()
 
-# Tool binaries and commands
+## Tools
+if(CMAKE_HOST_WIN32)
+  set(BINARY_EXT .exe)
+else()
+  set(BINARY_EXT)
+endif()
+
+# Binary files
 set(OBJCPY_BIN ${SGDK_TOOLCHAIN_PREFIX}-objcopy${BINARY_EXT})
 set(CONVSYM_BIN ${SGDK_BIN}/convsym${BINARY_EXT})
 set(RESCOMP_BIN ${SGDK_BIN}/rescomp.jar)
+set(SIZEBND_BIN ${SGDK_BIN}/sizebnd.jar)
 set(SJASM_BIN ${SGDK_BIN}/sjasm${BINARY_EXT})
 set(BINTOS_BIN ${SGDK_BIN}/bintos${BINARY_EXT})
 set(XGMTOOL_BIN ${SGDK_BIN}/xgmtool${BINARY_EXT})
 
+# Commands usable in CMake
 set(OBJCPY_CMD ${OBJCPY_BIN})
 set(CONVSYM_CMD ${CONVSYM_BIN})
 set(RESCOMP_CMD java -jar ${RESCOMP_BIN})
+set(SIZEBND_CMD java -jar ${SIZEBND_BIN})
 set(ASMZ80_CMD ${SJASM_BIN} -q)
 set(BINTOS_CMD ${BINTOS_BIN})
 
@@ -56,8 +81,9 @@ set(CMAKE_CXX_COMPILER ${SGDK_TOOLCHAIN_PREFIX}-g++${BINARY_EXT})
 set(CMAKE_ASM_COMPILER ${SGDK_TOOLCHAIN_PREFIX}-gcc${BINARY_EXT})
 set(CMAKE_AR ${SGDK_TOOLCHAIN_PREFIX}-ar${BINARY_EXT})
 
+## Flags
 # Declare default compiler and assembler flags
-set(SGDK_COMMON_FLAGS "-m68000 -Wall -Wextra -Wno-array-bounds -Wno-shift-negative-value -Wno-unused-parameter -fno-builtin -fms-extensions -ffunction-sections -fdata-sections -B${SGDK}/bin")
+set(SGDK_COMMON_FLAGS "-m68000 -Wall -Wextra -Wno-array-bounds -Wno-shift-negative-value -Wno-main -Wno-unused-parameter -fno-builtin -fms-extensions -ffunction-sections -fdata-sections -B${SGDK}/bin")
 set(SGDK_COMMON_CXX_FLAGS "-fno-rtti -fno-exceptions -fno-non-call-exceptions -fno-use-cxa-atexit -fno-common -fno-threadsafe-statics -fno-unwind-tables")
 set(SGDK_COMMON_ASM_FLAGS "-x\ assembler-with-cpp -Wa,--register-prefix-optional,--bitwise-or")
 
@@ -99,20 +125,3 @@ set(CMAKE_ASM_FLAGS_INIT "${SGDK_COMMON_ASM_FLAGS} ${SGDK_COMMON_FLAGS}")
 set(CMAKE_ASM_FLAGS_DEBUG "" CACHE STRING "Flags used by the ASM compiler during DEBUG builds." FORCE)
 set(CMAKE_ASM_FLAGS_RELWITHDEBINFO "" CACHE STRING "Flags used by the ASM compiler during RELWITHDEBINFO builds." FORCE)
 set(CMAKE_ASM_FLAGS_RELEASE "" CACHE STRING "Flags used by the ASM compiler during RELEASE builds." FORCE)
-
-# Declare the LTO plugin location
-if(CMAKE_HOST_WIN32)
-  execute_process(
-    COMMAND ${CMAKE_C_COMPILER} -dumpversion
-    OUTPUT_VARIABLE GCC_VERSION
-  )
-  set(LTO_PLUGIN ${SGDK_TOOLCHAIN}/libexec/gcc/m68k-elf/${GCC_VERSION}/liblto_plugin.dll)
-else()
-  set(LTO_PLUGIN)
-endif()
-
-# Let CMake know whether we want host or target paths to be found
-set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
-set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
-set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
-set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
