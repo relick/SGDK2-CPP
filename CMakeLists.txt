@@ -89,15 +89,6 @@ target_sources(md.newlibsys PRIVATE src/cpp/syscalls.c)
 
 # Helper function for setting up the md libraries
 function(setup_md_library target language)
-  # Only want to make one target's header sets public, as this will cause them to be installed.
-  # If they're all public, then each install copies the same files more than once
-  if(NOT DEFINED SGDK_installed_headers)
-    set(SGDK_installed_headers TRUE PARENT_SCOPE)
-    set(headers_scope PUBLIC)
-  else()
-    set(headers_scope PRIVATE)
-  endif()
-
   if(language STREQUAL "CXX")
     set(enable_newlib 1)
     set(enable_cpp 1)
@@ -138,15 +129,14 @@ function(setup_md_library target language)
   )
   # Add includes for building and installing. Note BASE_DIRS will add inc as an include path
   target_sources(${target}
-    ${headers_scope}
+    PUBLIC
     FILE_SET HEADERS BASE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/inc" FILES
       ${SRC_LIB_INCLUDES}
   )
   # Extra includes for z80 assembly that don't pollute the main target
   md_target_z80_include_directories(${target}
-    PRIVATE
-      "${CMAKE_CURRENT_SOURCE_DIR}/src"
-      "${CMAKE_CURRENT_SOURCE_DIR}/inc/snd"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src"
+    "${CMAKE_CURRENT_SOURCE_DIR}/inc/snd"
   )
 
   ## Add sources
@@ -161,17 +151,11 @@ function(setup_md_library target language)
       >
   )
 
-  set(tmp_install_list ${SGDK_install_list})
-
   # z80 files
-  md_target_z80_sources(${target} ${headers_scope} ${SRC_LIB_S80})
-  list(APPEND tmp_install_list ${target}.z80)
+  md_target_z80_sources(${target} PUBLIC ${SRC_LIB_S80})
 
   # Resource files
-  md_target_resources(${target} ${headers_scope} ${RES_LIB_RES})
-  list(APPEND tmp_install_list ${target}.res)
-
-  set(SGDK_install_list ${tmp_install_list} PARENT_SCOPE)
+  md_target_resources(${target} PUBLIC ${RES_LIB_RES})
 
 endfunction()
 

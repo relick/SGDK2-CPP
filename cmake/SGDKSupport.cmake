@@ -1,16 +1,17 @@
 include_guard(GLOBAL)
 
 # Rules to build z80 source code
-function(md_target_z80_include_directories target scope) # ARGN: include directories only used for .s80 files
-  md_ensure_extra_target(${target} z80)
-  target_include_directories(${target_z80} ${scope} ${ARGN})
+function(md_target_z80_include_directories target) # ARGN: include directories only used for .s80 files
+  SGDK_ext_interface(${target} z80_includes) # sets target_z80_includes
+  target_include_directories(${target_z80_includes} INTERFACE ${ARGN})
 endfunction()
 
 function(md_target_z80_sources target header_scope) # ARGN: .s80 files
-  md_ensure_extra_target(${target} z80) # sets target_z80 and z80_out_dir
+  SGDK_ext_interface(${target} z80_includes) # sets target_z80_includes
+  SGDK_ext_out_dir(${target} z80) # sets z80_out_dir
 
   set(target_includes "$<LIST:TRANSFORM,$<TARGET_PROPERTY:${target},INCLUDE_DIRECTORIES>,PREPEND,-i>")
-  set(extra_target_includes "$<LIST:TRANSFORM,$<TARGET_PROPERTY:${target_z80},INCLUDE_DIRECTORIES>,PREPEND,-i>")
+  set(extra_target_includes "$<LIST:TRANSFORM,$<TARGET_PROPERTY:${target_z80_includes},INTERFACE_INCLUDE_DIRECTORIES>,PREPEND,-i>")
   
   set(processed_src)
   set(processed_headers)
@@ -41,14 +42,10 @@ function(md_target_z80_sources target header_scope) # ARGN: .s80 files
     list(APPEND processed_headers ${c_header})
   endforeach()
 
-  target_sources(${target_z80} PRIVATE ${processed_src})
-  target_sources(${target_z80}
-    PRIVATE
-    FILE_SET z80_headers TYPE HEADERS BASE_DIRS ${z80_out_dir} FILES
-      ${processed_headers}
-  )
+  # Source files built by target
+  target_sources(${target} PRIVATE ${processed_src})
 
-  # Also add headers to the main target, using provided scope
+  # Headers added to target using provided scope
   target_sources(${target}
     ${header_scope}
     FILE_SET z80_headers TYPE HEADERS BASE_DIRS ${z80_out_dir} FILES
@@ -59,7 +56,7 @@ endfunction()
 
 # Rules to build resources
 function(md_target_resources target header_scope) # ARGN: .res files
-  md_ensure_extra_target(${target} res) # sets target_res and res_out_dir
+  SGDK_ext_out_dir(${target} res) # sets res_out_dir
 
   set(processed_src)
   set(processed_headers)
@@ -88,14 +85,10 @@ function(md_target_resources target header_scope) # ARGN: .res files
     list(APPEND processed_headers ${c_header})
   endforeach()
 
-  target_sources(${target_res} PRIVATE ${processed_src})
-  target_sources(${target_res}
-    PRIVATE
-    FILE_SET res_headers TYPE HEADERS BASE_DIRS ${res_out_dir} FILES
-      ${processed_headers}
-  )
+  # Source files built by target
+  target_sources(${target} PRIVATE ${processed_src})
 
-  # Also add headers to the main target, using provided scope
+  # Headers added to target using provided scope
   target_sources(${target}
     ${header_scope}
     FILE_SET res_headers TYPE HEADERS BASE_DIRS ${res_out_dir} FILES
@@ -127,7 +120,7 @@ function(md_add_rom target mdlib rom_head_c sega_s)
   add_custom_command(
     OUTPUT ${out_rom_head_bin}
     COMMAND ${OBJCPY_CMD} -O binary "$<TARGET_OBJECTS:${target_rom_head}>" "${out_rom_head_bin}"
-    MAIN_DEPENDENCY ${target_rom_head}
+    DEPENDS ${target_rom_head}
   )
   set(target_out_rom_head "${target}.out.rom_head")
   add_custom_target(${target_out_rom_head} DEPENDS ${out_rom_head_bin})
@@ -175,16 +168,15 @@ function(md_add_rom target mdlib rom_head_c sega_s)
 endfunction()
 
 ## Private
-function(md_ensure_extra_target target extension)
+function(SGDK_ext_interface target extension)
   set(extra_target_name "target_${extension}")
-  set(${extra_target_name} "${target}.${extension}")
+  set(${extra_target_name} "${target}.${extension}" PARENT_SCOPE)
   if(NOT TARGET ${${extra_target_name}})
-    add_library(${${extra_target_name}} STATIC)
-    target_link_libraries(${target} PRIVATE ${${extra_target_name}})
+    add_library(${${extra_target_name}} INTERFACE)
   endif()
+endfunction()
 
-  set(extra_target_out_dir_name ${extension}_out_dir)
-  set(${extra_target_out_dir_name} "${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/${target}.${extension}.dir")
-
-  return(PROPAGATE ${extra_target_name} ${extra_target_out_dir_name})
+function(SGDK_ext_out_dir target extension)
+  set(out_dir_var_name "${extension}_out_dir")
+  set(${out_dir_var_name} "${CMAKE_CURRENT_BINARY_DIR}/SGDKFiles/${target}.${extension}" PARENT_SCOPE)
 endfunction()
