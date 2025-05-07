@@ -20,8 +20,9 @@ if(NOT EXISTS "${BINTOS_BIN}" OR SGDK_BUILD_TOOLS)
     BUILD_ALWAYS TRUE
   )
 else()
-  message(STATUS "Using pre-built bintos.")
-  add_custom_target(bintos)
+  message(STATUS "Using pre-existing bintos.")
+  add_executable(bintos IMPORTED)
+  set_target_properties(bintos PROPERTIES IMPORTED_LOCATION ${BINTOS_BIN})
 endif()
 
 if(NOT EXISTS "${XGMTOOL_BIN}" OR SGDK_BUILD_TOOLS)
@@ -34,8 +35,9 @@ if(NOT EXISTS "${XGMTOOL_BIN}" OR SGDK_BUILD_TOOLS)
     BUILD_ALWAYS TRUE
   )
 else()
-  message(STATUS "Using pre-built xgmtool.")
-  add_custom_target(xgmtool)
+  message(STATUS "Using pre-existing xgmtool.")
+  add_executable(xgmtool IMPORTED)
+  set_target_properties(xgmtool PROPERTIES IMPORTED_LOCATION ${XGMTOOL_BIN})
 endif()
 
 if(NOT EXISTS "${SJASM_BIN}" OR SGDK_BUILD_TOOLS)
@@ -49,8 +51,9 @@ if(NOT EXISTS "${SJASM_BIN}" OR SGDK_BUILD_TOOLS)
     BUILD_ALWAYS TRUE
   )
 else()
-  message(STATUS "Using pre-built sjasm.")
-  add_custom_target(sjasm)
+  message(STATUS "Using pre-existing sjasm.")
+  add_executable(sjasm IMPORTED)
+  set_target_properties(sjasm PROPERTIES IMPORTED_LOCATION ${SJASM_BIN})
 endif()
 
 ## Prep for SGDK libraries

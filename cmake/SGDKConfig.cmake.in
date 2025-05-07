@@ -2,3 +2,11 @@
 
 include("${CMAKE_CURRENT_LIST_DIR}/SGDKTargets.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/SGDKSupport.cmake")
+
+# Add imported executables for the custom commands, as we know these are installed when using the package
+add_executable(bintos IMPORTED)
+set_target_properties(bintos PROPERTIES IMPORTED_LOCATION ${BINTOS_BIN})
+add_executable(xgmtool IMPORTED)
+set_target_properties(xgmtool PROPERTIES IMPORTED_LOCATION ${XGMTOOL_BIN})
+add_executable(sjasm IMPORTED)
+set_target_properties(sjasm PROPERTIES IMPORTED_LOCATION ${SJASM_BIN})
