@@ -10,7 +10,7 @@ project(md C CXX ASM)
 include(cmake/SGDKSupport.cmake)
 
 include(ExternalProject)
-if(NOT EXISTS "${BINTOS_BIN}" OR ${SGDK_BUILD_TOOLS})
+if(NOT EXISTS "${BINTOS_BIN}" OR SGDK_BUILD_TOOLS)
   message(STATUS "Building bintos.")
   ExternalProject_Add(
     bintos
@@ -24,7 +24,7 @@ else()
   add_custom_target(bintos)
 endif()
 
-if(NOT EXISTS "${XGMTOOL_BIN}" OR ${SGDK_BUILD_TOOLS})
+if(NOT EXISTS "${XGMTOOL_BIN}" OR SGDK_BUILD_TOOLS)
   message(STATUS "Building xgmtool.")
   ExternalProject_Add(
     xgmtool
@@ -38,7 +38,7 @@ else()
   add_custom_target(xgmtool)
 endif()
 
-if(NOT EXISTS "${SJASM_BIN}" OR ${SGDK_BUILD_TOOLS})
+if(NOT EXISTS "${SJASM_BIN}" OR SGDK_BUILD_TOOLS)
   message(STATUS "Building sjasm.")
   ExternalProject_Add(
     sjasm
