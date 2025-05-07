@@ -1,6 +1,6 @@
 {
-  "version": 10,
+  "version": 9,
   "include": [
-    "../../../install/cmake/CMakeGamePresets.json"
+    "${fileDir}/../../../install/cmake/CMakeGamePresets.json"
   ]
 }
