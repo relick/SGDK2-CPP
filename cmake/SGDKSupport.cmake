@@ -169,14 +169,17 @@ endfunction()
 
 ## Private
 function(SGDK_ext_interface target extension)
-  set(extra_target_name "target_${extension}")
-  set(${extra_target_name} "${target}.${extension}" PARENT_SCOPE)
-  if(NOT TARGET ${${extra_target_name}})
-    add_library(${${extra_target_name}} INTERFACE)
+  set(extra_target_var_name "target_${extension}")
+  set(${extra_target_var_name} "${target}.${extension}")
+  if(NOT TARGET ${${extra_target_var_name}})
+    add_library(${${extra_target_var_name}} INTERFACE)
   endif()
+
+  return(PROPAGATE ${extra_target_var_name})
 endfunction()
 
 function(SGDK_ext_out_dir target extension)
   set(out_dir_var_name "${extension}_out_dir")
-  set(${out_dir_var_name} "${CMAKE_CURRENT_BINARY_DIR}/SGDKFiles/${target}.${extension}" PARENT_SCOPE)
+  set(${out_dir_var_name} "${CMAKE_CURRENT_BINARY_DIR}/SGDKFiles/${target}.${extension}")
+  return(PROPAGATE ${out_dir_var_name})
 endfunction()
