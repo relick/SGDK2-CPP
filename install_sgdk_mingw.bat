@@ -1,25 +1,10 @@
-cls
+CLS
 
 @ECHO OFF
-IF "%~1"=="" (
 SET "SGDK_INSTALL=%cd%\install"
-) else (
-SET "SGDK_INSTALL=%~1"
-FOR %%I IN ("%SGDK_INSTALL%") DO SET "SGDK_INSTALL=%%~fI"
-)
 @ECHO ON
 
-cmake -S . -B build --fresh --toolchain=cmake/SGDKToolchain.cmake --install-prefix "%SGDK_INSTALL%" -DCMAKE_BUILD_TYPE=Debug
-cmake --build build
-cmake --install build
-
-cmake -S . -B build --fresh --toolchain=cmake/SGDKToolchain.cmake --install-prefix "%SGDK_INSTALL%" -DCMAKE_BUILD_TYPE=RelWithDebInfo
-cmake --build build
-cmake --install build
-
-cmake -S . -B build --fresh --toolchain=cmake/SGDKToolchain.cmake --install-prefix "%SGDK_INSTALL%" -DCMAKE_BUILD_TYPE=Release
-cmake --build build
-cmake --install build
+cmake --workflow --fresh --preset install_sgdk
 
 @ECHO.
 @ECHO.

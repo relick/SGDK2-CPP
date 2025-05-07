@@ -10,7 +10,6 @@
     {
       "name": "release",
       "description": "Configure with Release",
-      "hidden": false,
       "inherits": ["sgdk"],
       "binaryDir": "${sourceDir}/build/release",
       "cacheVariables": {
@@ -20,7 +19,6 @@
     {
       "name": "debug",
       "description": "Configure with Debug",
-      "hidden": false,
       "inherits": ["sgdk"],
       "binaryDir": "${sourceDir}/build/debug",
       "cacheVariables": {
@@ -30,7 +28,6 @@
     {
       "name": "relwithdebinfo",
       "description": "Configure with RelWithDebInfo",
-      "hidden": false,
       "inherits": ["sgdk"],
       "binaryDir": "${sourceDir}/build/relwithdebinfo",
       "cacheVariables": {
@@ -42,19 +39,16 @@
     {
         "name": "release",
         "description": "Build with Release",
-        "inheritConfigureEnvironment": true,
         "configurePreset": "release"
     },
     {
         "name": "debug",
         "description": "Build with Debug",
-        "inheritConfigureEnvironment": true,
         "configurePreset": "debug"
     },
     {
         "name": "relwithdebinfo",
         "description": "Build with RelWithDebInfo",
-        "inheritConfigureEnvironment": true,
         "configurePreset": "relwithdebinfo"
     }
   ]

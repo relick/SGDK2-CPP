@@ -1,0 +1,51 @@
+{
+  "version": 10,
+  "configurePresets": [
+    {
+      "name": "sgdk_multiconfig",
+      "description": "Configure SGDK",
+      "generator": "Ninja Multi-Config",
+      "binaryDir": "${sourceDir}/build",
+      "toolchainFile": "${sourceDir}/cmake/SGDKToolchain.cmake",
+      "cacheVariables": {
+        "CMAKE_INSTALL_PREFIX": "${sourceDir}/install"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "install_sgdk_base",
+      "hidden": true,
+      "configurePreset": "sgdk_multiconfig",
+      "jobs": 4,
+      "targets": ["install"]
+    },
+    {
+      "name": "install_debug_sgdk",
+      "inherits": ["install_sgdk_base"],
+      "configuration": "Debug"
+    },
+    {
+      "name": "install_relwithdebinfo_sgdk",
+      "inherits": ["install_sgdk_base"],
+      "configuration": "RelWithDebInfo"
+    },
+    {
+      "name": "install_release_sgdk",
+      "inherits": ["install_sgdk_base"],
+      "configuration": "Release"
+    }
+  ],
+  "workflowPresets": [
+    {
+      "name": "install_sgdk",
+      "description": "Configure and build SGDK",
+      "steps": [
+        { "type": "configure", "name": "sgdk_multiconfig" },
+        { "type": "build", "name": "install_debug_sgdk" },
+        { "type": "build", "name": "install_relwithdebinfo_sgdk" },
+        { "type": "build", "name": "install_release_sgdk" }
+      ]
+    }
+  ]
+}

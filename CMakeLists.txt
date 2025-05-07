@@ -11,7 +11,7 @@ include(cmake/SGDKSupport.cmake)
 
 include(ExternalProject)
 if(NOT EXISTS "${BINTOS_BIN}" OR ${SGDK_BUILD_TOOLS})
-  message("Building bintos.")
+  message(STATUS "Building bintos.")
   ExternalProject_Add(
     bintos
     SOURCE_DIR ${SGDK}/tools/bintos/src
@@ -20,12 +20,12 @@ if(NOT EXISTS "${BINTOS_BIN}" OR ${SGDK_BUILD_TOOLS})
     BUILD_ALWAYS TRUE
   )
 else()
-  message("Using pre-built bintos.")
+  message(STATUS "Using pre-built bintos.")
   add_custom_target(bintos)
 endif()
 
 if(NOT EXISTS "${XGMTOOL_BIN}" OR ${SGDK_BUILD_TOOLS})
-  message("Building xgmtool.")
+  message(STATUS "Building xgmtool.")
   ExternalProject_Add(
     xgmtool
     SOURCE_DIR ${SGDK}/tools/xgmtool/src
@@ -34,12 +34,12 @@ if(NOT EXISTS "${XGMTOOL_BIN}" OR ${SGDK_BUILD_TOOLS})
     BUILD_ALWAYS TRUE
   )
 else()
-  message("Using pre-built xgmtool.")
+  message(STATUS "Using pre-built xgmtool.")
   add_custom_target(xgmtool)
 endif()
 
 if(NOT EXISTS "${SJASM_BIN}" OR ${SGDK_BUILD_TOOLS})
-  message("Building sjasm.")
+  message(STATUS "Building sjasm.")
   ExternalProject_Add(
     sjasm
     CONFIGURE_COMMAND ""
@@ -49,7 +49,7 @@ if(NOT EXISTS "${SJASM_BIN}" OR ${SGDK_BUILD_TOOLS})
     BUILD_ALWAYS TRUE
   )
 else()
-  message("Using pre-built sjasm.")
+  message(STATUS "Using pre-built sjasm.")
   add_custom_target(sjasm)
 endif()
 
