@@ -164,12 +164,10 @@ function(md_add_rom target mdlib rom_head_c sega_s)
   set(target_out "${CMAKE_CURRENT_BINARY_DIR}/${target}.out")
   add_custom_command(TARGET ${target}
     POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy ${target_bin} ${target_out}
-    COMMAND ${OBJCPY_CMD} -O binary ${target_bin} ${target_bin}.tmp &&
+    COMMAND ${CMAKE_COMMAND} -E rename ${target_bin} ${target_out}
+    COMMAND ${OBJCPY_CMD} -O binary ${target_out} ${target_bin} &&
             ${SIZEBND_CMD} ${target_bin} -sizealign 131072 -checksum
-    COMMAND ${CMAKE_COMMAND} -E copy ${target_bin}.tmp ${target_bin}
-    COMMAND ${CMAKE_COMMAND} -E remove ${target_bin}.tmp
-    BYPRODUCTS ${rom_bin}
+    BYPRODUCTS ${target_out}
   )
 
 endfunction()
