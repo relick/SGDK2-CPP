@@ -134,6 +134,12 @@ function(add_SGDK_library target language)
     FILE_SET HEADERS BASE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/inc" FILES
       ${SRC_LIB_INCLUDES}
   )
+  # Extra includes for z80 assembly that don't pollute the main target
+  md_target_z80_include_directories(${target}
+    PRIVATE
+      "${CMAKE_CURRENT_SOURCE_DIR}/src"
+      "${CMAKE_CURRENT_SOURCE_DIR}/inc/snd"
+  )
 
   ## Add sources
   # m68k files
@@ -147,15 +153,12 @@ function(add_SGDK_library target language)
         src/cpp/syscalls.c
       >
   )
-  
-  # Create a list of extra includes for z80 assembly files, to avoid polluting the main target
-  set(z80_includes "${CMAKE_CURRENT_SOURCE_DIR}/src" "${CMAKE_CURRENT_SOURCE_DIR}/inc/snd")
 
   # z80 files
-  md_target_z80_sources_with_extra_includes(${target} z80_includes ${headers_scope} ${SRC_LIB_S80})
+  md_target_z80_sources(${target} ${headers_scope} ${SRC_LIB_S80})
 
   # Resource files
-  md_target_res_sources(${target} ${headers_scope} ${RES_LIB_RES})
+  md_target_resources(${target} ${headers_scope} ${RES_LIB_RES})
 
 endfunction()
 
@@ -184,7 +187,7 @@ install(
 
 # Targets
 install(
-  TARGETS md mdcpp
+  TARGETS md md.z80 md.res mdcpp mdcpp.z80 mdcpp.res
   EXPORT SGDKTargets
   ARCHIVE DESTINATION lib
   PUBLIC_HEADER DESTINATION include
