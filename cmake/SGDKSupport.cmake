@@ -27,12 +27,13 @@ function(md_target_z80_sources target header_scope) # ARGN: .s80 files
 
     add_custom_command(
       OUTPUT ${m68k_asm} ${c_header}
-      COMMAND ${ASMZ80_CMD} ${target_includes} ${extra_target_includes} "${z80_source}" ${z80_bin} &&
-              ${BINTOS_CMD} ${z80_bin} ${m68k_asm}
+      COMMAND ${ASMZ80_CMD} ${target_includes} ${extra_target_includes} "${z80_source}" ${z80_bin}
+      COMMAND ${BINTOS_CMD} ${z80_bin} ${m68k_asm}
       COMMAND_EXPAND_LISTS
       WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
       VERBATIM
-      DEPENDS "${z80_source}" bintos sjasm
+      MAIN_DEPENDENCY "${z80_source}"
+      DEPENDS bintos sjasm
       BYPRODUCTS ${z80_bin}
     )
 
@@ -78,7 +79,8 @@ function(md_target_resources target header_scope) # ARGN: .res files
       DEPFILE ${dep_file}
       COMMAND ${RESCOMP_CMD} "${res_source}" ${m68k_asm} -dep ${dep_file}
       WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-      DEPENDS "${res_source}" xgmtool
+      MAIN_DEPENDENCY "${res_source}"
+      DEPENDS xgmtool
       BYPRODUCTS ${dep_file}
     )
 
@@ -125,7 +127,7 @@ function(md_add_rom target mdlib rom_head_c sega_s)
   add_custom_command(
     OUTPUT ${out_rom_head_bin}
     COMMAND ${OBJCPY_CMD} -O binary "$<TARGET_OBJECTS:${target_rom_head}>" "${out_rom_head_bin}"
-    DEPENDS ${target_rom_head}
+    MAIN_DEPENDENCY ${target_rom_head}
   )
   set(target_out_rom_head "${target}.out.rom_head")
   add_custom_target(${target_out_rom_head} DEPENDS ${out_rom_head_bin})
@@ -177,7 +179,7 @@ function(md_ensure_extra_target target extension)
   set(extra_target_name "target_${extension}")
   set(${extra_target_name} "${target}.${extension}")
   if(NOT TARGET ${${extra_target_name}})
-    add_library(${${extra_target_name}})
+    add_library(${${extra_target_name}} STATIC)
     target_link_libraries(${target} PRIVATE ${${extra_target_name}})
   endif()
 

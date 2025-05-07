@@ -67,10 +67,30 @@ string(REPLACE "src/boot/sega.s" "" SRC_LIB_S "${SRC_LIB_S}")
 file(GLOB_RECURSE SRC_LIB_S80 src/*.s80)
 file(GLOB_RECURSE RES_LIB_RES res/*.res)
 
-# Generate a library for each language
-function(add_SGDK_library target language)
+# Helper macro for generically creating an installable static library target
+set(SGDK_install_list)
+macro(add_SGDK_library target)
+  add_library(${target} STATIC)
+  add_library(SGDK::${target} ALIAS ${target})
+  target_compile_options(${target} PUBLIC ${SGDK_DEFAULT_COMPILE_OPTIONS})
+  set_target_properties(${target}
+    PROPERTIES
+      STATIC_LIBRARY_OPTIONS "$<$<BOOL:${LTO_PLUGIN}>:--plugin=${LTO_PLUGIN}>"
+      OUTPUT_NAME_RELEASE "${target}_release"
+      OUTPUT_NAME_RELWITHDEBINFO "${target}_relwithdebinfo"
+      OUTPUT_NAME_DEBUG "${target}_debug"
+  )
+  list(APPEND SGDK_install_list ${target})
+endmacro()
+
+# Need to make syscall library separately, to be linked at the end if newlib is enabled
+add_SGDK_library(md.newlibsys)
+target_sources(md.newlibsys PRIVATE src/cpp/syscalls.c)
+
+# Helper function for setting up the md libraries
+function(setup_md_library target language)
   # Only want to make one target's header sets public, as this will cause them to be installed.
-  # If they're all public, then the install copies the same files more than once
+  # If they're all public, then each install copies the same files more than once
   if(NOT DEFINED SGDK_installed_headers)
     set(SGDK_installed_headers TRUE PARENT_SCOPE)
     set(headers_scope PUBLIC)
@@ -88,32 +108,20 @@ function(add_SGDK_library target language)
     message(FATAL_ERROR "Only C and CXX supported as SGDK library languages.")
   endif()
 
-  add_library(${target} STATIC)
-  add_library(SGDK::${target} ALIAS ${target})
-  set_target_properties(${target}
-    PROPERTIES
-      STATIC_LIBRARY_OPTIONS "$<$<BOOL:${LTO_PLUGIN}>:--plugin=${LTO_PLUGIN}>"
-      OUTPUT_NAME_RELEASE "${target}"
-      OUTPUT_NAME_RELWITHDEBINFO "${target}_relwithdebinfo"
-      OUTPUT_NAME_DEBUG "${target}_debug"
-  )
-
   target_link_libraries(${target}
     PUBLIC
       gcc
-      c
-      $<${enable_newlib}:m>
+      $<${enable_newlib}:
+        c
+        m
+      >
       $<${enable_cpp}:stdc++>
+      $<${enable_newlib}:SGDK::md.newlibsys>
   )
 
   target_link_options(${target}
     INTERFACE
       $<IF:${enable_newlib},-nostartfiles,-nostdlib>
-  )
-
-  target_compile_options(${target}
-    PUBLIC
-      ${SGDK_DEFAULT_COMPILE_OPTIONS}
   )
 
   target_compile_definitions(${target}
@@ -150,21 +158,29 @@ function(add_SGDK_library target language)
       
       $<${enable_cpp}:
         src/cpp/cplusplus.cpp
-        src/cpp/syscalls.c
       >
   )
 
+  set(tmp_install_list ${SGDK_install_list})
+
   # z80 files
   md_target_z80_sources(${target} ${headers_scope} ${SRC_LIB_S80})
+  list(APPEND tmp_install_list ${target}.z80)
 
   # Resource files
   md_target_resources(${target} ${headers_scope} ${RES_LIB_RES})
+  list(APPEND tmp_install_list ${target}.res)
+
+  set(SGDK_install_list ${tmp_install_list} PARENT_SCOPE)
 
 endfunction()
 
 ## SGDK libraries
-add_SGDK_library(md C)
-add_SGDK_library(mdcpp CXX)
+add_SGDK_library(md)
+setup_md_library(md C)
+
+add_SGDK_library(mdcpp)
+setup_md_library(mdcpp CXX)
 
 ## Installation
 # CMake files
@@ -187,7 +203,7 @@ install(
 
 # Targets
 install(
-  TARGETS md md.z80 md.res mdcpp mdcpp.z80 mdcpp.res
+  TARGETS ${SGDK_install_list}
   EXPORT SGDKTargets
   ARCHIVE DESTINATION lib
   PUBLIC_HEADER DESTINATION include
