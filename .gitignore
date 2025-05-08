@@ -46,3 +46,4 @@ tools/xgm rom builder
 project/test
 /build
 /install
+*__pycache__*
