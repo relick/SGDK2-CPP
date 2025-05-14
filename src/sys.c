@@ -77,37 +77,37 @@ bool addFrameLoad(u16 frameLoad, u32 vtime);
 
 #if LEGACY_ERROR_HANDLER
 // exception callbacks (legacy error handler)
-__attribute__((externally_visible)) VoidCallback *busErrorCB;
-__attribute__((externally_visible)) VoidCallback *addressErrorCB;
-__attribute__((externally_visible)) VoidCallback *illegalInstCB;
-__attribute__((externally_visible)) VoidCallback *zeroDivideCB;
-__attribute__((externally_visible)) VoidCallback *chkInstCB;
-__attribute__((externally_visible)) VoidCallback *trapvInstCB;
-__attribute__((externally_visible)) VoidCallback *privilegeViolationCB;
-__attribute__((externally_visible)) VoidCallback *traceCB;
-__attribute__((externally_visible)) VoidCallback *line1x1xCB;
-__attribute__((externally_visible)) VoidCallback *errorExceptionCB;
+USED_EXTERNALLY VoidCallback *busErrorCB;
+USED_EXTERNALLY VoidCallback *addressErrorCB;
+USED_EXTERNALLY VoidCallback *illegalInstCB;
+USED_EXTERNALLY VoidCallback *zeroDivideCB;
+USED_EXTERNALLY VoidCallback *chkInstCB;
+USED_EXTERNALLY VoidCallback *trapvInstCB;
+USED_EXTERNALLY VoidCallback *privilegeViolationCB;
+USED_EXTERNALLY VoidCallback *traceCB;
+USED_EXTERNALLY VoidCallback *line1x1xCB;
+USED_EXTERNALLY VoidCallback *errorExceptionCB;
 
 // exception state consumes 78 bytes of memory (legacy error handler)
-__attribute__((externally_visible)) u32 registerState[8+8];
-__attribute__((externally_visible)) u32 pcState;
-__attribute__((externally_visible)) u32 addrState;
-__attribute__((externally_visible)) u16 ext1State;
-__attribute__((externally_visible)) u16 ext2State;
-__attribute__((externally_visible)) u16 srState;
+USED_EXTERNALLY u32 registerState[8+8];
+USED_EXTERNALLY u32 pcState;
+USED_EXTERNALLY u32 addrState;
+USED_EXTERNALLY u16 ext1State;
+USED_EXTERNALLY u16 ext2State;
+USED_EXTERNALLY u16 srState;
 #endif
 
 // user V-Int, H-Int, Ext-Int and Int callbacks
-__attribute__((externally_visible)) VoidCallback *vintCB;
-__attribute__((externally_visible)) InterruptCaller hintCaller;
-__attribute__((externally_visible)) VoidCallback *eintCB;
-__attribute__((externally_visible)) VoidCallback *intCB;
+USED_EXTERNALLY VoidCallback *vintCB;
+USED_EXTERNALLY InterruptCaller hintCaller;
+USED_EXTERNALLY VoidCallback *eintCB;
+USED_EXTERNALLY VoidCallback *intCB;
 
 // user VBlank callbacks
 VoidCallback *vblankCB;
 
-__attribute__((externally_visible)) vu16 VBlankProcess;
-__attribute__((externally_visible)) vu16 intTrace;
+USED_EXTERNALLY vu16 VBlankProcess;
+USED_EXTERNALLY vu16 intTrace;
 
 // need to be accessed from external
 u16 intLevelSave;

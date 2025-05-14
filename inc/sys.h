@@ -56,6 +56,17 @@ extern "C"
  */
 #define HINTERRUPT_CALLBACK         __attribute__((interrupt)) void
 
+/**
+ *  \brief
+ *      Declare that a function or data defined in C should not be removed as an optimisation
+ *      even if it is unused in C. This ensures it is usable in asm in particular.
+ */
+#if defined(__clang__)
+#define USED_EXTERNALLY             __attribute__((used))
+#else
+#define USED_EXTERNALLY             __attribute__((externally_visible))
+#endif
+
 
 // exist through rom_head.c
 typedef struct
