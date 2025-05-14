@@ -1059,25 +1059,25 @@ static void readLightgun(u16 port)
 
     if (portType[port] == PORT_TYPE_MENACER)
     {
-        asm volatile ("move.w #160,%0\n"
-            "1:\n\t"
-            "dbra %0,1b\n\t"
+        asm volatile ("move.w #160,%0;"
+            "1:;"
+            "dbra %0,1b;"
             : "=d" (tmp) : : "cc"
         );
         Z80_STATE_SAVE
         *pb = 0xFF;                         /* deassert RST */
         Z80_STATE_RESTORE
-        asm volatile ("moveq #20,%0\n"
-            "1:\n\t"
-            "dbra %0,1b\n\t"
+        asm volatile ("moveq #20,%0;"
+            "1:;"
+            "dbra %0,1b;"
             : "=d" (tmp) : : "cc"
         );
         Z80_STATE_SAVE
         *pb = 0xDF;                         /* assert RST long */
         Z80_STATE_RESTORE
-        asm volatile ("moveq #60,%0\n"
-            "1:\n\t"
-            "dbra %0,1b\n\t"
+        asm volatile ("moveq #60,%0;"
+            "1:;"
+            "dbra %0,1b;"
             : "=d" (tmp) : : "cc"
         );
         Z80_STATE_SAVE
@@ -1085,9 +1085,9 @@ static void readLightgun(u16 port)
         asm volatile ("nop");
         *pb = 0xDF;                         /* assert RST long */
         Z80_STATE_RESTORE
-        asm volatile ("move.w #1080,%0\n"
-            "1:\n\t"
-            "dbra %0,1b\n\t"
+        asm volatile ("move.w #1080,%0;"
+            "1:;"
+            "dbra %0,1b;"
             : "=d" (tmp) : : "cc"
         );
         Z80_STATE_SAVE
@@ -1187,9 +1187,9 @@ static u16 readTrackball(u16 port)
     *pb = 0x00; /* TH (select) low */
     Z80_STATE_RESTORE
     /* ~ 84 us */
-    asm volatile ("moveq #63,%0\n"
-        "1:\n\t"
-        "dbra %0,1b\n\t"
+    asm volatile ("moveq #63,%0;"
+        "1:;"
+        "dbra %0,1b;"
         : "=d" (tmp) : : "cc"
     );
     Z80_STATE_SAVE
@@ -1197,9 +1197,9 @@ static u16 readTrackball(u16 port)
     *pb = 0x40; /* TH (select) high */
     Z80_STATE_RESTORE
     /* ~ 42 us */
-    asm volatile ("moveq #31,%0\n"
-        "1:\n\t"
-        "dbra %0,1b\n\t"
+    asm volatile ("moveq #31,%0;"
+        "1:;"
+        "dbra %0,1b;"
         : "=d" (tmp) : : "cc"
     );
     Z80_STATE_SAVE
@@ -1207,9 +1207,9 @@ static u16 readTrackball(u16 port)
     *pb = 0x00; /* TH (select) low */
     Z80_STATE_RESTORE
     /* ~ 42 us */
-    asm volatile ("moveq #31,%0\n"
-        "1:\n\t"
-        "dbra %0,1b\n\t"
+    asm volatile ("moveq #31,%0;"
+        "1:;"
+        "dbra %0,1b;"
         : "=d" (tmp) : : "cc"
     );
     Z80_STATE_SAVE
@@ -1217,9 +1217,9 @@ static u16 readTrackball(u16 port)
     *pb = 0x40; /* TH (select) high */
     Z80_STATE_RESTORE
     /* ~ 42 us */
-    asm volatile ("moveq #31,%0\n"
-        "1:\n\t"
-        "dbra %0,1b\n\t"
+    asm volatile ("moveq #31,%0;"
+        "1:;"
+        "dbra %0,1b;"
         : "=d" (tmp) : : "cc"
     );
     Z80_STATE_SAVE

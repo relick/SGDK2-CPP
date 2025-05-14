@@ -109,7 +109,7 @@ FORCE_INLINE s32 muls(s16 op1, s16 op2)
 FORCE_INLINE u16 divu(u32 op1, u16 op2)
 {
     u32 result = op1;
-    asm ("divu.w %1, %0"
+    asm ("divu %1, %0"
          : "+d" (result)
          : "d" (op2)
          : "cc");
@@ -119,7 +119,7 @@ FORCE_INLINE u16 divu(u32 op1, u16 op2)
 FORCE_INLINE s16 divs(s32 op1, s16 op2)
 {
     s32 result = op1;
-    asm ("divs.w %1, %0"
+    asm ("divs %1, %0"
          : "+d" (result)
          : "d" (op2)
          : "cc");
@@ -129,7 +129,7 @@ FORCE_INLINE s16 divs(s32 op1, s16 op2)
 FORCE_INLINE u16 modu(u32 op1, u16 op2)
 {
     u32 result = op1;
-    asm ("divu.w %1, %0\n"
+    asm ("divu %1, %0;"
          "swap %0"
          : "+d" (result)
          : "d" (op2)
@@ -140,7 +140,7 @@ FORCE_INLINE u16 modu(u32 op1, u16 op2)
 FORCE_INLINE s16 mods(s32 op1, s16 op2)
 {
     s32 result = op1;
-    asm ("divs.w %1, %0\n"
+    asm ("divs %1, %0;"
          "swap %0"
          : "+d" (result)
          : "d" (op2)
@@ -151,7 +151,7 @@ FORCE_INLINE s16 mods(s32 op1, s16 op2)
 FORCE_INLINE u32 divmodu(u32 op1, u16 op2)
 {
     u32 result = op1;
-    asm ("divu.w %1, %0"
+    asm ("divu %1, %0"
          : "+d" (result)
          : "d" (op2)
          : "cc");
@@ -161,7 +161,7 @@ FORCE_INLINE u32 divmodu(u32 op1, u16 op2)
 FORCE_INLINE s32 divmods(s32 op1, s16 op2)
 {
     s32 result = op1;
-    asm ("divs.w %1, %0"
+    asm ("divs %1, %0"
          : "+d" (result)
          : "d" (op2)
          : "cc");

@@ -629,8 +629,8 @@ static void NO_INLINE setNextXFrame(u16 num, bool set)
         *pw_bus = 0x0000;
 
         // wait a bit (about 80 cycles)
-        asm volatile ("\t\tmovm.l %d0-%d3,-(%sp)\n");
-        asm volatile ("\t\tmovm.l (%sp)+,%d0-%d3\n");
+        asm volatile ("movem.l %d0-%d3,-(%sp)\n");
+        asm volatile ("movem.l (%sp)+,%d0-%d3\n");
     }
 
     // point to PENDING_FRM parameter
