@@ -44,9 +44,9 @@ endif
 SRC_DIR := src
 RES_DIR := res
 INC_DIR := inc
-OUT_DIR := out/$(LIB_TYPE)
+OUT_DIR := out/$(BUILD_TYPE)
 DEP_DIR = $(OUT_DIR)/_deps
-OUT_DIR_LIB := $(GDK)/$(OUT_DIR)
+OUT_DIR_LIB := $(GDK)/out/$(LIB_TYPE)
 
 
 SRC_CPP = $(wildcard *.cpp)
