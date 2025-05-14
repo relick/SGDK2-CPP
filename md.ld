@@ -52,15 +52,23 @@ SECTIONS
   {
     KEEP(*(.text.keepboot)) *(.text.*) *(.text)
     . = ALIGN(0x4);
+    __PRE_INIT_ARRAY_LIST__ = .;
+    LONG((__PRE_INIT_ARRAY_END__ - __PRE_INIT_ARRAY_LIST__) / 4 - 2)
+    KEEP(*(SORT(.preinit_array.*)))
+    *(.preinit_array)
+    LONG(0)
+    __PRE_INIT_ARRAY_END__ = .;
      __CTOR_LIST__ = .;
     LONG((__CTOR_END__ - __CTOR_LIST__) / 4 - 2)
-    *(.ctors)
+    KEEP(*(SORT_BY_INIT_PRIORITY(.init_array.*) SORT_BY_INIT_PRIORITY(.ctors.*)))
+    *(.init_array .ctors)
     LONG(0)
     __CTOR_END__ = .;
     __DTOR_LIST__ = .;
     LONG((__DTOR_END__ - __DTOR_LIST__) / 4 - 2)
-    *(.dtors)
-     LONG(0)
+    KEEP(*(SORT_BY_INIT_PRIORITY(.fini_array.*) SORT_BY_INIT_PRIORITY(.dtors.*)))
+    *(.fini_array .dtors)
+    LONG(0)
     __DTOR_END__ = .;
 
     *(.rodata .rodata.*)
