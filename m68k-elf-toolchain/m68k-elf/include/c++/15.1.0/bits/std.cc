@@ -563,14 +563,18 @@ export namespace std
   using std::atomic_flag;
   using std::atomic_flag_clear;
   using std::atomic_flag_clear_explicit;
+#if __cpp_lib_atomic_wait
   using std::atomic_flag_notify_all;
   using std::atomic_flag_notify_one;
+#endif
   using std::atomic_flag_test;
   using std::atomic_flag_test_and_set;
   using std::atomic_flag_test_and_set_explicit;
   using std::atomic_flag_test_explicit;
+#if __cpp_lib_atomic_wait
   using std::atomic_flag_wait;
   using std::atomic_flag_wait_explicit;
+#endif
   using std::atomic_init;
   using std::atomic_int;
   using std::atomic_int16_t;
@@ -592,14 +596,18 @@ export namespace std
   using std::atomic_load;
   using std::atomic_load_explicit;
   using std::atomic_long;
+#if __cpp_lib_atomic_wait
   using std::atomic_notify_all;
   using std::atomic_notify_one;
+#endif
   using std::atomic_ptrdiff_t;
   using std::atomic_ref;
   using std::atomic_schar;
   using std::atomic_short;
   using std::atomic_signal_fence;
+#if __cpp_lib_atomic_lock_free_type_aliases
   using std::atomic_signed_lock_free;
+#endif
   using std::atomic_size_t;
   using std::atomic_store;
   using std::atomic_store_explicit;
@@ -622,10 +630,14 @@ export namespace std
   using std::atomic_uintptr_t;
   using std::atomic_ullong;
   using std::atomic_ulong;
+#if __cpp_lib_atomic_lock_free_type_aliases
   using std::atomic_unsigned_lock_free;
+#endif
   using std::atomic_ushort;
+#if __cpp_lib_atomic_wait
   using std::atomic_wait;
   using std::atomic_wait_explicit;
+#endif
   using std::atomic_wchar_t;
   using std::kill_dependency;
   using std::memory_order;
@@ -982,6 +994,7 @@ export namespace std
 #endif
 
 // 33.7 <condition_variable>
+#if _GLIBCXX_HAS_GTHREADS
 export namespace std
 {
   using std::condition_variable;
@@ -989,6 +1002,7 @@ export namespace std
   using std::cv_status;
   using std::notify_all_at_thread_exit;
 }
+#endif
 
 // 17.12.2 <coroutine>
 #if __cpp_lib_coroutine
@@ -1736,10 +1750,12 @@ export namespace __gnu_cxx
 }
 
 // <latch>
+#if __cpp_lib_latch
 export namespace std
 {
   using std::latch;
 }
+#endif
 
 // 17.3.3 <limits> [limits.syn]
 export namespace std
@@ -1959,11 +1975,14 @@ export namespace std::pmr
   using std::pmr::polymorphic_allocator;
   using std::pmr::pool_options;
   using std::pmr::set_default_resource;
+#if __cpp_lib_memory_resource >= 201603L
   using std::pmr::synchronized_pool_resource;
+  #endif
   using std::pmr::unsynchronized_pool_resource;
 }
 
 // <mutex>
+#if _GLIBCXX_HAS_GTHREADS
 export namespace std
 {
   using std::adopt_lock;
@@ -1985,6 +2004,7 @@ export namespace std
   using std::try_to_lock_t;
   using std::unique_lock;
 }
+#endif
 
 // 17.6.2 <new> [new.syn]
 export namespace std
@@ -2522,11 +2542,13 @@ export namespace std
 }
 
 // <semaphore>
+#if __cpp_lib_semaphore
 export namespace std
 {
   using std::binary_semaphore;
   using std::counting_semaphore;
 }
+#endif
 
 // <set>
 export namespace std
@@ -2545,6 +2567,7 @@ export namespace std
 }
 
 // <shared_mutex>
+#if __cpp_lib_shared_mutex
 export namespace std
 {
   using std::shared_lock;
@@ -2552,6 +2575,7 @@ export namespace std
   using std::shared_timed_mutex;
   using std::swap;
 }
+#endif
 
 // 17.8.1 <source_location>
 export namespace std
@@ -2830,7 +2854,9 @@ export namespace std
 {
   using std::swap;
   using std::thread;
+#if __cpp_lib_jthread
   using std::jthread;
+#endif
   namespace this_thread
   {
     using std::this_thread::get_id;
@@ -3400,89 +3426,22 @@ export C_LIB_NAMESPACE
 {
   using std::abs;
   using std::acos;
-  using std::acosf;
   using std::acosh;
-  using std::acoshf;
-  using std::acoshl;
-  using std::acosl;
   using std::asin;
-  using std::asinf;
   using std::asinh;
-  using std::asinhf;
-  using std::asinhl;
-  using std::asinl;
   using std::atan;
   using std::atan2;
-  using std::atan2f;
-  using std::atan2l;
-  using std::atanf;
   using std::atanh;
-  using std::atanhf;
-  using std::atanhl;
-  using std::atanl;
-  using std::cbrt;
-  using std::cbrtf;
-  using std::cbrtl;
   using std::ceil;
-  using std::ceilf;
-  using std::ceill;
-  using std::copysign;
-  using std::copysignf;
-  using std::copysignl;
   using std::cos;
-  using std::cosf;
   using std::cosh;
-  using std::coshf;
-  using std::coshl;
-  using std::cosl;
-  using std::double_t;
-  using std::erf;
-  using std::erfc;
-  using std::erfcf;
-  using std::erfcl;
-  using std::erff;
-  using std::erfl;
   using std::exp;
-  using std::exp2;
-  using std::exp2f;
-  using std::exp2l;
-  using std::expf;
-  using std::expl;
-  using std::expm1;
-  using std::expm1f;
-  using std::expm1l;
   using std::fabs;
-  using std::fabsf;
-  using std::fabsl;
-  using std::fdim;
-  using std::fdimf;
-  using std::fdiml;
-  using std::float_t;
   using std::floor;
-  using std::floorf;
-  using std::floorl;
-  using std::fma;
-  using std::fmaf;
-  using std::fmal;
-  using std::fmax;
-  using std::fmaxf;
-  using std::fmaxl;
-  using std::fmin;
-  using std::fminf;
-  using std::fminl;
   using std::fmod;
-  using std::fmodf;
-  using std::fmodl;
   using std::fpclassify;
   using std::frexp;
-  using std::frexpf;
-  using std::frexpl;
   using std::hypot;
-  using std::hypotf;
-  using std::hypotl;
-  using std::ilogb;
-  using std::ilogbf;
-  using std::ilogbl;
   using std::isfinite;
   using std::isgreater;
   using std::isgreaterequal;
@@ -3494,99 +3453,169 @@ export C_LIB_NAMESPACE
   using std::isnormal;
   using std::isunordered;
   using std::ldexp;
-  using std::ldexpf;
-  using std::ldexpl;
-#ifndef STD_COMPAT
+  #ifndef STD_COMPAT
   using std::lerp;
-#endif
-  using std::lgamma;
-  using std::lgammaf;
-  using std::lgammal;
-  using std::llrint;
-  using std::llrintf;
-  using std::llrintl;
-  using std::llround;
-  using std::llroundf;
-  using std::llroundl;
+  #endif
   using std::log;
   using std::log10;
+  using std::modf;
+  using std::pow;
+  using std::signbit;
+  using std::sin;
+  using std::sinh;
+  using std::sqrt;
+  using std::tan;
+  using std::tanh;
+
+#if defined(__STDCPP_FLOAT16_T__) && defined(_GLIBCXX_FLOAT_IS_IEEE_BINARY32)
+  using std::cbrt;
+  using std::copysign;
+  using std::double_t;
+  using std::erf;
+  using std::erfc;
+  using std::exp2;
+  using std::expm1;
+  using std::fdim;
+  using std::float_t;
+  using std::fma;
+  using std::fmax;
+  using std::fmin;
+  using std::ilogb;
+  using std::lgamma;
+  using std::llrint;
+  using std::llround;
+  using std::log1p;
+  using std::log2;
+  using std::logb;
+  using std::lrint;
+  using std::lround;
+  using std::nan;
+  using std::nearbyint;
+  using std::nextafter;
+  using std::nexttoward;
+  using std::remainder;
+  using std::remquo;
+  using std::rint;
+  using std::round;
+  using std::scalbln;
+  using std::scalbn;
+  using std::tgamma;
+  using std::trunc;
+  using std::acosf;
+  using std::acoshf;
+  using std::acoshl;
+  using std::acosl;
+  using std::asinf;
+  using std::asinhf;
+  using std::asinhl;
+  using std::asinl;
+  using std::atan2f;
+  using std::atan2l;
+  using std::atanf;
+  using std::atanhf;
+  using std::atanhl;
+  using std::atanl;
+  using std::cbrtf;
+  using std::cbrtl;
+  using std::ceilf;
+  using std::ceill;
+  using std::copysignf;
+  using std::copysignl;
+  using std::cosf;
+  using std::coshf;
+  using std::coshl;
+  using std::cosl;
+  using std::erfcf;
+  using std::erfcl;
+  using std::erff;
+  using std::erfl;
+  using std::exp2f;
+  using std::exp2l;
+  using std::expf;
+  using std::expl;
+  using std::expm1f;
+  using std::expm1l;
+  using std::fabsf;
+  using std::fabsl;
+  using std::fdimf;
+  using std::fdiml;
+  using std::floorf;
+  using std::floorl;
+  using std::fmaf;
+  using std::fmal;
+  using std::fmaxf;
+  using std::fmaxl;
+  using std::fminf;
+  using std::fminl;
+  using std::fmodf;
+  using std::fmodl;
+  using std::frexpf;
+  using std::frexpl;
+  using std::hypotf;
+  using std::hypotl;
+  using std::ilogbf;
+  using std::ilogbl;
+  using std::ldexpf;
+  using std::ldexpl;
+  using std::lgammaf;
+  using std::lgammal;
+  using std::llrintf;
+  using std::llrintl;
+  using std::llroundf;
+  using std::llroundl;
   using std::log10f;
   using std::log10l;
-  using std::log1p;
   using std::log1pf;
   using std::log1pl;
-  using std::log2;
   using std::log2f;
   using std::log2l;
-  using std::logb;
   using std::logbf;
   using std::logbl;
   using std::logf;
   using std::logl;
-  using std::lrint;
   using std::lrintf;
   using std::lrintl;
-  using std::lround;
   using std::lroundf;
   using std::lroundl;
-  using std::modf;
   using std::modff;
   using std::modfl;
-  using std::nan;
   using std::nanf;
   using std::nanl;
-  using std::nearbyint;
   using std::nearbyintf;
   using std::nearbyintl;
-  using std::nextafter;
   using std::nextafterf;
   using std::nextafterl;
-  using std::nexttoward;
   using std::nexttowardf;
   using std::nexttowardl;
-  using std::pow;
   using std::powf;
   using std::powl;
-  using std::remainder;
   using std::remainderf;
   using std::remainderl;
-  using std::remquo;
   using std::remquof;
   using std::remquol;
-  using std::rint;
   using std::rintf;
   using std::rintl;
-  using std::round;
   using std::roundf;
   using std::roundl;
-  using std::scalbln;
   using std::scalblnf;
   using std::scalblnl;
-  using std::scalbn;
   using std::scalbnf;
   using std::scalbnl;
-  using std::signbit;
-  using std::sin;
   using std::sinf;
-  using std::sinh;
   using std::sinhf;
   using std::sinhl;
   using std::sinl;
-  using std::sqrt;
   using std::sqrtf;
   using std::sqrtl;
-  using std::tan;
   using std::tanf;
-  using std::tanh;
   using std::tanhf;
   using std::tanhl;
   using std::tanl;
-  using std::tgamma;
   using std::tgammaf;
   using std::tgammal;
-  using std::trunc;
   using std::truncf;
   using std::truncl;
+#endif
 
 #if __cpp_lib_math_special_functions && !defined(STD_COMPAT)
   using std::assoc_laguerre;
