@@ -146,12 +146,16 @@ function(md_add_rom target mdlib rom_head_c sega_s)
   )
   target_link_options(${target}
     PRIVATE
-      -n
+      "LINKER:-n"
       -T${SGDK_LINKER_SCRIPT}
       "LINKER:--gc-sections"
        -flto
        -flto=auto
        -ffat-lto-objects
+  )
+  target_link_directories(${target}
+    PRIVATE
+      ${SGDK_LIB_DIRS}
   )
 
   # Final ROM generation: copy .out file, objcopy, pad
