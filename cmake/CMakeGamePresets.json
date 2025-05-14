@@ -2,54 +2,39 @@
   "version": 9,
   "configurePresets": [
     {
-      "name": "sgdk",
-      "description": "Configure with SGDK",
+      "name": "base",
       "hidden": true,
-      "toolchainFile": "${fileDir}/SGDKToolchain.cmake"
-    },
-    {
-      "name": "release",
-      "description": "Configure with Release",
-      "inherits": ["sgdk"],
-      "binaryDir": "${sourceDir}/build/release",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "toolchainFile": "${fileDir}/SGDKToolchain.cmake",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release"
+        "CMAKE_BUILD_TYPE": "${presetName}"
       }
     },
     {
-      "name": "debug",
-      "description": "Configure with Debug",
-      "inherits": ["sgdk"],
-      "binaryDir": "${sourceDir}/build/debug",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug"
-      }
+      "name": "Debug",
+      "inherits": ["base"]
     },
     {
-      "name": "relwithdebinfo",
-      "description": "Configure with RelWithDebInfo",
-      "inherits": ["sgdk"],
-      "binaryDir": "${sourceDir}/build/relwithdebinfo",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "RelWithDebInfo"
-      }
+      "name": "RelWithDebInfo",
+      "inherits": ["base"]
+    },
+    {
+      "name": "Release",
+      "inherits": ["base"]
     }
   ],
   "buildPresets": [
     {
-        "name": "release",
-        "description": "Build with Release",
-        "configurePreset": "release"
+        "name": "Debug",
+        "configurePreset": "Debug"
     },
     {
-        "name": "debug",
-        "description": "Build with Debug",
-        "configurePreset": "debug"
+        "name": "RelWithDebInfo",
+        "configurePreset": "RelWithDebInfo"
     },
     {
-        "name": "relwithdebinfo",
-        "description": "Build with RelWithDebInfo",
-        "configurePreset": "relwithdebinfo"
+        "name": "Release",
+        "configurePreset": "Release"
     }
   ]
 }
