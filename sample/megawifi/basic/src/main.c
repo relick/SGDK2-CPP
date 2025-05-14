@@ -350,7 +350,7 @@ static void init(void)
 }
 
 /// Entry point
-int main(bool hard)
+main(bool hard)
 {
 	UNUSED_PARAM(hard);
 	bool err;
@@ -362,5 +362,5 @@ int main(bool hard)
 		run_test();
 	}
 
-	return 0;
+	SYS_freeze();
 }

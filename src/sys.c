@@ -68,7 +68,7 @@ extern bool XGM2_doVBlankFadeProcess(void);
 extern void MEM_init();
 
 // main function
-extern int main(bool hardReset);
+extern int sgdk_main(bool hardReset);
 
 // forward
 static void internal_reset();
@@ -602,20 +602,20 @@ void NO_INLINE _start_entry()
 #endif
 
     // let's the fun go on !
-    main(TRUE);
+    sgdk_main(TRUE);
 
-    // for safety
-    while(TRUE) SYS_doVBlankProcess();
+    // for safety, though we shouldn't get here
+    SYS_freeze();
 }
 
 void NO_INLINE _reset_entry()
 {
     internal_reset();
 
-    main(FALSE);
+    sgdk_main(FALSE);
 
-    // for safety
-    while(TRUE) SYS_doVBlankProcess();
+    // for safety, though we shouldn't get here
+    SYS_freeze();
 }
 
 static void NO_INLINE internal_reset()
@@ -674,6 +674,12 @@ static void NO_INLINE internal_reset()
 
     // enable interrupts
     SYS_setInterruptMaskLevel(3);
+}
+
+void SYS_freeze()
+{
+    SYS_disableInts();
+    while (TRUE) { SYS_doVBlankProcess(); }
 }
 
 bool SYS_doVBlankProcess()

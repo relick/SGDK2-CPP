@@ -2,7 +2,7 @@
 #include <genesis.h>
 
 // file header (not really useful here but just for the example)
-#include "main.h"
+#include "funcs.h"
 
 // include our own resources
 #include "res_gfx.h"
@@ -16,8 +16,6 @@
 // forward declarations
 static u16 loadStarField(u16 vramIndex);
 static u16 loadDonut(u16 vramIndex);
-static void animateStarfield(void);
-static void animateDonut(void);
 
 static void joyEvent(u16 joy, u16 changed, u16 state);
 
@@ -38,7 +36,7 @@ s16 donutAngleStep;
 fix16 donutAmplitudeStep;
 
 
-int main(bool hardReset)
+main(bool hardReset)
 {
     // disable interrupt when accessing VDP
     SYS_disableInts();
@@ -88,8 +86,6 @@ int main(bool hardReset)
         // wait for the end of frame and do all the vblank process
         SYS_doVBlankProcess();
     }
-
-    return 0;
 }
 
 static u16 loadStarField(u16 vramIndex)
@@ -162,7 +158,7 @@ static u16 loadDonut(u16 vramIndex)
 }
 
 
-static void animateStarfield()
+void animateStarfield()
 {
     for(s16 i = 0; i < TABLE_LEN; i++)
     {
@@ -174,7 +170,7 @@ static void animateStarfield()
    VDP_setHorizontalScrollLine(BG_B, 2, scroll_PLAN_B, TABLE_LEN, DMA_QUEUE);
 }
 
-static void animateDonut()
+void animateDonut()
 {
     // start angle and amplitude
     s16 angle = F16_toInt(donutPhase);

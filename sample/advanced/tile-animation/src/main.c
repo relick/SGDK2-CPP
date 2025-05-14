@@ -118,7 +118,7 @@ void TilesAnimationUpdate()
     }
 }
 
-int main(bool hardReset)
+main(bool hardReset)
 {
     // do hard reset on soft reset (just for convenience)
     if (!hardReset)
@@ -151,5 +151,4 @@ int main(bool hardReset)
         // do vblank process
         SYS_doVBlankProcess();
     }
-    return (0);
 }

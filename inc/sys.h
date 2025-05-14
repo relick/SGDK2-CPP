@@ -67,6 +67,23 @@ extern "C"
 #define USED_EXTERNALLY             __attribute__((externally_visible))
 #endif
 
+ /**
+  *  \brief
+  *      Declare function will never return to main - useful to avoid needing SYS_freeze() if you delegate your infinite loop to another function.
+  */
+#define NEVER_RETURNS               __attribute__((noreturn)) void
+
+/**
+ *  \brief
+ *      Declare function as an SGDK game's entry point i.e. `main(bool hardReset)`.
+ *      Note: returning is an error. Use `SYS_freeze();` at the end of main if you don't call a NEVER_RETURNS function or have an infinite loop.
+ */
+#if defined(__cplusplus)
+#define main(...)                   ; extern "C" NEVER_RETURNS sgdk_main(__VA_ARGS__)
+#else
+#define main(...)                   ; NEVER_RETURNS sgdk_main(__VA_ARGS__)
+#endif
+
 
 // exist through rom_head.c
 typedef struct
@@ -213,6 +230,13 @@ void SYS_reset(void);
  * Reset with forced hardware init and memory clear / reset operation.
  */
 void SYS_hardReset(void);
+/**
+ *  \brief
+ *      Software freeze
+ *
+ * Stops execution and busy-waits forever. Use at the end of main if you don't have an infinite loop.
+ */
+NEVER_RETURNS SYS_freeze(void);
 
 /**
  *  \brief

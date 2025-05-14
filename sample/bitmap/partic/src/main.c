@@ -28,7 +28,7 @@ static void updatePartic(_particule *part_pos, s16 num);
 static void drawPartic(_particule *part_pos, s16 num, u8 col);
 
 
-int main(bool hard)
+main(bool hard)
 {
     char col;
 

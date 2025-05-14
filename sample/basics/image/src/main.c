@@ -2,7 +2,7 @@
 
 #include "gfx.h"
 
-int main(bool hard)
+main(bool hard)
 {
     u16 ind;
 
@@ -42,8 +42,6 @@ int main(bool hard)
     {
         SYS_doVBlankProcess();
     }
-
-    return 0;
 }
 
 

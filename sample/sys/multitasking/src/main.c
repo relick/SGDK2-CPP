@@ -101,7 +101,7 @@ static void fg_tsk(void)
 }
 
 /// Entry point
-int main(bool hard)
+main(bool hard)
 {
 	// Configure vertical blanking interrupt callback
 	SYS_setVIntCallback(vint_cb);
@@ -112,5 +112,5 @@ int main(bool hard)
 	fg_tsk();
 
 	// We should never reach here
-	return 0;
+	SYS_freeze();
 }

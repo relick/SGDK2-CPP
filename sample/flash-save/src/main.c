@@ -120,7 +120,7 @@ static void delete_test(uint8_t slot)
 	print_ln(line);
 }
 
-int main(__attribute__((unused)) bool hard_reset)
+main(__attribute__((unused)) bool hard_reset)
 {
 	print_ln("Save manager test start!");
 
@@ -155,5 +155,6 @@ int main(__attribute__((unused)) bool hard_reset)
 
 end:
 	print_ln("Save manager test done");
-	return 0;
+
+	SYS_freeze();
 }

@@ -34,7 +34,7 @@ s16 maskSpritesPosY = 0;
 s16 maskSpritesMovementOffsetY = 2;
 
 
-int main(bool hardReset)
+main(bool hardReset)
 {
     // screen initialization
     VDP_setScreenWidth320();
@@ -96,6 +96,4 @@ int main(bool hardReset)
         SPR_update();
         SYS_doVBlankProcess();
     }
-    
-    return 0;
 }

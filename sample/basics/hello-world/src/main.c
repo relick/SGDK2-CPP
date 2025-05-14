@@ -1,7 +1,7 @@
 #include <genesis.h>
 
 
-int main(bool hardReset)
+main(bool hardReset)
 {
     VDP_drawText("Hello world !", 12, 12);
 
@@ -13,6 +13,4 @@ int main(bool hardReset)
         // always call this method at the end of the frame
         SYS_doVBlankProcess();
     }
-
-    return 0;
 }

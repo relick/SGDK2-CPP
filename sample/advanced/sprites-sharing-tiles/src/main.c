@@ -63,7 +63,7 @@ void UpdateSpritesTileIndexesForStreamedFrames(Sprite *sprite)
 }
 
 
-int main(bool hardReset)
+main(bool hardReset)
 {
     // screen initialization
     VDP_setScreenWidth320();
@@ -126,6 +126,6 @@ int main(bool hardReset)
     for (u16 i = 0; i < REPLICA_COUNT; i++) {
         SPR_releaseSprite(replicaSprites[i]);
     }
-    
-    return 0;
+
+    SYS_freeze();
 }

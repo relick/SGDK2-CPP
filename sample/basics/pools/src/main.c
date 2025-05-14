@@ -133,18 +133,17 @@ void Collisions_Update();
 void Message_Draw();
 
 // Entry Point
-int main(bool hardReset)
+main(bool hardReset)
 {
     if (!hardReset)
         SYS_hardReset();
 
     Game_Init();
     MainLoop();
-    return 0;
 }
 
 // Main game loop - updates all game systems each frame
-void MainLoop()
+NEVER_RETURNS MainLoop()
 {
     while (TRUE)
     {

@@ -6,7 +6,7 @@
 
 void inGameJoyEvent(u16 joy, u16 changed, u16 state);
 
-int main(bool resetType) {
+main(bool resetType) {
 	//Soft resets don't clear RAM, this can bring some bugs so we hard reset every time we detect a soft reset
 	if (!resetType)
 		SYS_hardReset();
@@ -33,8 +33,6 @@ int main(bool resetType) {
 		SPR_update();
 		SYS_doVBlankProcess();
 	}
-
-	return 0;
 }
 
 //In order to make this data more accessible from all scripts we write them into a struct from global.h

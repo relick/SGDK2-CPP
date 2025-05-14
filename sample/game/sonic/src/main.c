@@ -18,7 +18,7 @@ static void joyEvent(u16 joy, u16 changed, u16 state);
 static void vblank();
 
 
-int main(bool hard)
+main(bool hard)
 {
     u16 palette[64];
     u16 ind;
@@ -106,7 +106,7 @@ int main(bool hard)
     MEM_free(bga);
     MEM_free(bgb);
 
-    return 0;
+    SYS_freeze();
 }
 
 
