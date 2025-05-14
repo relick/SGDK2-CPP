@@ -610,21 +610,12 @@ static u16 getTilesetIndex(TileSet** tilesets, u16* indexes, TileSet* tileset, u
 u16** NO_INLINE SPR_loadAllFrames(const SpriteDefinition* sprDef, u16 index, u16* totalNumTile)
 {
     u16 numFrameTot = 0;
-    u16 numTileTot = 0;
     Animation** anim = sprDef->animations;
     const u16 numAnimation = sprDef->numAnimation;
 
     for(u16 indAnim = 0; indAnim < numAnimation; indAnim++)
     {
-        AnimationFrame** frame = (*anim)->frames;
         const u16 numFrame = (*anim)->numFrame;
-
-        for(u16 indFrame = 0; indFrame < numFrame; indFrame++)
-        {
-            numTileTot += (*frame)->tileset->numTile;
-            frame++;
-        }
-
         numFrameTot += numFrame;
         anim++;
     }
