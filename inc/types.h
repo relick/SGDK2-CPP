@@ -82,48 +82,13 @@ extern "C"
 #define MAX_S32 0x7FFFFFFF
 #endif
 
-#if (ENABLE_NEWLIB == 0) // newlib disabled, use built in integers
+// Rely on built-in fixed-width integers to define the SGDK integers
+#include <stdint.h>
 
 /**
  *  \typedef s8
  *      8 bits signed integer (equivalent to char).
  */
-typedef char s8;
-/**
- *  \typedef s16
- *      16 bits signed integer (equivalent to short).
- */
-typedef short s16;
-/**
- *  \typedef s32
- *      32 bits signed integer (equivalent to long).
- */
-typedef long s32;
-
-/**
- *  \typedef u8
- *      8 bits unsigned integer (equivalent to unsigned char).
- */
-typedef unsigned char u8;
-/**
- *  \typedef u16
- *      16 bits unsigned integer (equivalent to unsigned short).
- */
-typedef unsigned short u16;
-/**
- *  \typedef u32
- *      32 bits unsigned integer (equivalent to unsigned long).
- */
-typedef unsigned long u32;
-
-#else // newlib enabled, use fixed-width integers
-
-#include <stdint.h>
-
- /**
-  *  \typedef s8
-  *      8 bits signed integer (equivalent to char).
-  */
 typedef int8_t s8;
 /**
  *  \typedef s16
@@ -152,7 +117,13 @@ typedef uint16_t u16;
  */
 typedef uint32_t u32;
 
-#endif // newlib enabled
+// Ensure the types are as expected
+static_assert(sizeof(s8) == 1, "Incorrect size s8");
+static_assert(sizeof(s16) == 2, "Incorrect size s16");
+static_assert(sizeof(s32) == 4, "Incorrect size s32");
+static_assert(sizeof(u8) == 1, "Incorrect size u8");
+static_assert(sizeof(u16) == 2, "Incorrect size u16");
+static_assert(sizeof(u32) == 4, "Incorrect size u32");
 
 #if !defined(__cplusplus) && (!defined(__STDC_VERSION__) || (__STDC_VERSION__ < 202300L))
 
