@@ -40,7 +40,7 @@ if(CMAKE_HOST_WIN32)
   set(SGDK_TOOLCHAIN_PREFIX ${SGDK_TOOLCHAIN}/bin/m68k-elf)
   
   # Specify this root to CMake
-  set(CMAKE_SYSROOT ${SGDK_TOOLCHAIN})
+  set(CMAKE_SYSROOT ${SGDK_TOOLCHAIN}/)
   
   # Specify LTO plugin location
   execute_process(
@@ -48,9 +48,11 @@ if(CMAKE_HOST_WIN32)
     OUTPUT_VARIABLE GCC_VERSION
   )
   set(LTO_PLUGIN ${SGDK_TOOLCHAIN}/libexec/gcc/m68k-elf/${GCC_VERSION}/liblto_plugin.dll)
+  set(SGDK_LIB_DIRS)
 else()
   set(SGDK_TOOLCHAIN_PREFIX m68k-elf)
   set(LTO_PLUGIN)
+  set(SGDK_LIB_DIRS)
 endif()
 
 ## Tools
@@ -82,6 +84,8 @@ set(CMAKE_C_COMPILER ${SGDK_TOOLCHAIN_PREFIX}-gcc${BINARY_EXT})
 set(CMAKE_CXX_COMPILER ${SGDK_TOOLCHAIN_PREFIX}-g++${BINARY_EXT})
 set(CMAKE_ASM_COMPILER ${SGDK_TOOLCHAIN_PREFIX}-gcc${BINARY_EXT})
 set(CMAKE_AR ${SGDK_TOOLCHAIN_PREFIX}-ar${BINARY_EXT})
+
+set(SGDK_CXX_STANDARD_LIBRARY stdc++)
 
 ## Flags
 # Declare default compiler and assembler flags

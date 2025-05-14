@@ -99,6 +99,11 @@ function(setup_md_library target language)
     message(FATAL_ERROR "Only C and CXX supported as SGDK library languages.")
   endif()
 
+  target_link_directories(${target}
+    PRIVATE
+      ${SGDK_LIB_DIRS}
+  )
+
   target_link_libraries(${target}
     PUBLIC
       gcc
@@ -106,12 +111,13 @@ function(setup_md_library target language)
         c
         m
       >
-      $<${enable_cpp}:stdc++>
-      $<${enable_newlib}:SGDK::md.newlibsys>
+      $<${enable_cpp}:${SGDK_CXX_STANDARD_LIBRARY}>
+      "LINKER:--whole-archive" $<${enable_newlib}:SGDK::md.newlibsys> "LINKER:--no-whole-archive"
   )
 
   target_link_options(${target}
     INTERFACE
+      "LINKER:-z,execstack"
       $<IF:${enable_newlib},-nostartfiles,-nostdlib>
   )
 
