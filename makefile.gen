@@ -11,6 +11,7 @@ endif
 
 include $(GDK)/common.mk
 
+LIB_TYPE := debug
 BUILD_TYPE := release
 ifeq ($(MAKECMDGOALS),debug)
   	BUILD_TYPE := debug
@@ -18,6 +19,15 @@ else ifeq ($(MAKECMDGOALS),Debug)
   	BUILD_TYPE := debug
 else ifeq ($(MAKECMDGOALS),clean-debug)
   	BUILD_TYPE := debug
+else ifeq ($(MAKECMDGOALS),final)
+	LIB_TYPE := release
+  	BUILD_TYPE := final
+else ifeq ($(MAKECMDGOALS),Final)
+	LIB_TYPE := release
+  	BUILD_TYPE := final
+else ifeq ($(MAKECMDGOALS),clean-final)
+	LIB_TYPE := release
+  	BUILD_TYPE := final
 else ifeq ($(MAKECMDGOALS),asm)
   	BUILD_TYPE := asm
 else ifeq ($(MAKECMDGOALS),Asm)
@@ -34,7 +44,7 @@ endif
 SRC_DIR := src
 RES_DIR := res
 INC_DIR := inc
-OUT_DIR := out/$(BUILD_TYPE)
+OUT_DIR := out/$(LIB_TYPE)
 DEP_DIR = $(OUT_DIR)/_deps
 OUT_DIR_LIB := $(GDK)/$(OUT_DIR)
 
@@ -107,11 +117,18 @@ else ifeq ($(BUILD_TYPE),asm)
 	AFLAGS := -x assembler-with-cpp -Wa,--register-prefix-optional,--bitwise-or $(FLAGS)
 	LIBMD := $(LIB)/libmd.a
 else
-	# release
-	FLAGS := $(INCS) $(DEFAULT_FLAGS) -O3 -fuse-linker-plugin -fno-web -fno-gcse -fno-tree-loop-ivcanon -fomit-frame-pointer -flto -flto=auto -ffat-lto-objects
-	CFLAGS := $(FLAGS)
+	# release/final
+	OPTIMISED_FLAGS:= $(INCS) $(DEFAULT_FLAGS) -O3 -fuse-linker-plugin -fno-web -fno-gcse -fno-tree-loop-ivcanon -fomit-frame-pointer -flto -flto=auto -ffat-lto-objects
+	ifeq ($(BUILD_TYPE),release)
+		FLAGS := $(OPTIMISED_FLAGS) -DDEBUG=1
+		CFLAGS := $(FLAGS) -ggdb -g
+		LIBMD := $(LIB)/libmd_debug.a
+	else
+		FLAGS := $(OPTIMISED_FLAGS)
+		CFLAGS := $(FLAGS)
+		LIBMD := $(LIB)/libmd.a
+	endif
 	AFLAGS := -x assembler-with-cpp -Wa,--register-prefix-optional,--bitwise-or $(FLAGS)
-	LIBMD := $(LIB)/libmd.a
 endif
 
 LIBSYS := $(LIB)/libsys.a
@@ -125,16 +142,19 @@ LIB_FLAGS := $(LIBMD) -L$(LIB) -lgcc -lc $(LIBSYS) -lm $(LIBCPP) -lstdc++
 .PHONY: Release
 .PHONY: debug
 .PHONY: Debug
+.PHONY: final
+.PHONY: Final
 .PHONY: asm
 .PHONY: Asm
 .PHONY: clean
 .PHONY: clean-release
 .PHONY: clean-debug
+.PHONY: clean-final
 .PHONY: clean-asm
 .PHONY: clean-all
 
-default: release
-all: release
+default: final
+all: final
 
 # include ext.mk if it exists (better to do it after first / default definition)
 ifneq ("$(wildcard $(GDK)/ext.mk)","")
@@ -143,17 +163,20 @@ endif
 
 Release: release
 Debug: debug
+Final: final
 Asm: asm
 clean: clean-all
 
-release: $(OUT_DIR)/rom.bin $(OUT_DIR)/symbol.txt 
+release: $(OUT_DIR)/rom.bin $(OUT_DIR)/symbol.txt
+release: injectSymbolsInROM
 release: padROM
-.PHONY: padROM
 
 debug: $(OUT_DIR)/rom.bin $(OUT_DIR)/symbol.txt
 debug: injectSymbolsInROM
 debug: padROM
-.PHONY: injectSymbolsInROM
+
+final: $(OUT_DIR)/rom.bin
+final: padROM
 
 asm: $(OBJS) $(LSTS)
 
@@ -162,12 +185,15 @@ clean-all:
 
 clean-release: clean-task
 clean-debug: clean-task
+clean-final: clean-task
 clean-asm: clean-task
 
 clean-task: 
 	$(RM) -r -f $(OUT_DIR)
 .PHONY: clean-task
 
+.PHONY: padROM
+.PHONY: injectSymbolsInROM
 
 padROM:	$(OUT_DIR)/rom.bin
 	$(SIZEBND) $(OUT_DIR)/rom.bin -sizealign 131072 -checksum
