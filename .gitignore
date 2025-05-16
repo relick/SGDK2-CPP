@@ -47,3 +47,4 @@ project/test
 /build
 /install
 *__pycache__*
+!m68k-elf-toolchain/**
