@@ -75,7 +75,7 @@ macro(add_SGDK_library target)
   target_compile_options(${target} PUBLIC ${SGDK_DEFAULT_COMPILE_OPTIONS})
   set_target_properties(${target}
     PROPERTIES
-      STATIC_LIBRARY_OPTIONS "$<$<BOOL:${LTO_PLUGIN}>:--plugin=${LTO_PLUGIN}>"
+      STATIC_LIBRARY_OPTIONS "$<$<BOOL:${SGDK_LTO_PLUGIN}>:--plugin=${SGDK_LTO_PLUGIN}>"
       OUTPUT_NAME_RELEASE "${target}_release"
       OUTPUT_NAME_RELWITHDEBINFO "${target}_relwithdebinfo"
       OUTPUT_NAME_DEBUG "${target}_debug"
@@ -177,6 +177,8 @@ setup_md_library(mdcpp CXX)
 install(
   DIRECTORY cmake/
   DESTINATION cmake
+  PATTERN "SGDKFindWindowsToolchain.cmake" EXCLUDE
+  PATTERN "dev" EXCLUDE
 )
 
 # Linker script
@@ -211,26 +213,24 @@ install(
 if(CMAKE_HOST_WIN32)
   # Install the toolchain if requested, but either way make an include that will find it later
   if(SGDK_INSTALL_WIN_TOOLCHAIN)
-    file(
-      WRITE "${CMAKE_CURRENT_BINARY_DIR}/SGDKFindWindowsToolchain.cmake"
-      "set(SGDK_TOOLCHAIN \"\${SGDK}/${SGDK_WIN32_TOOLCHAIN_FOLDER}\")"
+    install(
+      DIRECTORY ${SGDK_WIN32_TOOLCHAIN_RELATIVE}/
+      DESTINATION ${SGDK_WIN32_TOOLCHAIN_RELATIVE}
     )
     install(
-      DIRECTORY ${SGDK_WIN32_TOOLCHAIN_FOLDER}/
-      DESTINATION ${SGDK_WIN32_TOOLCHAIN_FOLDER}
+      FILES cmake/SGDKFindWindowsToolchain.cmake
+      DESTINATION cmake
     )
   else()
     file(
       WRITE "${CMAKE_CURRENT_BINARY_DIR}/SGDKFindWindowsToolchain.cmake"
-      "set(SGDK_TOOLCHAIN \"${CMAKE_CURRENT_SOURCE_DIR}/${SGDK_WIN32_TOOLCHAIN_FOLDER}\")"
+      "set(SGDK_WIN32_TOOLCHAIN \"${CMAKE_CURRENT_SOURCE_DIR}/${SGDK_WIN32_TOOLCHAIN_RELATIVE}\")"
+    )
+    install(
+      FILES "${CMAKE_CURRENT_BINARY_DIR}/SGDKFindWindowsToolchain.cmake"
+      DESTINATION cmake
     )
   endif()
-
-  install(
-    FILES
-      "${CMAKE_CURRENT_BINARY_DIR}/SGDKFindWindowsToolchain.cmake"
-    DESTINATION cmake
-  )
 endif()
 
 # find_package support
