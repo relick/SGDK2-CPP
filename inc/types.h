@@ -43,47 +43,73 @@ extern "C"
 #endif
 #endif
 
-#ifndef MIN_U8
-#define MIN_U8  0x00
+#ifndef U8_MIN
+#define U8_MIN  ((u8) 0x00)
 #endif
-#ifndef MAX_U8
-#define MAX_U8  0xFF
+#ifndef U8_MAX
+#define U8_MAX  ((u8) 0xFF)
 #endif
-#ifndef MIN_S8
-#define MIN_S8  (-0x80)
+#ifndef S8_MIN
+#define S8_MIN  ((s8) (-0x80))
 #endif
-#ifndef MAX_S8
-#define MAX_S8  0x7F
-#endif
-
-#ifndef MIN_U16
-#define MIN_U16 0x0000
-#endif
-#ifndef MAX_U16
-#define MAX_U16 0xFFFF
-#endif
-#ifndef MIN_S16
-#define MIN_S16 (-0x8000)
-#endif
-#ifndef MAX_S16
-#define MAX_S16 0x7FFF
+#ifndef S8_MAX
+#define S8_MAX  ((s8) 0x7F)
 #endif
 
-#ifndef MIN_U32
-#define MIN_U32 0x0000
+#ifndef U16_MIN
+#define U16_MIN ((u16) 0x0000)
 #endif
-#ifndef MAX_U32
-#define MAX_U32 0xFFFFFFFF
+#ifndef U16_MAX
+#define U16_MAX ((u16) 0xFFFF)
 #endif
-#ifndef MIN_S32
-#define MIN_S32 (-0x80000000)
+#ifndef S16_MIN
+#define S16_MIN ((s16) (-0x8000))
 #endif
-#ifndef MAX_S32
-#define MAX_S32 0x7FFFFFFF
+#ifndef S16_MAX
+#define S16_MAX ((s16) 0x7FFF)
 #endif
 
+#ifndef U32_MIN
+#define U32_MIN ((u32) 0x00000000)
+#endif
+#ifndef U32_MAX
+#define U32_MAX ((u32) 0xFFFFFFFF)
+#endif
+#ifndef S32_MIN
+#define S32_MIN ((s32) (-0x80000000))
+#endif
+#ifndef S32_MAX
+#define S32_MAX ((s32) 0x7FFFFFFF)
+#endif
+
+#if ENABLE_NEWLIB
 // Rely on built-in fixed-width integers to define the SGDK integers
 #include <stdint.h>
+
+// Includes size_t
+#else
+// Define our own fixed-width integers
+typedef char int8_t;
+typedef short int16_t;
+typedef long int32_t;
+typedef unsigned char uint8_t;
+typedef unsigned short uint16_t;
+typedef unsigned long uint32_t;
+
+/**
+ *  \typedef size_t
+ *      size type (equivalent to unsigned long).
+ */
+typedef unsigned long size_t;
+
+// Ensure the types are the size expected
+static_assert(sizeof(int8_t) == 1, "char is not 1 byte");
+static_assert(sizeof(int16_t) == 2, "short is not 2 bytes");
+static_assert(sizeof(int32_t) == 4, "long is not 4 bytes");
+static_assert(sizeof(uint8_t) == 1, "char is not 1 byte");
+static_assert(sizeof(uint16_t) == 2, "short is not 2 bytes");
+static_assert(sizeof(uint32_t) == 4, "long is not 4 bytes");
+#endif
 
 /**
  *  \typedef s8
@@ -116,14 +142,6 @@ typedef uint16_t u16;
  *      32 bits unsigned integer (equivalent to unsigned long).
  */
 typedef uint32_t u32;
-
-// Ensure the types are as expected
-static_assert(sizeof(s8) == 1, "Incorrect size s8");
-static_assert(sizeof(s16) == 2, "Incorrect size s16");
-static_assert(sizeof(s32) == 4, "Incorrect size s32");
-static_assert(sizeof(u8) == 1, "Incorrect size u8");
-static_assert(sizeof(u16) == 2, "Incorrect size u16");
-static_assert(sizeof(u32) == 4, "Incorrect size u32");
 
 #if !defined(__cplusplus) && (!defined(__STDC_VERSION__) || (__STDC_VERSION__ < 202300L))
 
@@ -329,67 +347,6 @@ typedef void VoidCallback(void);
 u8  getZeroU8(void);
 u16 getZeroU16(void);
 u32 getZeroU32(void);
-
-/**
- *  \brief
- *      ROL instruction for byte (8 bit) value
- *
- *  \param value
- *      value to apply bit rotation
- *  \param number
- *      number of bit rotation
- */
-u8  rol8(u8 value, u16 number);
-/**
- *  \brief
- *      ROL instruction for short (16 bit) value
- *
- *  \param value
- *      value to apply bit rotation
- *  \param number
- *      number of bit rotation
- */
-u16 rol16(u16 value, u16 number);
-/**
- *  \brief
- *      ROL instruction for long (32 bit) value
- *
- *  \param value
- *      value to apply bit rotation
- *  \param number
- *      number of bit rotation
- */
-u32 rol32(u32 value, u16 number);
-/**
- *  \brief
- *      ROR instruction for byte (8 bit) value
- *
- *  \param value
- *      value to apply bit rotation
- *  \param number
- *      number of bit rotation
- */
-u8  ror8(u8 value, u16 number);
-/**
- *  \brief
- *      ROR instruction for short (16 bit) value
- *
- *  \param value
- *      value to apply bit rotation
- *  \param number
- *      number of bit rotation
- */
-u16 ror16(u16 value, u16 number);
-/**
- *  \brief
- *      ROR instruction for long (32 bit) value
- *
- *  \param value
- *      value to apply bit rotation
- *  \param number
- *      number of bit rotation
- */
-u32 ror32(u32 value, u16 number);
 
 
 #if defined(__cplusplus)

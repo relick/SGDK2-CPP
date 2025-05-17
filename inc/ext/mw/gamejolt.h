@@ -31,8 +31,6 @@ extern "C"
 
 #include "types.h"
 
-#if (MODULE_MEGAWIFI != 0)
-
 /// \brief Module error codes.
 ///
 /// On success value is 0. On error all values are
@@ -542,10 +540,8 @@ char *gj_friend_get_next(char *pos, char **user_id);
 char *gj_request(const char **path, uint8_t num_paths, const char **key,
 		const char **value, uint8_t num_kv_pairs, uint32_t *out_len);
 
-#endif // MODULE_MEGAWIFI
-
 #if defined(__cplusplus)
 } // extern "C"
 #endif
 
-#endif // _GAMEJOLT_H_
+#endif /*_GAMEJOLT_H_*/

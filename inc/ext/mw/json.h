@@ -27,8 +27,6 @@ extern "C"
 
 #include "types.h"
 
-#if (MODULE_MEGAWIFI != 0)
-
 /// Hides jsmn API definitions to avoid linking errors
 #define JSMN_STATIC
 #include "ext/mw/jsmn.h"
@@ -123,10 +121,8 @@ int json_key_search(const char *key, const char *json_str,
  ****************************************************************************/
 int json_bool_get(const char *json_str, const jsmntok_t *json_tok, int obj_idx);
 
-#endif // MODULE_MEGAWIFI
-
 #if defined(__cplusplus)
 } // extern "C"
 #endif
 
-#endif // _JSON_H_
+#endif /*_JSON_H_*/

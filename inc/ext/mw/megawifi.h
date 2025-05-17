@@ -35,6 +35,7 @@ extern "C"
 #if (MODULE_EVERDRIVE == 1)
 	#include "ext/mw/ssf.h"
 #else
+	// use the default 16c550 uart
 	#include "ext/mw/16c550.h"
 #endif
 #include "ext/mw/mw-msg.h"
@@ -65,12 +66,12 @@ extern "C"
 /// Milliseconds between status polls while in wm_ap_assoc_wait()
 #define MW_STAT_POLL_MS		250
 
-#if (MODULE_EVERDRIVE == 0)
-	/// Length of the wflash buffer
-	#define MW_BUFLEN	1460
-#elif (MODULE_EVERDRIVE == 1)	
+#if (MODULE_EVERDRIVE != 0)
 	/// Length of the wflash buffer
 	#define MW_BUFLEN	1436
+#else
+	/// Length of the wflash buffer
+	#define MW_BUFLEN	1460
 #endif
 
 /// Error codes for MegaWiFi API functions
@@ -102,10 +103,9 @@ enum mw_http_method {
 /** \addtogroup mw_ctrl_pins mw_ctrl_pins
  *  \brief Pins used to control WiFi module.
  *  \{ */
-#define MW__RESET	UART_MCR__OUT1	///< Reset out.
-#define MW__PRG		UART_MCR__OUT2	///< Program out.
-#define MW__PD		UART_MCR__DTR	///< Power Down out.
-#define MW__DAT		UART_MSR__DSR	///< Data request in.
+#define MW__RESET UART_MCR__DTR   ///< Reset out.
+#define MW__PRG   UART_MCR__RTS   ///< Program out.
+#define MW__DCD   UART_MSR__DSR   ///< Data request in.
 /** \} */
 
 /// Maximum SSID length (including '\0').

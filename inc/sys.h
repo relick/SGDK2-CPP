@@ -58,6 +58,12 @@ extern "C"
 
 /**
  *  \brief
+ *      Macro for packing structures and enumerates
+ */
+#define PACKED		                __attribute__((__packed__))
+
+/**
+ *  \brief
  *      Declare that a function or data defined in C should not be removed as an optimisation
  *      even if it is unused in C. This ensures it is usable in asm in particular.
  */

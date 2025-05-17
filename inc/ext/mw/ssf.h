@@ -24,10 +24,8 @@ extern "C"
 {
 #endif
 
-#include "config.h"
 #include "types.h"
 
-#if (MODULE_MEGAWIFI == 1 && MODULE_EVERDRIVE == 1)
 //#define SSF_CTRL_P 0x8000 //register accesss protection bit. should be set, otherwise register will ignore any attempts to write
 //#define SSF_CTRL_X 0x4000 //32x mode
 //#define SSF_CTRL_W 0x2000 //ROM memory write protection
@@ -147,11 +145,11 @@ void uart_init(void);
  * \brief Reset TX and RX FIFOs.
  ****************************************************************************/
 #define uart_reset_fifos()	while(0)
+
 void ssf_set_rom_bank(u8 bank, u8 val);
-#endif 
 
 #if defined(__cplusplus)
 } // extern "C"
 #endif
 
-#endif // _SSF_H_
+#endif /*_SSF_H_*/
