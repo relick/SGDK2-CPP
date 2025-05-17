@@ -50,7 +50,7 @@ function(md_add_rom target mdlib) # [sega_s]
       -D region_support="$<TARGET_PROPERTY:${target},SGDK_HEAD_REGIONS>"
       -D ROM_HEAD_TEMPLATE=${SGDK}/boot/rom_head.c.in
       -D OUT_FILE=${out_rom_head_c}
-      -P "${SGDK}/cmake/SGDKRomHead.cmake"
+      -P "${SGDK}/cmake/SGDKSupport_GenerateRomHead.cmake"
     DEPENDS "${SGDK}/boot/rom_head.c.in"
     VERBATIM
   )
