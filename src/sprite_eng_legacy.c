@@ -16,7 +16,7 @@
 #include "mapper.h"
 
 #include "kdebug.h"
-#include "string.h"
+#include "str.h"
 #include "timer.h"
 
 

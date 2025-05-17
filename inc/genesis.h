@@ -25,7 +25,7 @@ extern "C"
 #include "object.h"
 
 #include "font.h"
-#include "string.h"
+#include "str.h"
 
 #include "tab_cnv.h"
 

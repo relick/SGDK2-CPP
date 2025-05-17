@@ -12,7 +12,7 @@
 
 #include "config.h"
 #include "types.h"
-#include "string.h"
+#include "str.h"
 
 
 #if (MODULE_MEGAWIFI != 0)

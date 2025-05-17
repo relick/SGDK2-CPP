@@ -9,10 +9,7 @@
 #include "memory.h"
 #include "dma.h"
 #include "maths.h"
-
-#if (ENABLE_NEWLIB == 1)
-#include <string.h>	// For memcpy
-#endif
+#include "str.h"
 
 #define PALETTEFADE_FRACBITS    8
 #define PALETTEFADE_ROUND_VAL   ((1 << (PALETTEFADE_FRACBITS - 1)) - 1)

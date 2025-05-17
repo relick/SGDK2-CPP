@@ -8,7 +8,7 @@
 #include "vdp_bg.h"
 
 #include "tools.h"
-#include "string.h"
+#include "str.h"
 #include "memory.h"
 #include "dma.h"
 #include "timer.h"

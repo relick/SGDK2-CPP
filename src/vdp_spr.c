@@ -6,7 +6,7 @@
 
 #include "dma.h"
 #include "tools.h"
-#include "string.h"
+#include "str.h"
 #include "memory.h"
 
 

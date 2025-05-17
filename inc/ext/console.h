@@ -36,7 +36,7 @@ extern "C"
 #if (MODULE_CONSOLE != 0)
 
 #include "types.h"
-#include "string.h"
+#include "str.h"
 #include "maths.h"
 #include "dma.h"
 
