@@ -1,0 +1,42 @@
+#include <genesis.h>
+
+#define ENABLE_BANK_SWITCH @enable_bank_switch@
+#define MODULE_MEGAWIFI @enable_mega_wifi@
+
+USED_EXTERNALLY
+const ROMHeader rom_header = {
+#if (ENABLE_BANK_SWITCH != 0)
+	"SEGA SSF        ",
+#elif (MODULE_MEGAWIFI != 0)
+	"SEGA MEGAWIFI   ",
+#else
+	"SEGA MEGA DRIVE ",
+#endif
+	@copyright_release_date@,                         // Copyright, format `(C)XXXX YYYY.ZZZ` with X = dev ID, Y = year, Z = month
+	@japan_title@,                                    // Japan name
+	@overseas_title@,                                 // Overseas name
+	@serial_number@,                                  // Serial number, format `GM YYYYYYYY-ZZ` with Y = number, Z = revision
+	0x000,                                              // checksum, compute by adding every 16 bit word from $000200 to end of the rom, then truncate
+	@device_support@,                                 // List of supported devices. J6 = 3 and 6 button support
+
+	// Memory
+	0x00000000,                                         // ROM start address
+#if (ENABLE_BANK_SWITCH != 0)
+	0x003FFFFF,                                         // ROM end address (4MB)
+#else
+	0x000FFFFF,                                         // ROM end address (1MB)
+#endif
+	0xE0FF0000,                                         // RAM start address (should always be $FF0000)
+	0xE0FFFFFF,                                         // RAM end address (should always be $FFFFFF)
+
+	// Extra memory
+	@extra_memory_sig@,                               // Always RA for SRAM or EEPROM, blank otherwise
+	@extra_memory_type@,                                // For SRAM: F8 = 8-bit (odd addresses), RAM saves. 20 suffix. For EEPROM: E840.
+	@extra_memory_start_address@,                       // extra memory start address
+	@extra_memory_end_address@,                         // extra memory end address
+
+	"            ",                                     // Modem support (leave blank)
+	"                                        ",         // [free space]
+	@region_support@,                                 // Region support (JUE)
+	"             ",                                    // [free space]
+};

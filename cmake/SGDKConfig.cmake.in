@@ -1,7 +1,9 @@
 @PACKAGE_INIT@
 
 include("${CMAKE_CURRENT_LIST_DIR}/SGDKTargets.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/SGDKSupport.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/SGDKSupport_RomTargets.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/SGDKSupport_RomProperties.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/SGDKSupport_Sources.cmake")
 
 # Add imported executables for the custom commands, as we know these are installed when using the package
 add_executable(bintos IMPORTED)

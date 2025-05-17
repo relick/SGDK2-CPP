@@ -7,7 +7,7 @@ set(SGDK_INSTALL_WIN_TOOLCHAIN FALSE CACHE BOOL "Copy the Windows gcc toolchain 
 # Project for SGDK
 project(md C CXX ASM)
 
-include(cmake/SGDKSupport.cmake)
+include(cmake/SGDKSupport_Sources.cmake)
 
 include(ExternalProject)
 if(NOT EXISTS "${BINTOS_BIN}" OR SGDK_BUILD_TOOLS)
@@ -179,6 +179,12 @@ install(
   DESTINATION cmake
   PATTERN "SGDKFindWindowsToolchain.cmake" EXCLUDE
   PATTERN "dev" EXCLUDE
+)
+
+# Boot files
+install(
+  DIRECTORY boot/
+  DESTINATION boot
 )
 
 # Linker script

@@ -99,16 +99,36 @@ typedef struct
     u32 rom_end;                                          /* ROM End Address (4) */
     u32 ram_start;                                        /* Start of Backup RAM (4) */
     u32 ram_end;                                          /* End of Backup RAM (4) */
-    char sram_sig[2]       __attribute__((nonstring));    /* "RA" for save ram (2) */
-    u16 sram_type;                                        /* 0xF820 for save ram on odd bytes (2) */
-    u32 sram_start;                                       /* SRAM start address - normally 0x200001 (4) */
-    u32 sram_end;                                         /* SRAM end address - start + 2*sram_size (4) */
+    char sram_sig[2]       __attribute__((nonstring));    /* "RA" for extra ram, blank otherwise (2) */
+    u16 ext_ram_type;                                     /* 0xF820 for save ram on odd bytes (2) */
+    u32 ext_ram_start;                                    /* Extra RAM start address - normally 0x200001 (4) */
+    u32 ext_ram_end;                                      /* Extra RAM end address - start + 2*sram_size (4) */
     char modem_support[12] __attribute__((nonstring));    /* Modem Support (24) */
-    char notes[40]         __attribute__((nonstring));    /* Memo (40) */
-    char region[16]        __attribute__((nonstring));    /* Country Support (16) */
+    char padding0[40]      __attribute__((nonstring));    /* [Free Space] (40) */
+    char region[3]         __attribute__((nonstring));    /* Country Support (3) */
+    char padding1[13]      __attribute__((nonstring));    /* [Free Space] (13) */
 } ROMHeader;
 
 extern const ROMHeader rom_header;
+
+// 
+enum SRAMFlags
+{
+    ExtRAMFlags_Unused       = 0x2000,
+    ExtRAMFlags_Used         = 0xA000,
+
+    ExtRAMType_None         = ExtRAMFlags_Unused,
+    ExtRAMType_EEPROM       = 0x4840 | ExtRAMFlags_Used, // 0xE840
+    ExtRAMType_SRAM         = 0x0020 | ExtRAMFlags_Used, // Add flags for read-write/16-8-bit/even-odd.
+
+    SRAMFlag_NoSaving       = 0 << 14,
+    SRAMFlag_Saving         = 1 << 14,
+
+    SRAMFlag_16Bit          = 0 << 12,
+    SRAMFlag_8BitEven       = (1 << 12) | (0 << 11),
+    SRAMFlag_8BitOdd        = (1 << 12) | (1 << 11),
+
+};
 
 // size of text segment --> start of initialized data (RO)
 extern u32 _stext;

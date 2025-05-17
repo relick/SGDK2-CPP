@@ -104,7 +104,9 @@ extern "C"
  *      will be accessed using BANK_getFarData(..) method (mapper.c). That may impact performance quite a bit
  *      it's why it's disabled by default if you don't require bank switch.
  */
+#ifndef ENABLE_BANK_SWITCH
 #define ENABLE_BANK_SWITCH      0
+#endif
 
 /**
  *  \brief
@@ -156,7 +158,9 @@ extern "C"
  *  \brief
  *      Set it to 1 if you want to enable MegaWiFi functions and support code (written by Jesus Alonso - doragasu)
  */
+#ifndef MODULE_MEGAWIFI
 #define MODULE_MEGAWIFI         0
+#endif
 
 /**
  *  \brief
@@ -170,7 +174,7 @@ extern "C"
  *      Set it to 1 if you want to enable the TTY text console module (written by Andreas Dietrich).<br>
  *      It consume about 28 bytes of memory when enabled.
  */
-#define MODULE_CONSOLE          1
+#define MODULE_CONSOLE          0
 
 
 #if defined(__cplusplus)
