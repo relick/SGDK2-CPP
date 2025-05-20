@@ -44,11 +44,6 @@
 #ifndef _LSD_H_
 #define _LSD_H_
 
-#if defined(__cplusplus)
-extern "C"
-{
-#endif
-
 #include "config.h"
 #include "types.h"
 
@@ -60,6 +55,10 @@ extern "C"
 	#include "ext/mw/16c550.h"
 #endif
 #include "ext/mw/mw-msg.h"
+#if defined(__cplusplus)
+extern "C"
+{
+#endif
 
 /// LSD frame overhead in bytes
 #define LSD_OVERHEAD		4
@@ -193,4 +192,4 @@ void lsd_line_sync(void);
 } // extern "C"
 #endif
 
-#endif // _LSD_H_
+#endif //_LSD_H_

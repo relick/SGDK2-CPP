@@ -544,4 +544,4 @@ char *gj_request(const char **path, uint8_t num_paths, const char **key,
 } // extern "C"
 #endif
 
-#endif /*_GAMEJOLT_H_*/
+#endif /* _GAMEJOLT_H_ */

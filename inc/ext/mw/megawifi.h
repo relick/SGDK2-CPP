@@ -27,11 +27,6 @@
 #ifndef _MEGAWIFI_H_
 #define _MEGAWIFI_H_
 
-#if defined(__cplusplus)
-extern "C"
-{
-#endif
-
 #if (MODULE_EVERDRIVE == 1)
 	#include "ext/mw/ssf.h"
 #else
@@ -40,6 +35,11 @@ extern "C"
 #endif
 #include "ext/mw/mw-msg.h"
 #include "ext/mw/lsd.h"
+
+#if defined(__cplusplus)
+extern "C"
+{
+#endif
 
 /// API version implemented, major number
 #define MW_API_VERSION_MAJOR	1

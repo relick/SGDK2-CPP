@@ -24,7 +24,7 @@ extern "C"
 {
 #endif
 
-#if (ENABLE_NEWLIB == 0) || !defined(ENABLE_NEWLIB)
+#if (ENABLE_NEWLIB == 0)
 
 /**
  *  \brief
