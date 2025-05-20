@@ -10,12 +10,12 @@
 #ifndef _16C550_H_
 #define _16C550_H_
 
+#include "types.h"
+
 #if defined(__cplusplus)
 extern "C"
 {
 #endif
-
-#include "types.h"
 
 /// 16C550 UART base address
 #define UART_BASE		0xA130C1

@@ -24,12 +24,12 @@
 #ifndef _GAMEJOLT_H_
 #define _GAMEJOLT_H_
 
+#include "types.h"
+
 #if defined(__cplusplus)
 extern "C"
 {
 #endif
-
-#include "types.h"
 
 /// \brief Module error codes.
 ///
