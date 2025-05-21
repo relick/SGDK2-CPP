@@ -10,7 +10,7 @@ endfunction()
 
 function(md_target_z80_sources target header_scope) # ARGN: .s80 files
   SGDK_ext_interface(${target} z80_includes) # sets target_z80_includes
-  SGDK_ext_out_dir(${target} z80) # sets z80_out_dir
+  SGDK_ext_out_dir(${target} z80) # sets z80_out_dir and target_z80_out_dir
 
   set(target_includes "$<LIST:TRANSFORM,$<TARGET_PROPERTY:${target},INCLUDE_DIRECTORIES>,PREPEND,-i>")
   set(extra_target_includes "$<LIST:TRANSFORM,$<TARGET_PROPERTY:${target_z80_includes},INTERFACE_INCLUDE_DIRECTORIES>,PREPEND,-i>")
@@ -22,7 +22,7 @@ function(md_target_z80_sources target header_scope) # ARGN: .s80 files
     cmake_path(ABSOLUTE_PATH z80_source BASE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
     cmake_path(RELATIVE_PATH z80_source BASE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" OUTPUT_VARIABLE z80_relative_source)
     cmake_path(REMOVE_EXTENSION z80_relative_source OUTPUT_VARIABLE z80_relative_stem)
-    set(out_stem "${z80_out_dir}/${z80_relative_stem}")
+    set(out_stem "${target_z80_out_dir}/${z80_relative_stem}")
     set(m68k_asm "${out_stem}.s")
     set(c_header "${out_stem}.h")
     set(z80_bin "${out_stem}.o80")
@@ -58,7 +58,7 @@ endfunction()
 
 # Rules to build resources
 function(md_target_resources target header_scope) # ARGN: .res files
-  SGDK_ext_out_dir(${target} res) # sets res_out_dir
+  SGDK_ext_out_dir(${target} res) # sets res_out_dir and target_res_out_dir
 
   set(processed_src)
   set(processed_headers)
@@ -67,7 +67,7 @@ function(md_target_resources target header_scope) # ARGN: .res files
     cmake_path(ABSOLUTE_PATH res_source BASE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
     cmake_path(RELATIVE_PATH res_source BASE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" OUTPUT_VARIABLE res_relative_source)
     cmake_path(REMOVE_EXTENSION res_relative_source OUTPUT_VARIABLE res_relative_stem)
-    set(out_stem "${res_out_dir}/${res_relative_stem}")
+    set(out_stem "${target_res_out_dir}/${res_relative_stem}")
     set(m68k_asm "${out_stem}.s")
     set(c_header "${out_stem}.h")
     set(dep_file "${out_stem}.d")
