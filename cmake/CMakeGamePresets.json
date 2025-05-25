@@ -5,7 +5,7 @@
       "name": "base",
       "hidden": true,
       "binaryDir": "${sourceDir}/build/${presetName}",
-      "toolchainFile": "${fileDir}/SGDKToolchain.cmake",
+      "toolchainFile": "${fileDir}/Toolchain/SGDKToolchain.cmake",
       "generator": "Ninja",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "${presetName}"

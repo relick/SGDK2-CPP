@@ -211,9 +211,9 @@ public class Compiler
             headerName += "_" + FileUtil.getFileName(fileNameOut, false);
             headerName = headerName.toUpperCase();
 
-            outH.append("#include <genesis.h>\n\n");
             outH.append("#ifndef _" + headerName + "_H_\n");
             outH.append("#define _" + headerName + "_H_\n\n");
+            outH.append("#include <SGDK/genesis.h>\n\n");
 
             // -- BINARY SECTION --
 

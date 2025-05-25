@@ -7,16 +7,18 @@ set(SGDK_INSTALL_WIN_TOOLCHAIN FALSE CACHE BOOL "Copy the Windows gcc toolchain 
 # Project for SGDK
 project(md C CXX ASM)
 
-include(cmake/SGDKSupport_Sources.cmake)
+include(GNUInstallDirs)
+
+include(${SGDK_CMAKE_SUPPORT}/Sources.cmake)
 
 include(ExternalProject)
 if(NOT EXISTS "${BINTOS_BIN}" OR SGDK_BUILD_TOOLS)
   message(STATUS "Building bintos.")
   ExternalProject_Add(
     bintos
-    SOURCE_DIR ${SGDK}/tools/bintos/src
+    SOURCE_DIR ${SGDK_SOURCE_ROOT}/tools/bintos/src
     BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/bintos.dir/build
-    INSTALL_COMMAND install bintos ${SGDK}/bin
+    INSTALL_COMMAND install bintos ${SGDK_BIN}
     BUILD_ALWAYS TRUE
   )
 else()
@@ -29,9 +31,9 @@ if(NOT EXISTS "${XGMTOOL_BIN}" OR SGDK_BUILD_TOOLS)
   message(STATUS "Building xgmtool.")
   ExternalProject_Add(
     xgmtool
-    SOURCE_DIR ${SGDK}/tools/xgmtool/src
+    SOURCE_DIR ${SGDK_SOURCE_ROOT}/tools/xgmtool/src
     BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/xgmtool.dir/build
-    INSTALL_COMMAND install xgmtool ${SGDK}/bin
+    INSTALL_COMMAND install xgmtool ${SGDK_BIN}
     BUILD_ALWAYS TRUE
   )
 else()
@@ -46,8 +48,8 @@ if(NOT EXISTS "${SJASM_BIN}" OR SGDK_BUILD_TOOLS)
     sjasm
     CONFIGURE_COMMAND ""
     DOWNLOAD_COMMAND ""
-    BUILD_COMMAND make -C ${SGDK}/tools/sjasm/src
-    INSTALL_COMMAND install ${SGDK}/tools/sjasm/src/sjasm ${SGDK}/bin
+    BUILD_COMMAND make -C ${SGDK_SOURCE_ROOT}/tools/sjasm/src
+    INSTALL_COMMAND install ${SGDK_SOURCE_ROOT}/tools/sjasm/src/sjasm ${SGDK_BIN}
     BUILD_ALWAYS TRUE
   )
 else()
@@ -131,7 +133,12 @@ function(setup_md_library target language)
   target_include_directories(${target} SYSTEM
     INTERFACE
       $<BUILD_INTERFACE:inc>
-      $<INSTALL_INTERFACE:include>
+      $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+  )
+  # Add private include dirs simply for source files to not need the SGDK/ prefix
+  target_include_directories(${target} SYSTEM
+    PRIVATE
+      inc/SGDK
   )
   # Add includes for building and installing. Note BASE_DIRS will add inc as an include path
   target_sources(${target}
@@ -142,7 +149,7 @@ function(setup_md_library target language)
   # Extra includes for z80 assembly that don't pollute the main target
   md_target_z80_include_directories(${target}
     "${CMAKE_CURRENT_SOURCE_DIR}/src"
-    "${CMAKE_CURRENT_SOURCE_DIR}/inc/snd"
+    "${CMAKE_CURRENT_SOURCE_DIR}/inc/SGDK/snd"
   )
 
   ## Add sources
@@ -156,6 +163,9 @@ function(setup_md_library target language)
         src/cpp/cplusplus.cpp
       >
   )
+
+  # Set the header folder name used for includes to SGDK instead of the target name
+  set_target_properties(${target} PROPERTIES SGDK_GENERATED_PREFIX SGDK)
 
   # z80 files
   md_target_z80_sources(${target} PUBLIC ${SRC_LIB_S80})
@@ -173,38 +183,48 @@ add_SGDK_library(mdcpp)
 setup_md_library(mdcpp CXX)
 
 ## Installation
+set(SGDK_TOOLS_INSTALL_DIR ${CMAKE_INSTALL_LIBEXECDIR}/SGDK)
+set(SGDK_EXTRA_FILES_INSTALL_DIR ${CMAKE_INSTALL_DATADIR}/SGDK)
+set(SGDK_CMAKE_INSTALL_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/SGDK)
+set(SGDK_INSTALL_DIR "\${CMAKE_CURRENT_LIST_DIR}/../../../") # Used just for the configure file to go from SGDK_CMAKE_INSTALL_DIR to the install root
+
 # CMake files
+configure_file(cmake/SGDKFindSGDKPaths.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/SGDKFindSGDKPaths.cmake @ONLY)
+install(
+  FILES "${CMAKE_CURRENT_BINARY_DIR}/SGDKFindSGDKPaths.cmake"
+  DESTINATION ${SGDK_CMAKE_INSTALL_DIR}
+)
+
 install(
   DIRECTORY cmake/
-  DESTINATION cmake
+  DESTINATION ${SGDK_CMAKE_INSTALL_DIR}
   PATTERN "SGDKFindWindowsToolchain.cmake" EXCLUDE
   PATTERN "dev" EXCLUDE
+  PATTERN "*.in" EXCLUDE
 )
 
 # Boot files
 install(
   DIRECTORY boot/
-  DESTINATION boot
+  DESTINATION ${SGDK_EXTRA_FILES_INSTALL_DIR}/boot
 )
 
 # Linker script
 install(
   FILES ${SGDK_LINKER_SCRIPT}
-  DESTINATION .
+  DESTINATION ${SGDK_EXTRA_FILES_INSTALL_DIR}
 )
 
 # Tools
 install(
   DIRECTORY bin/
-  DESTINATION bin
+  DESTINATION ${SGDK_TOOLS_INSTALL_DIR}
 )
 
 # Targets
 install(
   TARGETS ${SGDK_install_list}
   EXPORT SGDKTargets
-  ARCHIVE DESTINATION lib
-  PUBLIC_HEADER DESTINATION include
   FILE_SET HEADERS
   FILE_SET z80_headers
   FILE_SET res_headers
@@ -213,30 +233,27 @@ install(
   EXPORT SGDKTargets
   FILE SGDKTargets.cmake
   NAMESPACE SGDK::
-  DESTINATION cmake
+  DESTINATION ${SGDK_CMAKE_INSTALL_DIR}
 )
 
 if(CMAKE_HOST_WIN32)
-  # Install the toolchain if requested, but either way make an include that will find it later
+  # Install the toolchain if requested, and set the path to be configured into the toolchain finder
   if(SGDK_INSTALL_WIN_TOOLCHAIN)
     install(
       DIRECTORY ${SGDK_WIN32_TOOLCHAIN_RELATIVE}/
       DESTINATION ${SGDK_WIN32_TOOLCHAIN_RELATIVE}
     )
-    install(
-      FILES cmake/SGDKFindWindowsToolchain.cmake
-      DESTINATION cmake
-    )
+    set(SGDK_PATH_TO_WIN32_TOOLCHAIN "\${SGDK_INSTALL_ROOT}/${SGDK_WIN32_TOOLCHAIN_RELATIVE}")
   else()
-    file(
-      WRITE "${CMAKE_CURRENT_BINARY_DIR}/SGDKFindWindowsToolchain.cmake"
-      "set(SGDK_WIN32_TOOLCHAIN \"${CMAKE_CURRENT_SOURCE_DIR}/${SGDK_WIN32_TOOLCHAIN_RELATIVE}\")"
-    )
-    install(
-      FILES "${CMAKE_CURRENT_BINARY_DIR}/SGDKFindWindowsToolchain.cmake"
-      DESTINATION cmake
-    )
+    set(SGDK_PATH_TO_WIN32_TOOLCHAIN ${CMAKE_CURRENT_SOURCE_DIR}/${SGDK_WIN32_TOOLCHAIN_RELATIVE})
   endif()
+
+  # Configure and install the CMake for finding the toolchain later
+  configure_file(cmake/SGDKFindWindowsToolchain.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/SGDKFindWindowsToolchain.cmake @ONLY)
+  install(
+    FILES "${CMAKE_CURRENT_BINARY_DIR}/SGDKFindWindowsToolchain.cmake"
+    DESTINATION ${SGDK_CMAKE_INSTALL_DIR}
+  )
 endif()
 
 # find_package support
@@ -249,11 +266,11 @@ write_basic_package_version_file(
 configure_package_config_file(
   "${CMAKE_CURRENT_SOURCE_DIR}/cmake/SGDKConfig.cmake.in"
   "${CMAKE_CURRENT_BINARY_DIR}/SGDKConfig.cmake"
-  INSTALL_DESTINATION cmake
+  INSTALL_DESTINATION ${SGDK_CMAKE_INSTALL_DIR}
 )
 install(
   FILES
     "${CMAKE_CURRENT_BINARY_DIR}/SGDKConfig.cmake"
     "${CMAKE_CURRENT_BINARY_DIR}/SGDKConfigVersion.cmake"
-  DESTINATION cmake
+  DESTINATION ${SGDK_CMAKE_INSTALL_DIR}
 )

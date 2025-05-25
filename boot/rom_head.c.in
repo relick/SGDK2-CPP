@@ -1,4 +1,4 @@
-#include <genesis.h>
+#include <SGDK/genesis.h>
 
 #define ENABLE_BANK_SWITCH @enable_bank_switch@
 #define MODULE_MEGAWIFI @enable_mega_wifi@

@@ -6,7 +6,7 @@
       "description": "Configure SGDK",
       "generator": "Ninja Multi-Config",
       "binaryDir": "${sourceDir}/build",
-      "toolchainFile": "${sourceDir}/cmake/SGDKToolchain.cmake",
+      "toolchainFile": "${sourceDir}/cmake/Toolchain/SGDKToolchain.cmake",
       "cacheVariables": {
         "CMAKE_INSTALL_PREFIX": "${sourceDir}/install"
       }

@@ -1,10 +1,5 @@
 @PACKAGE_INIT@
 
-include("${CMAKE_CURRENT_LIST_DIR}/SGDKTargets.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/SGDKSupport_RomTargets.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/SGDKSupport_RomProperties.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/SGDKSupport_Sources.cmake")
-
 # Add imported executables for the custom commands, as we know these are installed when using the package
 add_executable(bintos IMPORTED)
 set_target_properties(bintos PROPERTIES IMPORTED_LOCATION ${BINTOS_BIN})
@@ -12,3 +7,8 @@ add_executable(xgmtool IMPORTED)
 set_target_properties(xgmtool PROPERTIES IMPORTED_LOCATION ${XGMTOOL_BIN})
 add_executable(sjasm IMPORTED)
 set_target_properties(sjasm PROPERTIES IMPORTED_LOCATION ${SJASM_BIN})
+
+include("${CMAKE_CURRENT_LIST_DIR}/SGDKTargets.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/Support/RomTargets.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/Support/RomProperties.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/Support/Sources.cmake")
