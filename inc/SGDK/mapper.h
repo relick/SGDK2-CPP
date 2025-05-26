@@ -40,8 +40,8 @@ extern "C"
 #endif
 
 
-#include "config.h"
-#include "types.h"
+#include "SGDK/config.h"
+#include "SGDK/types.h"
 
 
 #define MAPPER_BASE     0xA130F1

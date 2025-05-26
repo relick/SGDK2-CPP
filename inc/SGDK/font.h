@@ -17,10 +17,10 @@ extern "C"
 
 
 // contains definition of the base font
-#include "vdp.h"
-#include "bmp.h"
-#include "vdp_tile.h"
-#include "res/libres.h"
+#include "SGDK/vdp.h"
+#include "SGDK/bmp.h"
+#include "SGDK/vdp_tile.h"
+#include "SGDK/res/libres.h"
 
 
 #if defined(__cplusplus)

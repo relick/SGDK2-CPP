@@ -7,8 +7,8 @@
  * This unit provides methods to use the hardware DMA capabilities.
  */
 
-#include "config.h"
-#include "types.h"
+#include "SGDK/config.h"
+#include "SGDK/types.h"
 
 #ifndef _DMA_H_
 #define _DMA_H_

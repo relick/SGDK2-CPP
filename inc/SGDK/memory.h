@@ -26,7 +26,7 @@ extern "C"
 #endif
 
 // asics memory address definitions
-#include "memory_base.h"
+#include "SGDK/memory_base.h"
 
 /**
  *  \brief

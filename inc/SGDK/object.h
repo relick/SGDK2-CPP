@@ -29,7 +29,7 @@ extern "C"
 {
 #endif
 
-#include "pool.h"
+#include "SGDK/pool.h"
 
 
 /**

@@ -9,9 +9,9 @@
  * Color is defined with 3 bits for each component : xxxxBBBxGGGxRRRx
  */
 
-#include "config.h"
-#include "types.h"
-#include "dma.h"
+#include "SGDK/config.h"
+#include "SGDK/types.h"
+#include "SGDK/dma.h"
 
 #ifndef _PAL_H_
 #define _PAL_H_

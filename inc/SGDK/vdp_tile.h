@@ -19,8 +19,8 @@ extern "C"
 #endif
 
 
-#include "vdp.h"
-#include "dma.h"
+#include "SGDK/vdp.h"
+#include "SGDK/dma.h"
 
 
 /**

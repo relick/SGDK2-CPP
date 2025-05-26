@@ -135,7 +135,7 @@ function(setup_md_library target language)
       $<BUILD_INTERFACE:inc>
       $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
   )
-  # Add private include dirs simply for source files to not need the SGDK/ prefix
+  # Add private include dirs for source files to not need the SGDK/ prefix
   target_include_directories(${target} SYSTEM
     PRIVATE
       inc/SGDK

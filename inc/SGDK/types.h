@@ -15,7 +15,7 @@ extern "C"
 {
 #endif
 
-#include "config.h"
+#include "SGDK/config.h"
 
 /**
  *  \brief

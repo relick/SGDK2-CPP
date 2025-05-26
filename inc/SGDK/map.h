@@ -32,9 +32,9 @@ extern "C"
 #endif
 
 
-#include "vdp.h"
-#include "vdp_tile.h"
-#include "pal.h"
+#include "SGDK/vdp.h"
+#include "SGDK/vdp_tile.h"
+#include "SGDK/pal.h"
 
 // forward
 typedef struct Map Map;

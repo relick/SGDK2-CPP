@@ -19,9 +19,9 @@
  * and 25 time per second in PAL.
  */
 
-#include "maths.h"
-#include "vdp.h"
-#include "pal.h"
+#include "SGDK/maths.h"
+#include "SGDK/vdp.h"
+#include "SGDK/pal.h"
 
 #ifndef _BMP_H_
 #define _BMP_H_

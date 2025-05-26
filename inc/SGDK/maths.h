@@ -16,7 +16,7 @@ extern "C"
 {
 #endif
 
-#include "types.h"
+#include "SGDK/types.h"
 
 
 // 1° step is enough for FIX16

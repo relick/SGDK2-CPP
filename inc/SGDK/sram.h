@@ -30,7 +30,7 @@ extern "C"
 #endif
 
 
-#include "mapper.h"
+#include "SGDK/mapper.h"
 
 
 #define SRAM_CONTROL    MAPPER_BASE

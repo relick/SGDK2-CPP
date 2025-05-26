@@ -19,10 +19,10 @@ extern "C"
 {
 #endif
 
-#include "vdp_tile.h"
-#include "vdp_spr.h"
-#include "pal.h"
-#include "pool.h"
+#include "SGDK/vdp_tile.h"
+#include "SGDK/vdp_spr.h"
+#include "SGDK/pal.h"
+#include "SGDK/pool.h"
 
 
 /**

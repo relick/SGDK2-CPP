@@ -8,9 +8,9 @@
  * The Sega Genesis VDP can handle up to 80 simultanous sprites of 4x4 tiles (32x32 pixels).
  */
 
-#include "config.h"
-#include "types.h"
-#include "dma.h"
+#include "SGDK/config.h"
+#include "SGDK/types.h"
+#include "SGDK/dma.h"
 
 #ifndef _VDP_SPR_H_
 #define _VDP_SPR_H_

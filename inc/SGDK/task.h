@@ -27,7 +27,7 @@ extern "C"
 {
 #endif
 
-#include "task_cst.h"
+#include "SGDK/task_cst.h"
 
 
 /**

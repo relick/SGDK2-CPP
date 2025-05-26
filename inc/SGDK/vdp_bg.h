@@ -18,9 +18,9 @@ extern "C"
 {
 #endif
 
-#include "bmp.h"
-#include "vdp.h"
-#include "vdp_tile.h"
+#include "SGDK/bmp.h"
+#include "SGDK/vdp.h"
+#include "SGDK/vdp_tile.h"
 
 
 /**
