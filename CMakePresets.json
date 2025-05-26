@@ -8,7 +8,13 @@
       "binaryDir": "${sourceDir}/build",
       "toolchainFile": "${sourceDir}/cmake/Toolchain/SGDKToolchain.cmake",
       "cacheVariables": {
-        "CMAKE_INSTALL_PREFIX": "${sourceDir}/install"
+        "CMAKE_INSTALL_PREFIX": "${sourceDir}/install",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+      },
+      "vendor":{
+        "microsoft.com/VisualStudioSettings/CMake/1.0": {
+          "intelliSenseMode": "linux-gcc-x64"
+        }
       }
     }
   ],

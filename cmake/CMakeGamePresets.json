@@ -8,7 +8,13 @@
       "toolchainFile": "${fileDir}/Toolchain/SGDKToolchain.cmake",
       "generator": "Ninja",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "${presetName}"
+        "CMAKE_BUILD_TYPE": "${presetName}",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+      },
+      "vendor":{
+        "microsoft.com/VisualStudioSettings/CMake/1.0": {
+          "intelliSenseMode": "linux-gcc-x64"
+        }
       }
     },
     {

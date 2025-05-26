@@ -18,8 +18,8 @@ endif()
 message(STATUS "Using SGDK toolchain at '${CMAKE_TOOLCHAIN_FILE}', compiling with ${SGDK_TOOLCHAIN_NAME}.")
 
 ## CMake toolchain setup
-set(CMAKE_SYSTEM_NAME Generic)
-set(CMAKE_SYSTEM_PROCESSOR m68000)
+set(CMAKE_SYSTEM_NAME Generic CACHE STRING "No OS is used" FORCE)
+set(CMAKE_SYSTEM_PROCESSOR M68000 CACHE STRING "Main compile target is the m68k" FORCE)
 
 set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Build type - default is Release")
 set(CMAKE_CONFIGURATION_TYPES "Debug;RelWithDebInfo;Release" CACHE STRING "Valid configurations are Debug, RelWithDebInfo, and Release" FORCE)
@@ -61,7 +61,7 @@ if(CMAKE_HOST_WIN32)
   endif()
 
   # Specify this root to CMake
-  set(CMAKE_SYSROOT ${SGDK_WIN32_TOOLCHAIN}/)
+  set(CMAKE_SYSROOT ${SGDK_WIN32_TOOLCHAIN}/ CACHE FILEPATH "" FORCE)
   
   # Initialise both win32 toolchains
   sgdk_toolchain_gnu_win32_init()
@@ -156,13 +156,13 @@ set(CMAKE_C_FLAGS_INIT "${SGDK_COMMON_FLAGS} ${SGDK_COMMON_C_CXX_FLAGS}")
 set(CMAKE_C_FLAGS_DEBUG "" CACHE STRING "Flags used by the C compiler during DEBUG builds." FORCE)
 set(CMAKE_C_FLAGS_RELWITHDEBINFO "" CACHE STRING "Flags used by the C compiler during RELWITHDEBINFO builds." FORCE)
 set(CMAKE_C_FLAGS_RELEASE "" CACHE STRING "Flags used by the C compiler during RELEASE builds." FORCE)
-set(CMAKE_C_STANDARD 23)
+set(CMAKE_C_STANDARD 23 CACHE STRING "C Standard must be at least 23")
 
 set(CMAKE_CXX_FLAGS_INIT "${SGDK_COMMON_FLAGS} ${SGDK_COMMON_C_CXX_FLAGS} ${SGDK_COMMON_CXX_FLAGS}")
 set(CMAKE_CXX_FLAGS_DEBUG "" CACHE STRING "Flags used by the CXX compiler during DEBUG builds." FORCE)
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "" CACHE STRING "Flags used by the CXX compiler during RELWITHDEBINFO builds." FORCE)
 set(CMAKE_CXX_FLAGS_RELEASE "" CACHE STRING "Flags used by the CXX compiler during RELEASE builds." FORCE)
-set(CMAKE_CXX_STANDARD 26)
+set(CMAKE_CXX_STANDARD 23 CACHE STRING "C++ standard must be at least 23")
 
 set(CMAKE_ASM_FLAGS_INIT "${SGDK_COMMON_FLAGS} ${SGDK_COMMON_ASM_FLAGS}")
 set(CMAKE_ASM_FLAGS_DEBUG "" CACHE STRING "Flags used by the ASM compiler during DEBUG builds." FORCE)
