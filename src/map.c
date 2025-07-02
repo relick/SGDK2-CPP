@@ -19,10 +19,6 @@
 #define ROW_AHEAD       (15 + 1)
 
 
-// we don't want to share it
-extern vu16 VBlankProcess;
-
-
 // forward
 static void updateMap(Map *map, s16 xt, s16 yt);
 static void setMapColumn(Map *map, u16 column, u16 x, u16 y);
@@ -210,7 +206,7 @@ void MAP_release(Map* map)
 }
 
 
-void NO_INLINE MAP_scrollToEx(Map* map, u32 x, u32 y, bool forceRedraw)
+NO_INLINE void MAP_scrollToEx(Map* map, u32 x, u32 y, bool forceRedraw)
 {
     bool redraw = forceRedraw || map->firstUpdate;
 
@@ -693,7 +689,7 @@ static void prepareMapDataColumn_MTI16_BI8(Map *map, u16 *bufCol1, u16 *bufCol2,
     while(h--)
     {
         // get metatile index
-        u16 metaTileInd = *block & TILE_INDEX_MASK;
+        u16 metaTileInd = *block;
         // next row
         block += 8;
 
@@ -754,7 +750,7 @@ static void prepareMapDataColumn_MTI16_BI16(Map *map, u16 *bufCol1, u16 *bufCol2
     while(h--)
     {
         // get metatile index
-        u16 metaTileInd = *block & TILE_INDEX_MASK;
+        u16 metaTileInd = *block;
         // next row
         block += 8;
 
@@ -946,7 +942,7 @@ static void prepareMapDataColumnEx_MTI16_BI8(Map *map, u16 *bufCol1, u16 *bufCol
     while(h--)
     {
         // get metatile index
-        u16 metaTileInd = *block & TILE_INDEX_MASK;
+        u16 metaTileInd = *block;
         // next row
         block += 8;
 
@@ -1010,7 +1006,7 @@ static void prepareMapDataColumnEx_MTI16_BI16(Map *map, u16 *bufCol1, u16 *bufCo
     while(h--)
     {
         // get metatile index
-        u16 metaTileInd = *block & TILE_INDEX_MASK;
+        u16 metaTileInd = *block;
         // next row
         block += 8;
 
@@ -1181,7 +1177,7 @@ static void prepareMapDataRow_MTI16_BI8(Map* map, u16 *bufRow1, u16 *bufRow2, u1
     while(w--)
     {
         // metatile index; next col
-        u16 metaTileInd = *block++ & TILE_INDEX_MASK;
+        u16 metaTileInd = *block++;
         // get metatile pointeur
         u16* metaTile = &map->metaTiles[2 * 2 * metaTileInd];
 
@@ -1237,7 +1233,7 @@ static void prepareMapDataRow_MTI16_BI16(Map* map, u16 *bufRow1, u16 *bufRow2, u
     while(w--)
     {
         // metatile index; next col
-        u16 metaTileInd = *block++ & TILE_INDEX_MASK;
+        u16 metaTileInd = *block++;
         // get metatile pointeur
         u16* metaTile = &map->metaTiles[2 * 2 * metaTileInd];
 
@@ -1414,7 +1410,7 @@ static void prepareMapDataRowEx_MTI16_BI8(Map* map, u16 *bufRow1, u16 *bufRow2, 
     while(w--)
     {
         // metatile index; next col
-        u16 metaTileInd = *block++ & TILE_INDEX_MASK;
+        u16 metaTileInd = *block++;
         // get metatile pointeur
         u16* metaTile = &map->metaTiles[2 * 2 * metaTileInd];
 
@@ -1473,7 +1469,7 @@ static void prepareMapDataRowEx_MTI16_BI16(Map* map, u16 *bufRow1, u16 *bufRow2,
     while(w--)
     {
         // metatile index; next col
-        u16 metaTileInd = *block++ & TILE_INDEX_MASK;
+        u16 metaTileInd = *block++;
         // get metatile pointeur
         u16* metaTile = &map->metaTiles[2 * 2 * metaTileInd];
 
@@ -1507,7 +1503,7 @@ u16 MAP_getMetaTile(Map* map, u16 x, u16 y)
 
 u16 MAP_getTile(Map* map, u16 x, u16 y)
 {
-    u16 metaTileInd = map->getMetaTileCB(map, x / 2, y / 2) & TILE_INDEX_MASK;
+    u16 metaTileInd = map->getMetaTileCB(map, x / 2, y / 2);
     u16* metaTile = &map->metaTiles[2 * 2 * metaTileInd];
     return metaTile[((y & 1) * 2) + (x & 1)];
 }

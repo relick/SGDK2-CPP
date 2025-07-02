@@ -12,15 +12,19 @@
 #include "sys.h"
 
 
-// we don't want to share it
+// we don't want to share them
+extern s16 currentDriver;
 extern void Z80_loadDriverInternal(const u8 *drv, u16 size);
 
 // Z80_DRIVER_PCM
 // single channel 8 bits signed sample driver
 ///////////////////////////////////////////////////////////////
 
-void NO_INLINE SND_PCM_loadDriver(const bool waitReady)
+NO_INLINE void SND_PCM_loadDriver(const bool waitReady)
 {
+    // already loaded
+    if (currentDriver == Z80_DRIVER_PCM) return;
+
     Z80_loadDriverInternal(drv_pcm, sizeof(drv_pcm));
 
     SYS_disableInts();
@@ -47,20 +51,23 @@ void NO_INLINE SND_PCM_loadDriver(const bool waitReady)
     }
 
     SYS_enableInts();
+
+    // driver loaded
+    currentDriver = Z80_DRIVER_PCM;
 }
 
-void NO_INLINE SND_PCM_unloadDriver(void)
+NO_INLINE void SND_PCM_unloadDriver(void)
 {
     // nothing to do here
 }
 
-bool NO_INLINE SND_PCM_isPlaying(void)
+NO_INLINE bool SND_PCM_isPlaying(void)
 {
     vu8 *pb;
     u8 ret;
 
     // load the appropriate driver if not already done
-    Z80_loadDriver(Z80_DRIVER_PCM, TRUE);
+    SND_PCM_loadDriver(TRUE);
 
     Z80_requestBus(TRUE);
 
@@ -74,13 +81,13 @@ bool NO_INLINE SND_PCM_isPlaying(void)
     return ret;
 }
 
-void NO_INLINE SND_PCM_startPlay(const u8 *sample, const u32 len, const SoundPcmSampleRate rate, const SoundPanning pan, const bool loop)
+NO_INLINE void SND_PCM_startPlay(const u8 *sample, const u32 len, const SoundPcmSampleRate rate, const SoundPanning pan, const bool loop)
 {
     vu8 *pb;
     u32 addr;
 
     // load the appropriate driver if not already done
-    Z80_loadDriver(Z80_DRIVER_PCM, TRUE);
+    SND_PCM_loadDriver(TRUE);
 
     Z80_requestBus(TRUE);
 
@@ -114,13 +121,13 @@ void NO_INLINE SND_PCM_startPlay(const u8 *sample, const u32 len, const SoundPcm
     Z80_releaseBus();
 }
 
-void NO_INLINE SND_PCM_stopPlay(void)
+NO_INLINE void SND_PCM_stopPlay(void)
 {
     vu8 *pb;
     u32 addr;
 
     // load the appropriate driver if not already done
-    Z80_loadDriver(Z80_DRIVER_PCM, TRUE);
+    SND_PCM_loadDriver(TRUE);
 
     Z80_requestBus(TRUE);
 

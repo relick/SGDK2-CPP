@@ -13,15 +13,19 @@
 #include "sys.h"
 
 
-// we don't want to share it
+// we don't want to share them
+extern s16 currentDriver;
 extern void Z80_loadDriverInternal(const u8 *drv, u16 size);
 
 // Z80_DRIVER_DPCM2
 // 2 channels 4 bits DPCM sample driver
 ///////////////////////////////////////////////////////////////
 
-void NO_INLINE SND_DPCM2_loadDriver(const bool waitReady)
+NO_INLINE void SND_DPCM2_loadDriver(const bool waitReady)
 {
+    // already loaded
+    if (currentDriver == Z80_DRIVER_DPCM2) return;
+
     Z80_loadDriverInternal(drv_dpcm2, sizeof(drv_dpcm2));
 
     SYS_disableInts();
@@ -48,21 +52,24 @@ void NO_INLINE SND_DPCM2_loadDriver(const bool waitReady)
     }
 
     SYS_enableInts();
+
+    // driver loaded
+    currentDriver = Z80_DRIVER_DPCM2;
 }
 
-void NO_INLINE SND_DPCM2_unloadDriver(void)
+NO_INLINE void SND_DPCM2_unloadDriver(void)
 {
     // nothing to do here
 }
 
 
-bool NO_INLINE SND_DPCM2_isPlaying(const u16 channel_mask)
+NO_INLINE bool SND_DPCM2_isPlaying(const u16 channel_mask)
 {
     vu8 *pb;
     u8 ret;
 
     // load the appropriate driver if not already done
-    Z80_loadDriver(Z80_DRIVER_DPCM2, TRUE);
+    SND_DPCM2_loadDriver(TRUE);
 
     Z80_requestBus(TRUE);
 
@@ -76,7 +83,7 @@ bool NO_INLINE SND_DPCM2_isPlaying(const u16 channel_mask)
     return ret;
 }
 
-void NO_INLINE SND_DPCM2_startPlay(const u8 *sample, const u32 len, const SoundPCMChannel channel, const bool loop)
+NO_INLINE void SND_DPCM2_startPlay(const u8 *sample, const u32 len, const SoundPCMChannel channel, const bool loop)
 {
     vu8 *pb;
     u8 status;
@@ -84,7 +91,7 @@ void NO_INLINE SND_DPCM2_startPlay(const u8 *sample, const u32 len, const SoundP
     u32 addr;
 
     // load the appropriate driver if not already done
-    Z80_loadDriver(Z80_DRIVER_DPCM2, TRUE);
+    SND_DPCM2_loadDriver(TRUE);
 
     Z80_requestBus(TRUE);
 
@@ -133,13 +140,13 @@ void NO_INLINE SND_DPCM2_startPlay(const u8 *sample, const u32 len, const SoundP
     Z80_releaseBus();
 }
 
-void NO_INLINE SND_DPCM2_stopPlay(const SoundPCMChannel channel)
+NO_INLINE void SND_DPCM2_stopPlay(const SoundPCMChannel channel)
 {
     vu8 *pb;
     u32 addr;
 
     // load the appropriate driver if not already done
-    Z80_loadDriver(Z80_DRIVER_DPCM2, TRUE);
+    SND_DPCM2_loadDriver(TRUE);
 
     Z80_requestBus(TRUE);
 

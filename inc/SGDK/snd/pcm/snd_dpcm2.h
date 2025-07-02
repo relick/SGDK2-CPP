@@ -28,17 +28,8 @@ extern "C"
 /**
  *  \brief
  *      Load the Z80_DRIVER_DPCM2 sound driver.
- *
- *      Don't use this method directly, use #Z80_loadDriver(..) instead.
  */
 void SND_DPCM2_loadDriver(const bool waitReady);
-/**
- *  \brief
- *      Unload the Z80_DRIVER_DPCM2 sound driver.
- *
- *      Don't use this method directly, use #Z80_unloadDriver(..) instead.
- */
-void SND_DPCM2_unloadDriver(void);
 
 /**
  *  \brief
