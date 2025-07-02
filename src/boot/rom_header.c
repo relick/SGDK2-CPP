@@ -29,5 +29,6 @@ const ROMHeader rom_header = {
     0x0020FFFF,
     "            ",
     "DEMONSTRATION PROGRAM                   ",
-    "JUE             "
+    "JUE",
+    "             "
 };

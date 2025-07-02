@@ -180,6 +180,7 @@ Asm: asm
 clean: clean-all
 
 release: $(OUT_DIR)/rom.bin $(OUT_DIR)/symbol.txt
+release: injectSymbolsInROM
 release: padROM
 
 debug: $(OUT_DIR)/rom.bin $(OUT_DIR)/symbol.txt
