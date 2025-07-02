@@ -806,6 +806,24 @@ void F16_computePositionEx(fix16 *x2, fix16 *y2, fix16 x1, fix16 y1, fix16 ang, 
 
 
 // Deprecated functions
+#if ALLOW_DEPRECATED_F16
+#define intToFix16(...)        FIX16(__VA_ARGS__)
+#define fix16ToInt(...)        F16_toInt(__VA_ARGS__)
+#define fix16ToFix32(...)      F16_toFix32(__VA_ARGS__)
+#define fix16Frac(...)         F16_frac(__VA_ARGS__)
+#define fix16Int(...)          F16_int(__VA_ARGS__)
+#define fix16Round(...)        F16_round(__VA_ARGS__)
+#define fix16ToRoundedInt(...) F16_toRoundedInt(__VA_ARGS__)
+#define fix16Add(a, b)         ((f16)(a + b))
+#define fix16Sub(a, b)         ((f16)(a - b))
+#define fix16Neg(a)            ((f16)(0 - a))
+#define fix16Mul(...)          F16_mul(__VA_ARGS__)
+#define fix16Div(...)          F16_div(__VA_ARGS__)
+#define fix16Avg(...)          F16_avg(__VA_ARGS__)
+#define fix16Log2(...)         F16_log2(__VA_ARGS__)
+#define fix16Log10(...)        F16_log10(__VA_ARGS__)
+#define fix16Sqrt(...)         F16_sqrt(__VA_ARGS__)
+#else
 #define intToFix16(a)           _Pragma("GCC error \"This method is deprecated, use FIX16(..) instead.\"")
 #define fix16ToInt(a)           _Pragma("GCC error \"This method is deprecated, use F16_toInt(..) instead.\"")
 #define fix16ToFix32(a)         _Pragma("GCC error \"This method is deprecated, use F16_toFix32(..) instead.\"")
@@ -822,6 +840,7 @@ void F16_computePositionEx(fix16 *x2, fix16 *y2, fix16 x1, fix16 y1, fix16 ang, 
 #define fix16Log2(a)            _Pragma("GCC error \"This method is deprecated, use F16_log2(..) instead.\"")
 #define fix16Log10(a)           _Pragma("GCC error \"This method is deprecated, use F16_log10(..) instead.\"")
 #define fix16Sqrt(a)            _Pragma("GCC error \"This method is deprecated, use F16_sqrt(..) instead.\"")
+#endif
 
 
 ///////////////////////////////////////////////

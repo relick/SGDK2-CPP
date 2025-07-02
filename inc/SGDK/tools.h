@@ -75,6 +75,10 @@ void setRandomSeed(u16 seed);
  */
 u16 U16_rand(void);
 
+#if UPSTREAM_COMPATIBILITY
+#define random() U16_rand()
+#endif
+
 
 /**
  *  \brief

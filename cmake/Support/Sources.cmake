@@ -58,6 +58,10 @@ function(md_target_z80_sources target header_scope) # ARGN: .s80 files
   # TODO: remove this?
   target_include_directories(${target} PRIVATE ${target_z80_out_dir})
 
+  # Upstream projects don't require res/ prefix either
+  if(SGDK_UPSTREAM_COMPATIBILITY)
+    target_include_directories(${target} PRIVATE ${target_z80_out_dir}/res)
+  endif()
 endfunction()
 
 # Rules to build resources
@@ -105,4 +109,8 @@ function(md_target_resources target header_scope) # ARGN: .res files
   # TODO: remove this?
   target_include_directories(${target} PRIVATE ${target_res_out_dir})
 
+  # Upstream projects don't require res/ prefix either
+  if(SGDK_UPSTREAM_COMPATIBILITY)
+    target_include_directories(${target} PRIVATE ${target_res_out_dir}/res)
+  endif()
 endfunction()

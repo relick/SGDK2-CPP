@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 4.0)
 set(SGDK_BUILD_TOOLS FALSE CACHE BOOL "Build (*some) SGDK tools (note: requires ability to build 32-bit target, from an environment with make available)")
 set(SGDK_ENABLE_NEWLIB FALSE CACHE BOOL "Use newlib with SGDK. Affects C only, as C++ always uses newlib.")
 set(SGDK_INSTALL_WIN_TOOLCHAIN FALSE CACHE BOOL "Copy the Windows gcc toolchain to the SGDK install, allowing the install to exist fully independently of the source.")
+option(SGDK_UPSTREAM_COMPATIBILITY "Allow compilation of projects that build with upstream SGDK by relaxing some SGDK2-CPP restrictions." OFF)
+option(SGDK_DEPRECATED_F16_COMPATIBILITY "Allow compilation of projects that use the old-style f16 functions." OFF)
 
 # Project for SGDK
 project(md C CXX ASM)
@@ -127,6 +129,8 @@ function(setup_md_library target language)
     PUBLIC
       SGDK_GCC
       ENABLE_NEWLIB=${enable_newlib}
+      UPSTREAM_COMPATIBILITY=$<BOOL:${SGDK_UPSTREAM_COMPATIBILITY}>
+      ALLOW_DEPRECATED_F16=$<BOOL:${SGDK_DEPRECATED_F16_COMPATIBILITY}>
   )
 
   # Add include dirs for interface, marking them as system includes
@@ -135,6 +139,13 @@ function(setup_md_library target language)
       $<BUILD_INTERFACE:inc>
       $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
   )
+  # Upstream projects don't require SGDK/ prefix
+  if(SGDK_UPSTREAM_COMPATIBILITY)
+    target_include_directories(${target} SYSTEM
+      INTERFACE
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>/SGDK
+    )
+  endif()
   # Add private include dirs for source files to not need the SGDK/ prefix
   target_include_directories(${target} SYSTEM
     PRIVATE

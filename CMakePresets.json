@@ -16,6 +16,24 @@
           "intelliSenseMode": "linux-gcc-x64"
         }
       }
+    },
+    {
+      "name": "sgdk_multiconfig_compat",
+      "description": "Configure SGDK with upstream/deprecated compatibility",
+      "generator": "Ninja Multi-Config",
+      "binaryDir": "${sourceDir}/build",
+      "toolchainFile": "${sourceDir}/cmake/Toolchain/SGDKToolchain.cmake",
+      "cacheVariables": {
+        "CMAKE_INSTALL_PREFIX": "${sourceDir}/install",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "SGDK_UPSTREAM_COMPATIBILITY": "ON",
+        "SGDK_DEPRECATED_F16_COMPATIBILITY": "ON"
+      },
+      "vendor":{
+        "microsoft.com/VisualStudioSettings/CMake/1.0": {
+          "intelliSenseMode": "linux-gcc-x64"
+        }
+      }
     }
   ],
   "buildPresets": [
@@ -40,6 +58,28 @@
       "name": "install_release_sgdk",
       "inherits": ["install_sgdk_base"],
       "configuration": "Release"
+    },
+    {
+      "name": "install_sgdk_compat_base",
+      "hidden": true,
+      "configurePreset": "sgdk_multiconfig_compat",
+      "jobs": 4,
+      "targets": ["install"]
+    },
+    {
+      "name": "install_debug_sgdk_compat",
+      "inherits": ["install_sgdk_compat_base"],
+      "configuration": "Debug"
+    },
+    {
+      "name": "install_relwithdebinfo_sgdk_compat",
+      "inherits": ["install_sgdk_compat_base"],
+      "configuration": "RelWithDebInfo"
+    },
+    {
+      "name": "install_release_sgdk_compat",
+      "inherits": ["install_sgdk_compat_base"],
+      "configuration": "Release"
     }
   ],
   "workflowPresets": [
@@ -51,6 +91,16 @@
         { "type": "build", "name": "install_debug_sgdk" },
         { "type": "build", "name": "install_relwithdebinfo_sgdk" },
         { "type": "build", "name": "install_release_sgdk" }
+      ]
+    },
+    {
+      "name": "install_sgdk_compat",
+      "description": "Configure and build SGDK with upstream/deprecation compatibility",
+      "steps": [
+        { "type": "configure", "name": "sgdk_multiconfig_compat" },
+        { "type": "build", "name": "install_debug_sgdk_compat" },
+        { "type": "build", "name": "install_relwithdebinfo_sgdk_compat" },
+        { "type": "build", "name": "install_release_sgdk_compat" }
       ]
     }
   ]

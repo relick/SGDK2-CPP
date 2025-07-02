@@ -1,5 +1,8 @@
 @PACKAGE_INIT@
 
+set(SGDK_UPSTREAM_COMPATIBILITY @SGDK_UPSTREAM_COMPATIBILITY@)
+set(SGDK_DEPRECATED_F16_COMPATIBILITY @SGDK_DEPRECATED_F16_COMPATIBILITY@)
+
 # Add imported executables for the custom commands, as we know these are installed when using the package
 add_executable(bintos IMPORTED)
 set_target_properties(bintos PROPERTIES IMPORTED_LOCATION ${BINTOS_BIN})

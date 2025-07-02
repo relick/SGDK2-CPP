@@ -68,7 +68,11 @@ extern bool XGM2_doVBlankFadeProcess(void);
 extern void MEM_init();
 
 // main function
+#if !UPSTREAM_COMPATIBILITY
 extern int sgdk_main(bool hardReset);
+#else
+extern NEVER_RETURNS sgdk_main(bool hardReset);
+#endif
 
 // forward
 static void internal_reset();
