@@ -16,7 +16,7 @@ The following must be installed and available on your PATH:
 If not on Windows, then a gcc cross-compiler toolchain for m68k-elf, with newlib, is required to be available.
 
 ### Install SGDK2-CPP
-Run install_sgdk_win.bat on Windows (install_sgdk_unix.bat on other systems).
+Run install_sgdk_mingw.bat on Windows (install_sgdk_unix.sh on other systems).
 This will create an install subfolder, that contains the built libraries, includes, and CMake package/support files.
 
 ## Setting up a game using SGDK2-CPP
