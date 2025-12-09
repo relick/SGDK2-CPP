@@ -42,15 +42,6 @@ extern "C"
 
 // *****************************************************************************
 //
-//  Defines
-//
-// *****************************************************************************
-
-/// Comment out to disable asserts
-#define ENABLE_ASSERT_CHECKS
-
-// *****************************************************************************
-//
 //  Types
 //
 // *****************************************************************************
@@ -80,11 +71,11 @@ typedef int (*vsnprintf_t)(char *buf, int count, const char *fmt, va_list args);
  *      in printed to the console. This will also reset the system to the SGDK
  *      default state.
  *
- *  Can be disabled by undefining ENABLE_ASSERT_CHECKS or by defining NDEBUG.
+ *  Can be disabled by defining NDEBUG or using SGDK release build (LIB_DEBUG=0).
  */
 
-#if defined(ENABLE_ASSERT_CHECKS) && !defined(NDEBUG)
-#define assert(condition)                                                              \
+#if !defined(NDEBUG) && (LIB_DEBUG != 0)
+#define con_assert(condition)                                                          \
     if ( !(condition) )                                                                \
     {                                                                                  \
         CON_reset();                                                                   \
@@ -93,7 +84,7 @@ typedef int (*vsnprintf_t)(char *buf, int count, const char *fmt, va_list args);
         while (TRUE);                                                                  \
     }
 #else
-#define assert(condition)
+#define con_assert(condition)
 #endif
 
 /**
@@ -103,7 +94,7 @@ typedef int (*vsnprintf_t)(char *buf, int count, const char *fmt, va_list args);
  * Uppercase version. Same as assert().
  */
 
-#define ASSERT(condition) assert(condition)
+#define CON_ASSERT(condition) con_assert(condition)
 
 // *****************************************************************************
 //

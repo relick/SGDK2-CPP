@@ -176,6 +176,11 @@ extern "C"
  */
 #define MODULE_CONSOLE          0
 
+/**
+ *  \brief
+ *      Set it to 1 if you want to enable Link Cable Protocol functions (written by BlodTor)
+ */
+#define MODULE_LINK_CABLE       0
 
 #if defined(__cplusplus)
 } // extern "C"
