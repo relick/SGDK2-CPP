@@ -61,15 +61,6 @@ else()
 endif()
 
 ## Prep for SGDK libraries
-# Gather sources
-file(GLOB_RECURSE SRC_LIB_INCLUDES ${CMAKE_CURRENT_SOURCE_DIR}/inc/*.[hi])
-file(GLOB_RECURSE SRC_LIB_C src/*.c)
-string(REPLACE "src/boot/rom_head.c" "" SRC_LIB_C "${SRC_LIB_C}")
-string(REPLACE "src/cpp/syscalls.c" "" SRC_LIB_C "${SRC_LIB_C}")
-file(GLOB_RECURSE SRC_LIB_S src/*.s)
-string(REPLACE "src/boot/sega.s" "" SRC_LIB_S "${SRC_LIB_S}")
-file(GLOB_RECURSE SRC_LIB_S80 src/*.s80)
-file(GLOB_RECURSE RES_LIB_RES res/*.res)
 
 # Helper macro for generically creating an installable static library target
 set(SGDK_install_list)
@@ -155,7 +146,62 @@ function(setup_md_library target language)
   target_sources(${target}
     PUBLIC
     FILE_SET HEADERS BASE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/inc" FILES
-      ${SRC_LIB_INCLUDES}
+      # User-controlled
+      inc/SGDK/config.h
+
+      # SGDK
+      inc/SGDK/asm.h
+      inc/SGDK/asm_mac.i
+      inc/SGDK/bmp.h
+      inc/SGDK/dma.h
+      inc/SGDK/genesis.h
+      inc/SGDK/joy.h
+      inc/SGDK/kdebug.h
+      inc/SGDK/map.h
+      inc/SGDK/mapper.h
+      inc/SGDK/maths.h
+      inc/SGDK/maths3D.h
+      inc/SGDK/memory.h
+      inc/SGDK/memory_base.h
+      inc/SGDK/object.h
+      inc/SGDK/pal.h
+      inc/SGDK/pool.h
+      inc/SGDK/psg.h
+      inc/SGDK/sprite_eng.h
+      inc/SGDK/sprite_eng_legacy.h
+      inc/SGDK/sram.h
+      inc/SGDK/str.h
+      inc/SGDK/sys.h
+      inc/SGDK/tab_cnv.h
+      inc/SGDK/task.h
+      inc/SGDK/task_cst.h
+      inc/SGDK/timer.h
+      inc/SGDK/tools.h
+      inc/SGDK/types.h
+      inc/SGDK/vdp.h
+      inc/SGDK/vdp_bg.h
+      inc/SGDK/vdp_pal.h
+      inc/SGDK/vdp_spr.h
+      inc/SGDK/vdp_tile.h
+      inc/SGDK/vram.h
+      inc/SGDK/ym2612.h
+      inc/SGDK/z80_ctrl.h
+
+      # Sound
+      inc/SGDK/snd/smp_null.h
+      inc/SGDK/snd/smp_null_dpcm.h
+      inc/SGDK/snd/sound.h
+      inc/SGDK/snd/xgm.h
+      inc/SGDK/snd/xgm2.h
+      inc/SGDK/snd/pcm/snd_dpcm2.h
+      inc/SGDK/snd/pcm/snd_pcm.h
+      inc/SGDK/snd/pcm/snd_pcm4.h
+      inc/SGDK/snd/pcm/tab_vol.h
+
+      # Z80
+      inc/SGDK/snd/z80_def.i80
+      inc/SGDK/snd/z80_fct.i80
+      inc/SGDK/snd/z80_mac.i80
   )
   # Extra includes for z80 assembly that don't pollute the main target
   md_target_z80_include_directories(${target}
@@ -167,9 +213,63 @@ function(setup_md_library target language)
   # m68k files
   target_sources(${target}
     PRIVATE
-      ${SRC_LIB_C}
-      ${SRC_LIB_S}
-      
+      # Main
+      src/bmp.c
+      src/bmp_a.s
+      src/dma.c
+      src/dma_a.s
+      src/error_a.s
+      src/joy.c
+      src/kdebug.s
+      src/map.c
+      src/mapper.c
+      src/maths.c
+      src/maths3D.c
+      src/maths3D_a.s
+      src/memory.c
+      src/memory_a.s
+      src/object.c
+      src/pal.c
+      src/pool.c
+      src/psg.c
+      src/sprite_eng.c
+      src/sprite_eng_legacy.c
+      src/sram.c
+      src/sram_a.s
+      src/str.c
+      src/sys.c
+      src/sys_a.s
+      src/tab_cnv.c
+      src/tab_log10.c
+      src/tab_log2.c
+      src/tab_sin.c
+      src/tab_sqrt.c
+      src/task.s
+      src/timer.c
+      src/tools.c
+      src/tools_a.s
+      src/types.c
+      src/vdp.c
+      src/vdp_bg.c
+      src/vdp_spr.c
+      src/vdp_tile.c
+      src/vdp_tile_a.s
+      src/vram.c
+      src/ym2612.c
+      src/z80_ctrl.c
+
+      # Sound
+      src/snd/smp_null.s
+      src/snd/smp_null_dpcm.s
+      src/snd/sound.c
+      src/snd/xgm.c
+      src/snd/xgm2.c
+      src/snd/pcm/snd_dpcm2.c
+      src/snd/pcm/snd_pcm.c
+      src/snd/pcm/snd_pcm4.c
+      src/snd/pcm/tab_vol.c
+
+      # C++
       $<${enable_cpp}:
         src/cpp/cplusplus.cpp
       >
@@ -179,10 +279,21 @@ function(setup_md_library target language)
   set_target_properties(${target} PROPERTIES SGDK_GENERATED_PREFIX SGDK)
 
   # z80 files
-  md_target_z80_sources(${target} PUBLIC ${SRC_LIB_S80})
+  md_target_z80_sources(${target}
+    PUBLIC
+      src/snd/drv_null.s80
+      src/snd/drv_xgm.s80
+      src/snd/pcm/drv_dpcm2.s80
+      src/snd/pcm/drv_pcm.s80
+      src/snd/pcm/drv_pcm4.s80
+      src/snd/xgm2/drv_xgm2.s80
+  )
 
   # Resource files
-  md_target_resources(${target} PUBLIC ${RES_LIB_RES})
+  md_target_resources(${target}
+    PUBLIC
+      res/libres.res
+  )
 
 endfunction()
 
