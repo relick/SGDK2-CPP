@@ -93,11 +93,16 @@
 #ifndef _LINK_CABLE_H_
 #define _LINK_CABLE_H_
 
-#include "config.h"
+#include "SGDK/config.h"
 
 #if (MODULE_LINK_CABLE != 0)
 
-#include "types.h"
+#include "SGDK/types.h"
+
+#if defined(__cplusplus)
+extern "C"
+{
+#endif
 
 /**
  * Constants
@@ -310,6 +315,10 @@ void LCP_masterCycle();
  * return LCP_error
  */
 u16 LCP_getError();
+
+#if defined(__cplusplus)
+} // extern "C"
+#endif
 
 #endif // MODULE_LINK_CABLE
 

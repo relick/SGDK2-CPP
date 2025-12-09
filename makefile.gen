@@ -111,10 +111,10 @@ DEPS += $(SRC_C:.c=.d)
 DEPS += $(SRC_CPP:.cpp=.d)
 DEPS := $(addprefix $(DEP_DIR)/, $(DEPS))
 
-INCS := -I$(SRC_DIR) -I$(INC_DIR) -I$(RES_DIR) -I$(OUT_DIR) -isystem$(INC_LIB) -isystem$(OUT_DIR_LIB)
+INCS := -I$(SRC_DIR) -I$(INC_DIR) -I$(RES_DIR) -I$(OUT_DIR) -isystem$(INC_LIB) -isystem$(INC_LIB)/SGDK -isystem$(OUT_DIR_LIB)
 DEFAULT_FLAGS := $(EXTRA_FLAGS) -DSGDK_GCC -m68000 -fdiagnostics-color=always -Wall -Wextra -Wno-shift-negative-value -Wno-main -Wno-unused-parameter -fno-builtin -ffunction-sections -fdata-sections -fms-extensions -B$(BIN)
 CXX_EXTRA_FLAGS := -std=c++26 -fno-rtti -fno-exceptions -fno-non-call-exceptions -fno-use-cxa-atexit -fno-common -fno-threadsafe-statics -fno-unwind-tables
-Z80_FLAGS := -i$(SRC_DIR) -i$(INC_DIR) -i$(RES_DIR) -i$(OUT_DIR) -i$(SRC_LIB) -i$(INC_LIB) -i$(INC_LIB)/snd -i$(OUT_DIR_LIB)
+Z80_FLAGS := -i$(SRC_DIR) -i$(INC_DIR) -i$(RES_DIR) -i$(OUT_DIR) -i$(SRC_LIB) -i$(INC_LIB)/SGDK -i$(INC_LIB)/SGDK/snd -i$(OUT_DIR_LIB)
 
 ifeq ($(BUILD_TYPE),debug)
 	# debug

@@ -51,9 +51,9 @@ OBJS_LIB := $(addprefix $(OUT_DIR)/, $(OBJS_LIB))
 LSTS_LIB := $(SRC_LIB_C:.c=.lst)
 LSTS_LIB := $(addprefix $(OUT_DIR)/, $(LSTS_LIB))
 
-INCS_LIB := -I$(INC_LIB) -I$(OUT_DIR)
+INCS_LIB := -I$(INC_LIB) -I$(INC_LIB)/SGDK -I$(SRC_LIB) -I$(OUT_DIR)
 DEFAULT_FLAGS_LIB := $(EXTRA_FLAGS) -DSGDK_GCC -m68000 -Wall -Wextra -Wno-array-bounds -Wno-shift-negative-value -Wno-unused-parameter -fno-builtin -fms-extensions -ffunction-sections -fdata-sections $(INCS_LIB) -B$(BIN)
-FLAGSZ80_LIB := -i$(SRC_LIB) -i$(INC_LIB) -i$(INC_LIB)/snd -i$(OUT_DIR)
+FLAGSZ80_LIB := -i$(SRC_LIB) -i$(INC_LIB)/SGDK -i$(INC_LIB)/SGDK/snd -i$(OUT_DIR)
 
 ifeq ($(BUILD_TYPE),debug)
 	# debug

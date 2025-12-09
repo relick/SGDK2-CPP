@@ -24,7 +24,6 @@ extern "C"
 #include "SGDK/pool.h"
 #include "SGDK/object.h"
 
-#include "SGDK/font.h"
 #include "SGDK/str.h"
 
 #include "SGDK/tab_cnv.h"
@@ -37,14 +36,10 @@ extern "C"
 #include "SGDK/vdp_spr.h"
 #include "SGDK/vdp_tile.h"
 #include "SGDK/vdp_pal.h"
-
 #include "SGDK/pal.h"
-
 #include "SGDK/vram.h"
 #include "SGDK/dma.h"
-
 #include "SGDK/map.h"
-
 #include "SGDK/bmp.h"
 #include "SGDK/sprite_eng.h"
 #include "SGDK/sprite_eng_legacy.h"
@@ -89,9 +84,14 @@ extern "C"
 #include "SGDK/ext/console.h"
 #endif
 
+#if (MODULE_LINK_CABLE != 0)
+#include "SGDK/ext/link_cable.h"
+#endif
+
 // preserve compatibility with old resources name
 #define logo_lib sgdk_logo
 #define font_lib font_default
+#define font_pal_default palette_grey
 #define font_pal_lib font_pal_default
 
 #if defined(__cplusplus)

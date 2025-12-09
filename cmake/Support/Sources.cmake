@@ -85,6 +85,12 @@ function(md_target_resources target header_scope) # ARGN: .res files
       OUTPUT ${m68k_asm} ${c_header}
       DEPFILE ${dep_file}
       COMMAND ${RESCOMP_CMD} "${res_source}" ${m68k_asm} -dep ${dep_file}
+      COMMAND ${CMAKE_COMMAND} -E rename ${c_header} ${c_header}.tmp
+      COMMAND "${CMAKE_COMMAND}"
+      -D IN_FILE=${c_header}.tmp
+      -D OUT_FILE=${c_header}
+      -D SGDK_UPSTREAM_COMPATIBILITY=${SGDK_UPSTREAM_COMPATIBILITY}
+      -P "${SGDK_CMAKE_SUPPORT}/GenerateResourceHeader.cmake"
       WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
       MAIN_DEPENDENCY "${res_source}"
       DEPENDS xgmtool
