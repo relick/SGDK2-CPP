@@ -30,7 +30,7 @@
 #if (ENABLE_LOGO != 0)
 #define LOGO_SIZE                   64
 
-#include "res/libres.h"
+#include "SGDK/res/libres.h"
 #endif
 
 
@@ -66,10 +66,10 @@ extern bool VDP_doVBlankScrollProcess(void);
 extern void MEM_init();
 
 // main function
-#if !UPSTREAM_COMPATIBILITY
-extern int sgdk_main(bool hardReset);
-#else
+#if !SGDK_UPSTREAM_COMPATIBILITY
 extern NEVER_RETURNS sgdk_main(bool hardReset);
+#else
+extern void sgdk_main(bool hardReset);
 #endif
 
 // forward

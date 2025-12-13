@@ -13,20 +13,27 @@ function(md_add_rom target mdlib) # [sega_s]
     set(sega_s "${SGDK_BOOTFILES}/sega.s")
   endif()
 
-  # TODO: Make all the configuration options generate the config.h
+  set(mdlib_target ${mdlib}$<$<TARGET_PROPERTY:${target},SGDK_BANK_SWITCH>:.bank_switch>)
 
   ## Create target using given name, linking with chosen mdlib.
   # This will generate the .elf and then finalise it into a .bin, although the setup for that is further below.
   # This target can be added to by the user, with sources, options, properties etc.
   add_executable(${target})
-  target_link_libraries(${target} PUBLIC ${mdlib})
+  target_link_libraries(${target}
+    PUBLIC
+      ${mdlib_target}
+
+      # Optional libraries
+      $<$<TARGET_PROPERTY:SGDK_EXT_EVERDRIVE>:${mdlib_target}.ext.everdrive>
+      $<$<TARGET_PROPERTY:SGDK_EXT_EVERDRIVE_FAT16>:${mdlib_target}.ext.everdrive_fat16>
+      $<$<TARGET_PROPERTY:SGDK_EXT_MEGAWIFI>:${mdlib_target}.ext.megawifi$<$<TARGET_PROPERTY:SGDK_EXT_EVERDRIVE>:.everdrive>>
+      $<$<TARGET_PROPERTY:SGDK_EXT_MINIMUSIC>:md.ext.minimusic>
+      $<$<TARGET_PROPERTY:SGDK_EXT_FLASHSAVE>:${mdlib_target}.ext.flashsave>
+      $<$<TARGET_PROPERTY:SGDK_EXT_CONSOLE>:${mdlib_target}.ext.console>
+      $<$<TARGET_PROPERTY:SGDK_EXT_LINKCABLE>:${mdlib_target}.ext.linkcable>
+  )
 
   SGDK_add_default_props(${target})
-  target_compile_definitions(${target}
-    PRIVATE
-      ENABLE_BANK_SWITCH=$<TARGET_PROPERTY:SGDK_BANK_SWITCH>
-      MODULE_MEGAWIFI=$<TARGET_PROPERTY:SGDK_MEGA_WIFI>
-  )
 
   ## Set up the boot files
   # Create rom_head.c
@@ -36,7 +43,7 @@ function(md_add_rom target mdlib) # [sega_s]
     OUTPUT ${out_rom_head_c}
     COMMAND "${CMAKE_COMMAND}"
       -D enable_bank_switch=$<TARGET_PROPERTY:${target},SGDK_BANK_SWITCH>
-      -D enable_mega_wifi=$<TARGET_PROPERTY:${target},SGDK_MEGA_WIFI>
+      -D enable_mega_wifi=$<TARGET_PROPERTY:${target},SGDK_EXT_MEGAWIFI>
       -D copyright_release_date="$<TARGET_PROPERTY:${target},SGDK_HEAD_COPYRIGHT>"
       -D japan_title="$<TARGET_PROPERTY:${target},SGDK_HEAD_JPTITLE>"
       -D overseas_title="$<TARGET_PROPERTY:${target},SGDK_HEAD_OSTITLE>"
@@ -58,7 +65,7 @@ function(md_add_rom target mdlib) # [sega_s]
   # Build rom_head.c into an object
   set(target_rom_head "${target}.rom_head")
   add_library(${target_rom_head} OBJECT ${out_rom_head_c})
-  target_link_libraries(${target_rom_head} PRIVATE ${mdlib})
+  target_link_libraries(${target_rom_head} PRIVATE ${mdlib_target})
 
   # Generate rom_head.bin. Because sega.s will try to include "out/rom_head.bin", the bin
   # needs to be created within a folder called "out", and the root of that folder will be passed
@@ -76,7 +83,7 @@ function(md_add_rom target mdlib) # [sega_s]
   # Build sega.s into an object
   set(target_boot "${target}.boot")
   add_library(${target_boot} OBJECT ${sega_s})
-  target_link_libraries(${target_boot} PUBLIC ${mdlib})
+  target_link_libraries(${target_boot} PUBLIC ${mdlib_target})
   add_dependencies(${target_boot} ${target_out_rom_head})
   # Allow "out/rom_head.bin" to be found, by using this include directory.
   target_compile_options(${target_boot} PRIVATE "-Wa,-I${out_rom_head_dir}")

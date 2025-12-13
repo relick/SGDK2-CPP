@@ -103,6 +103,8 @@ extern "C"
  *      When automatic bank switch is enabled all internal BIN data structures declared in .far_rodata section
  *      will be accessed using BANK_getFarData(..) method (mapper.c). That may impact performance quite a bit
  *      it's why it's disabled by default if you don't require bank switch.
+ * 
+ *      When using CMake, call md_rom_enable_bank_switch() on your rom target instead of changing this define.
  */
 #ifndef ENABLE_BANK_SWITCH
 #define ENABLE_BANK_SWITCH      0
@@ -139,15 +141,21 @@ extern "C"
 /**
  *  \brief
  *      Set it to 1 if you want to use EVERDRIVE programming methods (written by Krikzz).
+ *      When using CMake, call md_rom_enable_ext_everdrive() on your rom target instead of changing this define.
  */
+#ifndef MODULE_EVERDRIVE
 #define MODULE_EVERDRIVE        0
+#endif
 
 /**
  *  \brief
  *      Set it to 1 if you want to use FAT16 methods for Everdrive cart (written by Krikzz).<br>
  *      This cost a bit more than 1 KB of RAM.
+ *      When using CMake, call md_rom_enable_ext_everdrive_fat16() on your rom target instead of changing this define.
  */
+#ifndef MODULE_FAT16
 #define MODULE_FAT16            0
+#endif
 
 // FAT16 need EVERDRIVE
 #if ((MODULE_EVERDRIVE == 0) && (MODULE_FAT16 != 0))
@@ -157,6 +165,7 @@ extern "C"
 /**
  *  \brief
  *      Set it to 1 if you want to enable MegaWiFi functions and support code (written by Jesus Alonso - doragasu)
+ *      When using CMake, call md_rom_enable_ext_megawifi() on your rom target instead of changing this define.
  */
 #ifndef MODULE_MEGAWIFI
 #define MODULE_MEGAWIFI         0
@@ -166,21 +175,30 @@ extern "C"
  *  \brief
  *      Set it to 1 if you want to enable Flash Save functions (written by Jesus Alonso - doragasu).<br>
  *      There is no reason to disable it as it doesn't consume extra memory
+ *      When using CMake, it IS disabled by default - call md_rom_enable_ext_flashsave() on your rom target instead of changing this define.
  */
+#ifndef MODULE_FLASHSAVE
 #define MODULE_FLASHSAVE        1
+#endif
 
 /**
  *  \brief
  *      Set it to 1 if you want to enable the TTY text console module (written by Andreas Dietrich).<br>
  *      It consume about 28 bytes of memory when enabled.
+ *      When using CMake, call md_rom_enable_ext_console() on your rom target instead of changing this define.
  */
+#ifndef MODULE_CONSOLE
 #define MODULE_CONSOLE          0
+#endif
 
 /**
  *  \brief
  *      Set it to 1 if you want to enable Link Cable Protocol functions (written by BlodTor)
+ *      When using CMake, call md_rom_enable_ext_linkcable() on your rom target instead of changing this define.
  */
+#ifndef MODULE_LINK_CABLE
 #define MODULE_LINK_CABLE       0
+#endif
 
 #if defined(__cplusplus)
 } // extern "C"

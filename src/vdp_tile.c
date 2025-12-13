@@ -12,7 +12,7 @@
 #include "tab_cnv.h"
 #include "tools.h"
 
-#include "res/libres.h"
+#include "SGDK/res/libres.h"
 
 
 // forward

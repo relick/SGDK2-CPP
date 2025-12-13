@@ -806,7 +806,7 @@ void F16_computePositionEx(fix16 *x2, fix16 *y2, fix16 x1, fix16 y1, fix16 ang, 
 
 
 // Deprecated functions
-#if ALLOW_DEPRECATED_F16
+#if SGDK_ALLOW_DEPRECATED_F16
 #define intToFix16(...)        FIX16(__VA_ARGS__)
 #define fix16ToInt(...)        F16_toInt(__VA_ARGS__)
 #define fix16ToFix32(...)      F16_toFix32(__VA_ARGS__)

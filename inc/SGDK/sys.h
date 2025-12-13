@@ -82,7 +82,7 @@ extern "C"
  *      Declare function as an SGDK game's entry point i.e. `main(bool hardReset)`.
  *      Note: returning is an error. Use `SYS_freeze();` at the end of main if you don't call a NEVER_RETURNS function or have an infinite loop.
  */
-#if !UPSTREAM_COMPATIBILITY
+#if !SGDK_UPSTREAM_COMPATIBILITY
 #if defined(__cplusplus)
 #define main(...)                   ; extern "C" NEVER_RETURNS sgdk_main(__VA_ARGS__)
 #else
