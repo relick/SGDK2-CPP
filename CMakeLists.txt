@@ -64,9 +64,17 @@ endif()
 
 # Helper macro for generically creating an installable static library target
 set(SGDK_install_list)
-macro(add_SGDK_library target)
-  add_library(${target} STATIC)
+macro(add_SGDK_target target library_type)
+  add_library(${target} ${library_type})
   add_library(SGDK::${target} ALIAS ${target})
+  list(APPEND SGDK_install_list ${target})
+endmacro()
+
+macro(add_SGDK_interface target)
+  add_SGDK_target(${target} INTERFACE)
+endmacro()
+macro(add_SGDK_library target)
+  add_SGDK_target(${target} STATIC)
   target_compile_options(${target} PUBLIC ${SGDK_DEFAULT_COMPILE_OPTIONS})
   target_include_directories(${target} SYSTEM PRIVATE inc/SGDK) # Add private include dirs for source files to not need the SGDK/ prefix
   set_target_properties(${target}
@@ -76,12 +84,12 @@ macro(add_SGDK_library target)
       OUTPUT_NAME_RELWITHDEBINFO "${target}_relwithdebinfo"
       OUTPUT_NAME_DEBUG "${target}_debug"
   )
-  list(APPEND SGDK_install_list ${target})
 endmacro()
-macro(add_SGDK_interface target)
-  add_library(${target} INTERFACE)
-  add_library(SGDK::${target} ALIAS ${target})
-  list(APPEND SGDK_install_list ${target})
+
+# Builds the given target explicitly banning anything that is different regarding newlib or bank switching.
+# Used to verify that the target does not need to be built multiple times.
+macro(ensure_no_newlib_bankswitch target)
+  target_compile_definitions(${target} PRIVATE SGDK_CMAKE_NO_CONFIG_DEPENDENCY)
 endmacro()
 
 # Add all parts of SGDK that are not affected by language or (dynamic) config options to a shared target:
@@ -193,9 +201,17 @@ md_target_resources(md.shared
     res/libres.res
 )
 
-# Need to make syscall library separately, to be linked at the end if newlib is enabled
-add_SGDK_library(md.newlibsys)
-target_sources(md.newlibsys PRIVATE src/cpp/syscalls.c)
+# Newlib support requires the syscalls to be linked without LTO stripping unused symbols:
+add_SGDK_library(md.newlib.syscalls)
+target_sources(md.newlib.syscalls PRIVATE src/cpp/syscalls.c)
+add_SGDK_interface(md.newlib)
+target_link_libraries(md.newlib INTERFACE c m "LINKER:--whole-archive" SGDK::md.newlib.syscalls "LINKER:--no-whole-archive")
+
+# C++ support only requires linking with the standard library, forcing newlib, and some C++ abi setup.
+# It's important to note that the newlib syscalls MUST be linked after the C++ abi setup and the standard library.
+add_SGDK_library(md.cpp)
+target_link_libraries(md.cpp PUBLIC ${SGDK_CXX_STANDARD_LIBRARY} md.newlib)
+target_sources(md.cpp PRIVATE src/cpp/cplusplus.cpp)
 
 # Helper function for setting up the core md libraries, which build differently depending on newlib setting (and therefore language), and whether bank switch is enabled.
 function(setup_md_library target language enable_bank_switch)
@@ -212,12 +228,8 @@ function(setup_md_library target language enable_bank_switch)
   target_link_libraries(${target}
     PUBLIC
       SGDK::md.shared
-      $<${enable_newlib}:
-        c
-        m
-      >
-      $<${enable_cpp}:${SGDK_CXX_STANDARD_LIBRARY}>
-      "LINKER:--whole-archive" $<${enable_newlib}:SGDK::md.newlibsys> "LINKER:--no-whole-archive"
+      $<${enable_cpp}:SGDK::md.cpp>
+      $<${enable_newlib}:SGDK::md.newlib>
   )
 
   target_link_options(${target}
@@ -290,11 +302,6 @@ function(setup_md_library target language enable_bank_switch)
       src/snd/pcm/snd_pcm.c
       src/snd/pcm/snd_pcm4.c
       src/snd/pcm/tab_vol.c
-
-      # C++
-      $<${enable_cpp}:
-        src/cpp/cplusplus.cpp
-      >
   )
 
 endfunction()
@@ -310,23 +317,27 @@ setup_md_library(mdcpp CXX 0)
 add_SGDK_library(mdcpp.bank_switch)
 setup_md_library(mdcpp.bank_switch CXX 1)
 
-## Optional libraries that depend on SGDK configuration:
-macro(add_SGDK_ext_shared_interface target) # [header_list]
-  add_SGDK_interface(${target})
-  target_link_libraries(${target} INTERFACE md.shared)
-  target_sources(${target} INTERFACE FILE_SET HEADERS BASE_DIRS ${SGDK_INC_DIR} FILES ${ARGN})
-endmacro()
+## Optional libraries:
 
-# Everdrive - FAT16 option has to be compiled separately, but the main library can be depended on
-add_SGDK_ext_shared_interface(md.shared.ext.everdrive inc/SGDK/ext/everdrive.h)
-target_compile_definitions(md.shared.ext.everdrive INTERFACE MODULE_EVERDRIVE=1)
+# Everdrive. FAT16 option adds on to the main everdrive lib.
+add_SGDK_library(md.ext.everdrive)
+target_link_libraries(md.ext.everdrive PUBLIC SGDK::md.shared)
+target_compile_definitions(md.ext.everdrive PUBLIC MODULE_EVERDRIVE=1)
+target_sources(md.ext.everdrive PUBLIC FILE_SET HEADERS BASE_DIRS ${SGDK_INC_DIR} FILES inc/SGDK/ext/everdrive.h)
+target_sources(md.ext.everdrive PRIVATE src/ext/everdrive.c)
+ensure_no_newlib_bankswitch(md.ext.everdrive)
 
-add_SGDK_interface(md.shared.ext.everdrive_fat16)
-target_link_libraries(md.shared.ext.everdrive_fat16 INTERFACE md.shared.ext.everdrive)
-target_compile_definitions(md.shared.ext.everdrive_fat16 INTERFACE MODULE_FAT16=1)
+add_SGDK_library(md.ext.everdrive_fat16)
+target_link_libraries(md.ext.everdrive_fat16 PUBLIC SGDK::md.ext.everdrive)
+target_compile_definitions(md.ext.everdrive_fat16 PUBLIC MODULE_FAT16=1)
+target_sources(md.ext.everdrive_fat16 PUBLIC FILE_SET HEADERS BASE_DIRS ${SGDK_INC_DIR} FILES inc/SGDK/ext/fat16.h)
+target_sources(md.ext.everdrive_fat16 PRIVATE src/ext/fat16.c)
+ensure_no_newlib_bankswitch(md.ext.everdrive_fat16)
 
-# MegaWiFi - default option and Everdrive option have to be compiled separately, but a shared library can be depended on
-add_SGDK_ext_shared_interface(md.shared.ext.megawifi.shared
+# MegaWiFi - default option and Everdrive option have to be compiled separately, but most of it can be shared.
+add_SGDK_library(md.ext.megawifi.shared)
+target_link_libraries(md.ext.megawifi.shared PUBLIC SGDK::md.shared)
+target_sources(md.ext.megawifi.shared PUBLIC FILE_SET HEADERS BASE_DIRS ${SGDK_INC_DIR} FILES
   inc/SGDK/ext/mw/gamejolt.h
   inc/SGDK/ext/mw/jsmn.h
   inc/SGDK/ext/mw/json.h
@@ -334,64 +345,55 @@ add_SGDK_ext_shared_interface(md.shared.ext.megawifi.shared
   inc/SGDK/ext/mw/megawifi.h
   inc/SGDK/ext/mw/mw-msg.h
 )
-target_compile_definitions(md.shared.ext.megawifi.shared INTERFACE MODULE_MEGAWIFI=1)
+target_compile_definitions(md.ext.megawifi.shared PUBLIC MODULE_MEGAWIFI=1)
+target_sources(md.ext.megawifi.shared PRIVATE src/ext/mw/gamejolt.c src/ext/mw/json.c src/ext/mw/megawifi.c)
+ensure_no_newlib_bankswitch(md.ext.megawifi.shared)
 
-add_SGDK_ext_shared_interface(md.shared.ext.megawifi inc/SGDK/ext/mw/16c550.h)
-target_link_libraries(md.shared.ext.megawifi INTERFACE md.shared.ext.megawifi.shared)
+add_SGDK_library(md.ext.megawifi)
+target_link_libraries(md.ext.megawifi PUBLIC SGDK::md.ext.megawifi.shared)
+target_sources(md.ext.megawifi PUBLIC FILE_SET HEADERS BASE_DIRS ${SGDK_INC_DIR} FILES inc/SGDK/ext/mw/16c550.h)
+target_sources(md.ext.megawifi PRIVATE src/ext/mw/lsd.c src/ext/mw/16c550.c)
+ensure_no_newlib_bankswitch(md.ext.megawifi)
 
-add_SGDK_ext_shared_interface(md.shared.ext.megawifi.everdrive inc/SGDK/ext/mw/ssf.h)
-target_link_libraries(md.shared.ext.megawifi.everdrive INTERFACE md.shared.ext.megawifi.shared md.shared.ext.everdrive)
+add_SGDK_library(md.ext.megawifi.everdrive)
+target_link_libraries(md.ext.megawifi.everdrive PUBLIC SGDK::md.ext.megawifi.shared SGDK::md.ext.everdrive)
+target_sources(md.ext.megawifi.everdrive PUBLIC FILE_SET HEADERS BASE_DIRS ${SGDK_INC_DIR} FILES inc/SGDK/ext/mw/ssf.h)
+target_sources(md.ext.megawifi.everdrive PRIVATE src/ext/mw/lsd.c src/ext/mw/ssf.c)
+ensure_no_newlib_bankswitch(md.ext.megawifi.everdrive)
 
-# Others
-add_SGDK_ext_shared_interface(md.shared.ext.flashsave inc/SGDK/ext/flash-save/flash.h inc/SGDK/ext/flash-save/saveman.h)
-target_compile_definitions(md.shared.ext.flashsave INTERFACE MODULE_FLASHSAVE=1)
+# Flash Save
+add_SGDK_library(md.ext.flashsave)
+target_link_libraries(md.ext.flashsave PUBLIC SGDK::md.shared)
+target_compile_definitions(md.ext.flashsave PUBLIC MODULE_FLASHSAVE=1)
+target_sources(md.ext.flashsave PUBLIC FILE_SET HEADERS BASE_DIRS ${SGDK_INC_DIR} FILES inc/SGDK/ext/flash-save/flash.h inc/SGDK/ext/flash-save/saveman.h)
+target_sources(md.ext.flashsave PRIVATE src/ext/flash-save/flash.c src/ext/flash-save/saveman.c)
+ensure_no_newlib_bankswitch(md.ext.flashsave)
 
-add_SGDK_ext_shared_interface(md.shared.ext.console inc/SGDK/ext/console.h inc/SGDK/ext/stb/stb_sprintf.h)
-target_compile_definitions(md.shared.ext.console INTERFACE MODULE_CONSOLE=1)
+# Console
+add_SGDK_library(md.ext.console)
+target_link_libraries(md.ext.console PUBLIC SGDK::md.shared)
+target_compile_definitions(md.ext.console PUBLIC MODULE_CONSOLE=1)
+target_sources(md.ext.console PUBLIC FILE_SET HEADERS BASE_DIRS ${SGDK_INC_DIR} FILES inc/SGDK/ext/console.h inc/SGDK/ext/stb/stb_sprintf.h)
+target_sources(md.ext.console PRIVATE src/ext/console.c)
+ensure_no_newlib_bankswitch(md.ext.console)
 
-add_SGDK_ext_shared_interface(md.shared.ext.linkcable inc/SGDK/ext/link_cable.h)
-target_compile_definitions(md.shared.ext.linkcable INTERFACE MODULE_LINK_CABLE=1)
+# Link Cable
+add_SGDK_library(md.ext.linkcable)
+target_link_libraries(md.ext.linkcable PUBLIC SGDK::md.shared)
+target_compile_definitions(md.ext.linkcable PUBLIC MODULE_LINK_CABLE=1)
+target_sources(md.ext.linkcable PUBLIC FILE_SET HEADERS BASE_DIRS ${SGDK_INC_DIR} FILES inc/SGDK/ext/link_cable.h)
+target_sources(md.ext.linkcable PRIVATE src/ext/link_cable.c)
+ensure_no_newlib_bankswitch(md.ext.linkcable)
 
-# Final libraries
-macro(add_SGDK_ext_library target_suffix mdlib) # [source_list]
-  add_SGDK_library(${mdlib}.${target_suffix})
-  target_link_libraries(${mdlib}.${target_suffix} PUBLIC ${mdlib} md.shared.${target_suffix})
-  target_sources(${mdlib}.${target_suffix} PRIVATE ${ARGN})
-endmacro()
-
-set(megawifi_common_sources
-  src/ext/mw/gamejolt.c
-  src/ext/mw/json.c
-  src/ext/mw/lsd.c
-  src/ext/mw/megawifi.c
-)
-macro(add_SGDK_ext_libraries mdlib)
-  # Everdrive
-  add_SGDK_ext_library(ext.everdrive ${mdlib} src/ext/everdrive.c)
-  add_SGDK_ext_library(ext.everdrive_fat16 ${mdlib} src/ext/everdrive.c)
-
-  # MegaWiFi
-  add_SGDK_ext_library(ext.megawifi ${mdlib} ${megawifi_common_sources} src/ext/mw/16c550.c)
-  add_SGDK_ext_library(ext.megawifi.everdrive ${mdlib} ${megawifi_common_sources} src/ext/mw/ssf.c)
-
-  # Others
-  add_SGDK_ext_library(ext.flashsave ${mdlib} src/ext/flash-save/flash.c src/ext/flash-save/saveman.c)
-  add_SGDK_ext_library(ext.console ${mdlib} src/ext/console.c)
-  add_SGDK_ext_library(ext.linkcable ${mdlib} src/ext/link_cable.c)
-endmacro()
-add_SGDK_ext_libraries(md)
-add_SGDK_ext_libraries(md.bank_switch)
-add_SGDK_ext_libraries(mdcpp)
-add_SGDK_ext_libraries(mdcpp.bank_switch)
-
-## Optional libraries that do not depend on SGDK configuration:
 # MiniMusic
 add_SGDK_library(md.ext.minimusic)
-target_link_libraries(md.ext.minimusic PUBLIC md.shared)
+target_link_libraries(md.ext.minimusic PUBLIC SGDK::md.shared)
 target_sources(md.ext.minimusic PUBLIC FILE_SET HEADERS BASE_DIRS ${SGDK_INC_DIR} FILES inc/SGDK/ext/minimusic/minimus.h)
 target_sources(md.ext.minimusic PRIVATE src/ext/minimusic/minimus.c)
 md_target_z80_include_directories(md.ext.minimusic "${CMAKE_CURRENT_SOURCE_DIR}/src/ext/minimusic")
 md_target_z80_sources(md.ext.minimusic PRIVATE PREFIX_OPTIONAL_FOR_TARGET src/ext/minimusic/minimus_drv.s80)
+ensure_no_newlib_bankswitch(md.ext.minimusic)
+
 
 ## Installation
 set(SGDK_TOOLS_INSTALL_DIR ${CMAKE_INSTALL_LIBEXECDIR}/SGDK)

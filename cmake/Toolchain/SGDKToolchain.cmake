@@ -113,7 +113,7 @@ sgdk_toolchain_clang_set_compilers()
 
 ## Flags
 # Declare default compiler and assembler flags
-set(SGDK_COMMON_FLAGS "-Wall -Wextra -Wno-array-bounds -Wno-shift-negative-value -Wno-main -Wno-unused-parameter -fno-builtin -fms-extensions -ffunction-sections -fdata-sections")
+set(SGDK_COMMON_FLAGS "-Wall -Wextra -Wno-array-bounds -Wno-shift-negative-value -Wno-main -Wno-unused-parameter -Werror=undef -fno-builtin -fms-extensions -ffunction-sections -fdata-sections")
 if(CMAKE_HOST_WIN32)
   set(SGDK_COMMON_FLAGS "${SGDK_COMMON_FLAGS} -B${SGDK_WIN32_TOOLCHAIN}/bin/")
 endif()

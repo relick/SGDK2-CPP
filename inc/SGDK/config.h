@@ -118,7 +118,16 @@ extern "C"
  *      This is predefined when using CMake, using the value of cache variable SGDK_ENABLE_NEWLIB (C) or simply always enabled (C++).
  */
 #ifndef ENABLE_NEWLIB
+#if defined(__cplusplus)
 #define ENABLE_NEWLIB           1
+#else
+#define ENABLE_NEWLIB           0
+#endif
+#endif
+
+#ifdef SGDK_CMAKE_NO_CONFIG_DEPENDENCY
+#undef ENABLE_BANK_SWITCH
+#undef ENABLE_NEWLIB
 #endif
 
 /**

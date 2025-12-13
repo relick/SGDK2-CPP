@@ -24,13 +24,13 @@ function(md_add_rom target mdlib) # [sega_s]
       ${mdlib_target}
 
       # Optional libraries
-      $<$<TARGET_PROPERTY:SGDK_EXT_EVERDRIVE>:${mdlib_target}.ext.everdrive>
-      $<$<TARGET_PROPERTY:SGDK_EXT_EVERDRIVE_FAT16>:${mdlib_target}.ext.everdrive_fat16>
-      $<$<TARGET_PROPERTY:SGDK_EXT_MEGAWIFI>:${mdlib_target}.ext.megawifi$<$<TARGET_PROPERTY:SGDK_EXT_EVERDRIVE>:.everdrive>>
+      $<$<TARGET_PROPERTY:SGDK_EXT_EVERDRIVE>:md.ext.everdrive>
+      $<$<TARGET_PROPERTY:SGDK_EXT_EVERDRIVE_FAT16>:md.ext.everdrive_fat16>
+      $<$<TARGET_PROPERTY:SGDK_EXT_MEGAWIFI>:md.ext.megawifi$<$<TARGET_PROPERTY:SGDK_EXT_EVERDRIVE>:.everdrive>>
       $<$<TARGET_PROPERTY:SGDK_EXT_MINIMUSIC>:md.ext.minimusic>
-      $<$<TARGET_PROPERTY:SGDK_EXT_FLASHSAVE>:${mdlib_target}.ext.flashsave>
-      $<$<TARGET_PROPERTY:SGDK_EXT_CONSOLE>:${mdlib_target}.ext.console>
-      $<$<TARGET_PROPERTY:SGDK_EXT_LINKCABLE>:${mdlib_target}.ext.linkcable>
+      $<$<TARGET_PROPERTY:SGDK_EXT_FLASHSAVE>:md.ext.flashsave>
+      $<$<TARGET_PROPERTY:SGDK_EXT_CONSOLE>:md.ext.console>
+      $<$<TARGET_PROPERTY:SGDK_EXT_LINKCABLE>:md.ext.linkcable>
   )
 
   SGDK_add_default_props(${target})
