@@ -20,6 +20,11 @@
 #ifndef _MEMORY_H_
 #define _MEMORY_H_
 
+#if (ENABLE_NEWLIB != 0)
+#include <string.h> // Include string.h from newlib
+#include <stdlib.h> // Include stdlib.h from newlib
+#endif // (ENABLE_NEWLIB != 0)
+
 #if defined(__cplusplus)
 extern "C"
 {
@@ -139,13 +144,6 @@ extern "C"
 }
 
 
-#if (ENABLE_NEWLIB == 0)
-// enable standard libc compatibility
-#define malloc(x)       MEM_alloc(x)
-#define free(x)         MEM_free(x)
-#endif  // ENABLE_NEWLIB
-
-
 /**
  *  \brief
  *      Return available memory in bytes
@@ -174,6 +172,10 @@ u16  MEM_getLargestFreeBlock(void);
  * Notice that this function leaves the value of ptr unchanged, hence it still points to the same (now invalid) location, and not to the null pointer.
  */
 void MEM_free(void* ptr);
+#if (ENABLE_NEWLIB == 0)
+// enable standard libc compatibility
+#define free(ptr) MEM_free(ptr)
+#endif  // (ENABLE_NEWLIB == 0)
 /**
  *  \brief
  *      Allocate memory block
@@ -189,6 +191,11 @@ void MEM_free(void* ptr);
  * The content of the newly allocated block of memory is not initialized, remaining with indeterminate values.
  */
 void* MEM_alloc(u16 size);
+#if (ENABLE_NEWLIB == 0)
+// enable standard libc compatibility
+#define malloc(size) MEM_alloc(size)
+#endif // (ENABLE_NEWLIB == 0)
+
 /**
  *  \brief
  *      Allocate memory block at a specific address (useful for short addressing or fixed low level working address)
@@ -232,7 +239,6 @@ bool MEM_checkIntegrity();
  */
 void MEM_dump(void);
 
-#if (ENABLE_NEWLIB == 0)
 /**
  *  \brief
  *      Fill block of memory
@@ -246,10 +252,10 @@ void MEM_dump(void);
  *
  * Sets the first num bytes of the block of memory pointed by to with the specified value.
  */
-void memset(void* to, u8 value, u16 len);
-#else  // ENABLE_NEWLIB
-void* memset(void* to, int value, size_t len);
-#endif  // ENABLE_NEWLIB
+void SGDK_memset(void* to, u8 value, u16 len);
+#if (ENABLE_NEWLIB == 0)
+#define memset(to, value, len) SGDK_memset(to, value, len)
+#endif  // (ENABLE_NEWLIB == 0)
 
 /**
  *  \brief
@@ -280,7 +286,6 @@ void memsetU16(u16* to, u16 value, u16 len);
  */
 void memsetU32(u32* to, u32 value, u16 len);
 
-#if (ENABLE_NEWLIB == 0)
 /**
  *  \brief
  *      Copy block of memory
@@ -296,12 +301,11 @@ void memsetU32(u32* to, u32 value, u16 len);
  * The underlying type of the objects pointed by both the source and destination pointers are irrelevant for this function
  * as the result is a binary copy of the data.
  */
-void memcpy(void* to, const void* from, u16 len);
-#else  // ENABLE_NEWLIB
-void* memcpy(void* __restrict to, const void* __restrict from, size_t len);
-#endif  // ENABLE_NEWLIB
-
+void SGDK_memcpy(void* to, const void* from, u16 len);
 #if (ENABLE_NEWLIB == 0)
+#define memcpy(to, from, len) SGDK_memcpy(to, from, len)
+#endif  // (ENABLE_NEWLIB == 0)
+
 /**
  *  \brief
  *      Compare 2 blocks of memory
@@ -317,10 +321,10 @@ void* memcpy(void* __restrict to, const void* __restrict from, size_t len);
  * The sign of the result is the sign of the difference between the values of the first pair of bytes (both interpreted as unsigned char)
  * that differ in the objects being compared. 
  */
-s8 memcmp(const void* pointer1, const void* pointer2, size_t len);
-#else  // ENABLE_NEWLIB
-int memcmp(const void* pointer1, const void* pointer2, size_t len);
-#endif  // ENABLE_NEWLIB
+s8 SGDK_memcmp(const void* pointer1, const void* pointer2, size_t len);
+#if (ENABLE_NEWLIB == 0)
+#define memcmp(pointer1, pointer2, len) SGDK_memcmp(pointer1, pointer2, len)
+#endif  // (ENABLE_NEWLIB == 0)
 
 /**
  *  \deprecated Uses memcpy(void *to, const void *from, u16 len) instead.
@@ -345,7 +349,7 @@ int memcmp(const void* pointer1, const void* pointer2, size_t len);
 /**
  *  \deprecated Uses memcpy(void *to, const void *from, u16 len) instead.
  */
-#define astMemcpy(to, from, len)        _Pragma("GCC error \"This method is deprecated, use memcpy(..) instead.\"")
+#define fastMemcpy(to, from, len)        _Pragma("GCC error \"This method is deprecated, use memcpy(..) instead.\"")
 /**
  *  \deprecated Uses memcpy(void *to, const void *from, u16 len) instead.
  */

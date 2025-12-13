@@ -114,15 +114,12 @@ extern "C"
  *  \brief
  *      Set it to 1 if you want to use newlib with SGDK.<br>
  *      That will disable any standard methods from SGDK to replace them by newlib library implementation.
- *      Required for C++. 
- *      This is predefined when using CMake, using the value of cache variable SGDK_ENABLE_NEWLIB (C) or simply always enabled (C++).
+ *      Required for C++.
+ *
+ *      When using CMake, call md_rom_enable_newlib() on your rom target instead of changing this define.
  */
 #ifndef ENABLE_NEWLIB
-#if defined(__cplusplus)
-#define ENABLE_NEWLIB           1
-#else
-#define ENABLE_NEWLIB           0
-#endif
+#define ENABLE_NEWLIB           (0 || defined(__cplusplus))
 #endif
 
 #ifdef SGDK_CMAKE_NO_CONFIG_DEPENDENCY

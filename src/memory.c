@@ -149,6 +149,11 @@ extern u32 _bend;
 // static void packBlock(u16* block);
 static u16* pack(u16 nsize);
 
+#if (ENABLE_NEWLIB != 0)
+// avoid name conflict
+#define free free_block
+#endif
+
 static u16* free;
 static u16* heap;
 static u16* heapEnd;
@@ -744,8 +749,7 @@ static u16* pack(u16 nsize)
     return NULL;
 }
 
-#if (ENABLE_NEWLIB == 0)
-s8 memcmp(const void* pointer1, const void* pointer2, size_t len)
+s8 SGDK_memcmp(const void* pointer1, const void* pointer2, size_t len)
 {
 	s8 result = 0;
     const u8* m1 = (const u8*)pointer1;
@@ -756,5 +760,4 @@ s8 memcmp(const void* pointer1, const void* pointer2, size_t len)
 
 	return result;
 }
-#endif
 

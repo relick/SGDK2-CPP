@@ -10,10 +10,13 @@
  * This unit provides basic null terminated string operations and type conversions.
  */
 
+#include "SGDK/config.h"
+
 #ifndef _STR_H_
 #define _STR_H_
 
 #if (ENABLE_NEWLIB != 0)
+#include <ctype.h> // Include ctype.h from newlib
 #include <string.h> // Include string.h from newlib
 #include <stdarg.h> // Include stdarg.h from newlib
 #include <stdio.h> // Include stdio.h from newlib
@@ -24,21 +27,23 @@ extern "C"
 {
 #endif
 
-#if (ENABLE_NEWLIB == 0)
-
 /**
  *  \brief
  *      Test if specified character is a digit or not
  */
-#define isdigit(c)      ((c) >= '0' && (c) <= '9')
+#define SGDK_isdigit(c)  ((c) >= '0' && (c) <= '9')
+#if (ENABLE_NEWLIB == 0)
+#define isdigit(c) SGDK_isdigit(c)
+#endif  // (ENABLE_NEWLIB == 0)
 
-
+#if (ENABLE_NEWLIB == 0)
 typedef void *__gnuc_va_list;
 typedef __gnuc_va_list va_list;
 
 #define va_start(v,l) __builtin_va_start(v,l)
 #define va_end(v) __builtin_va_end(v)
 #define va_arg(v,l) __builtin_va_arg(v,l)
+#endif  // (ENABLE_NEWLIB == 0)
 
 
 /**
@@ -51,7 +56,10 @@ typedef __gnuc_va_list va_list;
  *
  * This function calculates and returns the length of the specified string (limited to 65535 characters maximum).
  */
-u16 strlen(const char *str);
+u16 SGDK_strlen(const char *str);
+#if (ENABLE_NEWLIB == 0)
+#define strlen(str) SGDK_strlen(str)
+#endif  // (ENABLE_NEWLIB == 0)
 /**
  *  \brief
  *      Compute the length of a string, to a maximum number of bytes.
@@ -66,7 +74,10 @@ u16 strlen(const char *str);
  *  The strnlen() function computes the length of the string pointed to by 'str', not including the terminating null character ('\0'), <br>
  *  up to a maximum of 'maxlen' bytes. The function doesn't check any more than the first 'maxlen' bytes.
  */
-u16 strnlen(const char *str, u16 maxlen);
+u16 SGDK_strnlen(const char *str, u16 maxlen);
+#if (ENABLE_NEWLIB == 0)
+#define strnlen(str, maxlen) SGDK_strnlen(str, maxlen)
+#endif  // (ENABLE_NEWLIB == 0)
 /**
  *  \brief
  *      Compare the 2 strings.
@@ -84,7 +95,10 @@ u16 strnlen(const char *str, u16 maxlen);
  * If they are equal to each other, it continues with the following pairs until
  * the characters differ or until a terminating null-character is reached.
  */
-s8 strcmp(const char *str1, const char *str2);
+s8 SGDK_strcmp(const char *str1, const char *str2);
+#if (ENABLE_NEWLIB == 0)
+#define strcmp(str1, str2) SGDK_strcmp(str1, str2)
+#endif  // (ENABLE_NEWLIB == 0)
 
 /**
  *  \brief
@@ -98,7 +112,10 @@ s8 strcmp(const char *str1, const char *str2);
  *
  * Copies the source string to destination.
  */
-char* strcpy(char *dest, const char *src);
+char* SGDK_strcpy(char *dest, const char *src);
+#if (ENABLE_NEWLIB == 0)
+#define strcpy(dest, src) SGDK_strcpy(dest, src)
+#endif  // (ENABLE_NEWLIB == 0)
 /**
  *  \brief
  *      Copies the first 'len' characters of string.
@@ -113,7 +130,10 @@ char* strcpy(char *dest, const char *src);
  *
  * Copies the first 'len' characters source string to destination.
  */
-char* strncpy(char *dest, const char *src, u16 len);
+char* SGDK_strncpy(char *dest, const char *src, u16 len);
+#if (ENABLE_NEWLIB == 0)
+#define strncpy(dest, src, len) SGDK_strncpy(dest, src, len)
+#endif  // (ENABLE_NEWLIB == 0)
 /**
  *  \brief
  *      Concatenate two strings.
@@ -126,7 +146,10 @@ char* strncpy(char *dest, const char *src, u16 len);
  *
  * Appends the source string to the destination string.
  */
-char* strcat(char *dest, const char *src);
+char* SGDK_strcat(char *dest, const char *src);
+#if (ENABLE_NEWLIB == 0)
+#define strcat(dest, src) SGDK_strcat(dest, src)
+#endif  // (ENABLE_NEWLIB == 0)
 /**
  *  \brief
  *      Search for a character in the specified string.
@@ -140,7 +163,10 @@ char* strcat(char *dest, const char *src);
  * Returns a pointer to the first occurrence of <i>c</i> in the given string.<br>
  * The function returns NULL if the specified character is not found.
  */
-char* strchr(const char *from, char c);
+char* SGDK_strchr(const char *from, char c);
+#if (ENABLE_NEWLIB == 0)
+#define strchr(from, c) SGDK_strchr(from, c)
+#endif  // (ENABLE_NEWLIB == 0)
 
 /**
  *  \brief
@@ -165,7 +191,10 @@ char* strchr(const char *from, char c);
  *  If 'fmt' includes format specifiers (subsequences beginning with %), the additional arguments following format are
  *  formatted and inserted in the resulting string replacing their respective specifiers
  */
-int vsprintf(char *buffer, const char *fmt, va_list args);
+int SGDK_vsprintf(char *buffer, const char *fmt, va_list args) __attribute__ ((format (printf, 2, 0)));
+#if (ENABLE_NEWLIB == 0)
+#define vsprintf(buffer, fmt, args) SGDK_vsprintf(buffer, fmt, args)
+#endif  // (ENABLE_NEWLIB == 0)
 /**
  *  \brief
  *      Composes a string with the same text that would be printed if format was used on printf,
@@ -190,9 +219,10 @@ int vsprintf(char *buffer, const char *fmt, va_list args);
  *  If 'fmt' includes format specifiers (subsequences beginning with %), the additional arguments following format are
  *  formatted and inserted in the resulting string replacing their respective specifiers
  */
-int sprintf(char *buffer, const char *fmt, ...) __attribute__ ((format (printf, 2, 3)));
-
-#endif  // ENABLE_NEWLIB
+int SGDK_sprintf(char* buffer, const char* fmt, ...) __attribute__ ((format (printf, 2, 3)));
+#if (ENABLE_NEWLIB == 0)
+#define sprintf(buffer, fmt, ...) SGDK_sprintf(buffer, fmt, __VA_ARGS__)
+#endif  // (ENABLE_NEWLIB == 0)
 
 /**
  *  \brief

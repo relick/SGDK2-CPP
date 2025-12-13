@@ -1,9 +1,7 @@
 #include "config.h"
 #include "asm_mac.i"
 
-#if (ENABLE_NEWLIB == 0)
-func memset
-#endif
+func SGDK_memset
     move.w  14(%sp),%d0         // d0 = len
     jeq     .L02
 
@@ -193,9 +191,7 @@ func memsetU32
     rts
 
 
-#if (ENABLE_NEWLIB == 0)
-func memcpy
-#endif
+func SGDK_memcpy
     move.w  14(%sp),%d0         // d0 = len
     jeq     .L82
 

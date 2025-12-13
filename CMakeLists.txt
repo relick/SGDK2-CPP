@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 4.0)
 
 set(SGDK_BUILD_TOOLS FALSE CACHE BOOL "Build (*some) SGDK tools (note: requires ability to build 32-bit target, from an environment with make available)")
-set(SGDK_ENABLE_NEWLIB FALSE CACHE BOOL "Use newlib with SGDK. Affects C only, as C++ always uses newlib.")
 set(SGDK_INSTALL_WIN_TOOLCHAIN FALSE CACHE BOOL "Copy the Windows gcc toolchain to the SGDK install, allowing the install to exist fully independently of the source.")
+option(SGDK_BUILD_WITH_NEWLIB "Build the SGDK library with newlib. Enabling this is not required for building projects with newlib, but enabling WILL FORCE all projects to be built with newlib!" OFF)
 option(SGDK_UPSTREAM_COMPATIBILITY "Allow compilation of projects that build with upstream SGDK by relaxing some SGDK2-CPP restrictions." OFF)
 option(SGDK_DEPRECATED_F16_COMPATIBILITY "Allow compilation of projects that use the old-style f16 functions." OFF)
 
@@ -72,6 +72,7 @@ endmacro()
 
 macro(add_SGDK_interface target)
   add_SGDK_target(${target} INTERFACE)
+  target_compile_options(${target} INTERFACE ${SGDK_DEFAULT_COMPILE_OPTIONS})
 endmacro()
 macro(add_SGDK_library target)
   add_SGDK_target(${target} STATIC)
@@ -201,17 +202,11 @@ md_target_resources(md.shared
     res/libres.res
 )
 
-# Newlib support requires the syscalls to be linked without LTO stripping unused symbols:
-add_SGDK_library(md.newlib.syscalls)
-target_sources(md.newlib.syscalls PRIVATE src/cpp/syscalls.c)
-add_SGDK_interface(md.newlib)
-target_link_libraries(md.newlib INTERFACE c m "LINKER:--whole-archive" SGDK::md.newlib.syscalls "LINKER:--no-whole-archive")
-
 # C++ support only requires linking with the standard library, forcing newlib, and some C++ abi setup.
 # It's important to note that the newlib syscalls MUST be linked after the C++ abi setup and the standard library.
 add_SGDK_library(md.cpp)
-target_link_libraries(md.cpp PUBLIC ${SGDK_CXX_STANDARD_LIBRARY} md.newlib)
-target_sources(md.cpp PRIVATE src/cpp/cplusplus.cpp)
+target_link_libraries(md.cpp PUBLIC ${SGDK_CXX_STANDARD_LIBRARY} md.newlib.enabled)
+target_sources(md.cpp PRIVATE src/cpp/abi.cpp src/cpp/new.cpp)
 
 # Helper function for setting up the core md libraries, which build differently depending on newlib setting (and therefore language)
 function(setup_md_library target language)
@@ -238,9 +233,10 @@ function(setup_md_library target language)
   )
 
   target_compile_definitions(${target}
-    PUBLIC
-      ENABLE_NEWLIB=${enable_newlib}
     PRIVATE
+      # The md library should be built with or without newlib according to the CMake configure argument.
+      ENABLE_NEWLIB=$<BOOL:${SGDK_BUILD_WITH_NEWLIB}>
+
       # Ensures that for the md library, the linkable config functions are used.
       # In principle, LTO should mean this isn't any worse than the preprocessor definition toggle.
       ENABLE_BANK_SWITCH=1
@@ -309,12 +305,13 @@ function(setup_md_library target language)
 
 endfunction()
 
-## SGDK libraries
+## Main SGDK library
 add_SGDK_library(md)
 setup_md_library(md C)
 
-add_SGDK_library(mdcpp)
-setup_md_library(mdcpp CXX)
+add_SGDK_interface(mdcpp)
+target_link_libraries(mdcpp INTERFACE md md.cpp)
+set_target_properties(mdcpp PROPERTIES SGDK_NEWLIB 1)
 
 ## Configuration libraries:
 macro(add_SGDK_configuration_library_common target define enabled suffix) # [ARGN sources]
@@ -327,6 +324,22 @@ macro(add_SGDK_configuration_library target define) # [ARGN sources]
   add_SGDK_configuration_library_common(${target} ${define} 1 enabled ${ARGN})
   add_SGDK_configuration_library_common(${target} ${define} 0 disabled ${ARGN})
 endmacro()
+
+# Newlib
+# The syscalls are required to be linked without unused symbols being stripped:
+add_SGDK_library(md.newlib.syscalls)
+target_sources(md.newlib.syscalls PRIVATE src/newlib/syscalls.c)
+
+add_SGDK_interface(md.newlib.enabled)
+target_link_libraries(md.newlib.enabled INTERFACE c m "LINKER:--whole-archive" SGDK::md.newlib.syscalls "LINKER:--no-whole-archive")
+target_compile_definitions(md.newlib.enabled INTERFACE ENABLE_NEWLIB=1)
+if(${SGDK_BUILD_WITH_NEWLIB})
+  add_library(md.newlib.disabled ALIAS md.newlib.enabled)
+  add_library(SGDK::md.newlib.disabled ALIAS md.newlib.enabled)
+else()
+  add_SGDK_interface(md.newlib.disabled)
+  target_compile_definitions(md.newlib.disabled INTERFACE ENABLE_NEWLIB=0)
+endif()
 
 # Bank switching by default
 add_SGDK_configuration_library(md.bank_switch_default ENABLE_BANK_SWITCH src/config/bank_switch.c)

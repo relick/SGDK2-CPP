@@ -22,6 +22,7 @@ function(md_add_rom target mdlib) # [sega_s]
     ${mdlib}
 
     # Configuration libraries
+    SGDK::md.newlib.$<IF:$<OR:$<BOOL:$<TARGET_PROPERTY:${target},SGDK_NEWLIB>>,$<BOOL:$<TARGET_PROPERTY:${mdlib},SGDK_NEWLIB>>>,enabled,disabled>
     SGDK::md.bank_switch_default.$<IF:$<TARGET_PROPERTY:${target},SGDK_BANK_SWITCH>,enabled,disabled>
 
     # Optional libraries

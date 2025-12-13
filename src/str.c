@@ -19,10 +19,9 @@
 #define P09 1000000000
 #define P10 10000000000
 
-#if (ENABLE_NEWLIB == 0)
 static const char uppercase_hexchars[] = "0123456789ABCDEF";
 static const char lowercase_hexchars[] = "0123456789abcdef";
-#endif  // ENABLE_NEWLIB
+
 static const char digits[] =
     "0001020304050607080910111213141516171819"
     "2021222324252627282930313233343536373839"
@@ -33,13 +32,10 @@ static const char digits[] =
 // FORWARD
 static u16 digits10(const u16 v);
 static u16 uint16ToStr(u16 value, char *str, u16 minsize);
-#if (ENABLE_NEWLIB == 0)
-static u16 skip_atoi(const char **s);
-#endif  // ENABLE_NEWLIB
+static u16 SGDK_skip_atoi(const char **s);
 
 
-#if (ENABLE_NEWLIB == 0)
-u16 strlen(const char *str)
+u16 SGDK_strlen(const char *str)
 {
     const char *src = str;
     u16 result = 0;
@@ -49,7 +45,7 @@ u16 strlen(const char *str)
     return result;
 }
 
-u16 strnlen(const char *str, u16 maxlen)
+u16 SGDK_strnlen(const char *str, u16 maxlen)
 {
     const char *src = str;
     u16 i = maxlen;
@@ -59,7 +55,7 @@ u16 strnlen(const char *str, u16 maxlen)
     return maxlen - i;
 }
 
-s8 strcmp(const char *str1, const char *str2)
+s8 SGDK_strcmp(const char *str1, const char *str2)
 {
     const u8 *p1 = (const u8*) str1;
     const u8 *p2 = (const u8*) str2;
@@ -73,7 +69,7 @@ s8 strcmp(const char *str1, const char *str2)
     return *p1 - *p2;
 }
 
-char* strcpy(char *to, const char *from)
+char* SGDK_strcpy(char *to, const char *from)
 {
     const char *src = from;
     char *dst = to;
@@ -83,7 +79,7 @@ char* strcpy(char *to, const char *from)
     return to;
 }
 
-char* strncpy(char *to, const char *from, u16 len)
+char* SGDK_strncpy(char *to, const char *from, u16 len)
 {
     const char *src = from;
     char *dst = to;
@@ -115,7 +111,7 @@ char* strncpy(char *to, const char *from, u16 len)
 //  return to;
 //}
 
-char* strcat(char *to, const char *from)
+char* SGDK_strcat(char *to, const char *from)
 {
     const char *src = from;
     char *dst = to;
@@ -126,7 +122,7 @@ char* strcat(char *to, const char *from)
     return to;
 }
 
-char* strchr(const char *from, char c)
+char* SGDK_strchr(const char *from, char c)
 {
     const char *src = from;
 
@@ -134,7 +130,6 @@ char* strchr(const char *from, char c)
 
     return (*src == c) ? (char*)src : NULL;
 }
-#endif  // ENABLE_NEWLIB
 
 char* strclr(char *str)
 {
@@ -429,18 +424,17 @@ static u16 digits10(const u16 v)
     }
 }
 
-#if (ENABLE_NEWLIB == 0)
-static u16 skip_atoi(const char **s)
+static u16 SGDK_skip_atoi(const char** s)
 {
     u16 i = 0;
 
-    while(isdigit(**s))
+    while(SGDK_isdigit(**s))
         i = (i * 10) + *((*s)++) - '0';
 
     return i;
 }
 
-int vsprintf(char *buf, const char *fmt, va_list args)
+int SGDK_vsprintf(char *buf, const char *fmt, va_list args)
 {
     char tmp_buffer[14];
     s32 i;
@@ -496,8 +490,8 @@ repeat:
 
         field_width = precision = -1;
 
-        if (isdigit(*fmt))
-            field_width = skip_atoi(&fmt);
+        if (SGDK_isdigit(*fmt))
+            field_width = SGDK_skip_atoi(&fmt);
         else if (*fmt == '*')
         {
             ++fmt;
@@ -515,8 +509,8 @@ repeat:
         {
             ++fmt;
 
-            if (isdigit(*fmt))
-                precision = skip_atoi(&fmt);
+            if (SGDK_isdigit(*fmt))
+                precision = SGDK_skip_atoi(&fmt);
             else if (*fmt == '*')
             {
                 ++fmt;
@@ -706,7 +700,7 @@ hexa_conv:
     return str - buf;
 }
 
-int sprintf(char *buffer, const char *fmt, ...)
+int SGDK_sprintf(char *buffer, const char *fmt, ...)
 {
     va_list args;
     int i;
@@ -717,4 +711,3 @@ int sprintf(char *buffer, const char *fmt, ...)
 
     return i;
 }
-#endif // ENABLE_NEWLIB

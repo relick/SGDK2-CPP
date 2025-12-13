@@ -48,7 +48,7 @@
 // *****************************************************************************
 
 // SGDK vsprintf() used as default
-extern int vsprintf(char *buf, const char *fmt, va_list args);
+extern int SGDK_vsprintf(char* buf, const char* fmt, va_list args);
 
 // *****************************************************************************
 //
@@ -80,7 +80,7 @@ static u16*  m_consoleFrameBuffer    = NULL;
 static char* m_consoleLineBuffer     = NULL;
 static u16   m_consoleLineBufferSize = 160;
 
-static vsprintf_t  m_vsprintf_func  = (vsprintf_t)vsprintf;
+static vsprintf_t  m_vsprintf_func  = (vsprintf_t)SGDK_vsprintf;
 static vsnprintf_t m_vsnprintf_func = NULL;
 
 // *****************************************************************************

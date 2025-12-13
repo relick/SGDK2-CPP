@@ -20,8 +20,3 @@ void operator delete  (void* p, std::nothrow_t const&) noexcept { operator delet
 void operator delete  (void* p, std::size_t size)      noexcept { operator delete(p); }
 void operator delete[](void* p, std::size_t size)      noexcept { operator delete(p); }
 void operator delete[](void* p, std::nothrow_t const&) noexcept { operator delete(p); }
-
-// Stub C++ ABI
-void __cxa_pure_virtual() {}
-void __cxa_atexit() {}
-void __cxa_throw(void *thrown_exception, void *pvtinfo, void (*dest)(void *)) {}

@@ -18,6 +18,11 @@ VDPSprite *lastAllocatedVDPSprite;
 // It can be used to define the number of sprite to transfer with VDP_updateSprites(..)
 s16 highestVDPSpriteIndex;
 
+#if (ENABLE_NEWLIB != 0)
+// avoid name conflict
+#define free free_sprite
+#endif
+
 // used for VDP sprite allocation
 static VDPSprite *allocStack[SAT_MAX_SIZE];
 // point on top of the allocation stack (first available VDP sprite)

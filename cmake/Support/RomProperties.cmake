@@ -3,6 +3,10 @@ include_guard(GLOBAL)
 include("${SGDK_CMAKE_SUPPORT}/Private.cmake")
 
 ## Config
+function(md_rom_enable_newlib target)
+  set_target_properties(${target} PROPERTIES SGDK_NEWLIB 1)
+endfunction()
+
 function(md_rom_enable_bank_switch target)
   set_target_properties(${target} PROPERTIES SGDK_BANK_SWITCH 1)
 endfunction()
