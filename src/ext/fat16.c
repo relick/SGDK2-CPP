@@ -212,7 +212,7 @@ void loadLongName(Fat16Record *record, u8 *data) {
         if ((data[0] & 64) != 0)break;
         data -= 32;
         //name_len += 13;
-        if (name_len + 1 >= sizeof (record->long_name)) {
+        if ((size_t)(name_len + 1) >= sizeof (record->long_name)) {
             long_name_buff[name_len++] = data[i];
             break;
         }
