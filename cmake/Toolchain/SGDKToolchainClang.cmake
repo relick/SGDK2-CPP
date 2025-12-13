@@ -7,7 +7,7 @@ macro(sgdk_toolchain_clang_win32_init)
   if(SGDK_USE_CLANG)
     set(SGDK_LIB_DIRS
       ${SGDK_CLANG_TOOLCHAIN}/lib
-      ${SGDK_WIN32_TOOLCHAIN}/lib/gcc/m68k-elf/${GCC_VERSION}
+      ${SGDK_WIN32_TOOLCHAIN}/lib/gcc/m68k-elf/${SGDK_GCC_VERSION}
       ${SGDK_WIN32_TOOLCHAIN}/m68k-elf/lib
     )
   endif()
