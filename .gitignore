@@ -48,3 +48,4 @@ project/test
 /install
 *__pycache__*
 !m68k-elf-toolchain/**
+.vscode/settings.json
