@@ -58,14 +58,15 @@ extern "C"
  *  \see #SYS_getFarData(..)
  *  \see #SYS_getFarDataSafe(..)
  */
+void* CONFIG_getFarDataWrapper(void* data);
+void* CONFIG_getFarDataSafeWrapper(void* data, u32 size);
 #if (ENABLE_BANK_SWITCH != 0)
-    #define FAR(data) SYS_getFarData((void*) (data))
-    #define FAR_SAFE(data, size) SYS_getFarDataSafe((void*) (data), size)
+    #define FAR(data) CONFIG_getFarDataWrapper((void*) (data))
+    #define FAR_SAFE(data, size) CONFIG_getFarDataSafeWrapper((void*) (data), size)
 #else
     #define FAR(data) data
     #define FAR_SAFE(data, size) data
 #endif
-
 
 /**
  *  \brief

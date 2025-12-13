@@ -213,8 +213,8 @@ add_SGDK_library(md.cpp)
 target_link_libraries(md.cpp PUBLIC ${SGDK_CXX_STANDARD_LIBRARY} md.newlib)
 target_sources(md.cpp PRIVATE src/cpp/cplusplus.cpp)
 
-# Helper function for setting up the core md libraries, which build differently depending on newlib setting (and therefore language), and whether bank switch is enabled.
-function(setup_md_library target language enable_bank_switch)
+# Helper function for setting up the core md libraries, which build differently depending on newlib setting (and therefore language)
+function(setup_md_library target language)
   if(language STREQUAL "CXX")
     set(enable_newlib 1)
     set(enable_cpp 1)
@@ -240,7 +240,10 @@ function(setup_md_library target language enable_bank_switch)
   target_compile_definitions(${target}
     PUBLIC
       ENABLE_NEWLIB=${enable_newlib}
-      ENABLE_BANK_SWITCH=${enable_bank_switch}
+    PRIVATE
+      # Ensures that for the md library, the linkable config functions are used.
+      # In principle, LTO should mean this isn't any worse than the preprocessor definition toggle.
+      ENABLE_BANK_SWITCH=1
   )
 
   ## Add sources
@@ -308,17 +311,27 @@ endfunction()
 
 ## SGDK libraries
 add_SGDK_library(md)
-setup_md_library(md C 0)
-add_SGDK_library(md.bank_switch)
-setup_md_library(md.bank_switch C 1)
+setup_md_library(md C)
 
 add_SGDK_library(mdcpp)
-setup_md_library(mdcpp CXX 0)
-add_SGDK_library(mdcpp.bank_switch)
-setup_md_library(mdcpp.bank_switch CXX 1)
+setup_md_library(mdcpp CXX)
+
+## Configuration libraries:
+macro(add_SGDK_configuration_library_common target define enabled suffix) # [ARGN sources]
+  add_SGDK_library(${target}.${suffix})
+  target_link_libraries(${target}.${suffix} PUBLIC SGDK::md.shared)
+  target_compile_definitions(${target}.${suffix} PUBLIC ${define}=${enabled})
+  target_sources(${target}.${suffix} PRIVATE ${ARGN})
+endmacro()
+macro(add_SGDK_configuration_library target define) # [ARGN sources]
+  add_SGDK_configuration_library_common(${target} ${define} 1 enabled ${ARGN})
+  add_SGDK_configuration_library_common(${target} ${define} 0 disabled ${ARGN})
+endmacro()
+
+# Bank switching by default
+add_SGDK_configuration_library(md.bank_switch_default ENABLE_BANK_SWITCH src/config/bank_switch.c)
 
 ## Optional libraries:
-
 # Everdrive. FAT16 option adds on to the main everdrive lib.
 add_SGDK_library(md.ext.everdrive)
 target_link_libraries(md.ext.everdrive PUBLIC SGDK::md.shared)

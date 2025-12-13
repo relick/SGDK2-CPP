@@ -1,7 +1,12 @@
 #include <SGDK/genesis.h>
 
-#define ENABLE_BANK_SWITCH @enable_bank_switch@
-#define MODULE_MEGAWIFI @enable_mega_wifi@
+#if (ENABLE_BANK_SWITCH != @enable_bank_switch@)
+#error "Something went wrong: incompatible values for ENABLE_BANK_SWITCH"
+#endif
+
+#if (MODULE_MEGAWIFI != @enable_mega_wifi@)
+#error "Something went wrong: incompatible values for MODULE_MEGAWIFI"
+#endif
 
 USED_EXTERNALLY
 const ROMHeader rom_header = {
