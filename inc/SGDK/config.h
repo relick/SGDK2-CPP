@@ -104,7 +104,7 @@ extern "C"
  *      will be accessed using BANK_getFarData(..) method (mapper.c). That may impact performance quite a bit
  *      it's why it's disabled by default if you don't require bank switch.
  * 
- *      When using CMake, call md_rom_enable_bank_switch() on your rom target instead of changing this define.
+ *      When using CMake, call md_rom_enable_auto_bank_switch() on your rom target instead of changing this define.
  */
 #ifndef ENABLE_BANK_SWITCH
 #define ENABLE_BANK_SWITCH      0
@@ -116,7 +116,8 @@ extern "C"
  *      That will disable any standard methods from SGDK to replace them by newlib library implementation.
  *      Required for C++.
  *
- *      When using CMake, call md_rom_enable_newlib() on your rom target instead of changing this define.
+ *      When using CMake, do not change this define.
+ *      Use SGDK::md_with_newlib or SGDK::md_with_cpp instead of SGDK::md when calling md_add_rom().
  */
 #ifndef ENABLE_NEWLIB
 #define ENABLE_NEWLIB           (0 || defined(__cplusplus))
@@ -147,7 +148,7 @@ extern "C"
 /**
  *  \brief
  *      Set it to 1 if you want to use EVERDRIVE programming methods (written by Krikzz).
- *      When using CMake, call md_rom_enable_ext_everdrive() on your rom target instead of changing this define.
+ *      When using CMake, link your target with SGDK::Extra::everdrive instead of changing this define.
  */
 #ifndef MODULE_EVERDRIVE
 #define MODULE_EVERDRIVE        0
@@ -157,7 +158,7 @@ extern "C"
  *  \brief
  *      Set it to 1 if you want to use FAT16 methods for Everdrive cart (written by Krikzz).<br>
  *      This cost a bit more than 1 KB of RAM.
- *      When using CMake, call md_rom_enable_ext_everdrive_fat16() on your rom target instead of changing this define.
+ *      When using CMake, link your target with SGDK::Extra::everdrive_fat16 instead of changing this define.
  */
 #ifndef MODULE_FAT16
 #define MODULE_FAT16            0
@@ -171,7 +172,7 @@ extern "C"
 /**
  *  \brief
  *      Set it to 1 if you want to enable MegaWiFi functions and support code (written by Jesus Alonso - doragasu)
- *      When using CMake, call md_rom_enable_ext_megawifi() on your rom target instead of changing this define.
+ *      When using CMake, link your target with SGDK::Extra::megawifi_default or megawifi_everdrive instead of changing this define.
  */
 #ifndef MODULE_MEGAWIFI
 #define MODULE_MEGAWIFI         0
@@ -181,7 +182,7 @@ extern "C"
  *  \brief
  *      Set it to 1 if you want to enable Flash Save functions (written by Jesus Alonso - doragasu).<br>
  *      There is no reason to disable it as it doesn't consume extra memory
- *      When using CMake, it IS disabled by default - call md_rom_enable_ext_flashsave() on your rom target instead of changing this define.
+ *      When using CMake, it IS disabled by default - link your target with SGDK::Extra::flashsave instead of changing this define.
  */
 #ifndef MODULE_FLASHSAVE
 #define MODULE_FLASHSAVE        1
@@ -191,7 +192,7 @@ extern "C"
  *  \brief
  *      Set it to 1 if you want to enable the TTY text console module (written by Andreas Dietrich).<br>
  *      It consume about 28 bytes of memory when enabled.
- *      When using CMake, call md_rom_enable_ext_console() on your rom target instead of changing this define.
+ *      When using CMake, link your target with SGDK::Extra::console instead of changing this define.
  */
 #ifndef MODULE_CONSOLE
 #define MODULE_CONSOLE          0
@@ -200,7 +201,7 @@ extern "C"
 /**
  *  \brief
  *      Set it to 1 if you want to enable Link Cable Protocol functions (written by BlodTor)
- *      When using CMake, call md_rom_enable_ext_linkcable() on your rom target instead of changing this define.
+ *      When using CMake, link your target with SGDK::Extra::link_cable instead of changing this define.
  */
 #ifndef MODULE_LINK_CABLE
 #define MODULE_LINK_CABLE       0
