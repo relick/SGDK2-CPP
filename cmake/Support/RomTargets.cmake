@@ -5,7 +5,7 @@ include("${SGDK_CMAKE_SUPPORT}/Private.cmake")
 # Create a ROM target using preferred SGDK library
 function(md_add_rom target mdlib) # [sega_s]
   if(${ARGC} GREATER 3)
-    message(FATAL_ERROR "Too many arguments for: md_add_rom(target mdlib [sega_s])")
+    message(FATAL_ERROR "md_add_rom(target mdlib [sega_s]): Too many arguments")
   endif()
   set(sega_s ${ARGN})
   if(NOT sega_s)
@@ -13,28 +13,18 @@ function(md_add_rom target mdlib) # [sega_s]
     set(sega_s "${SGDK_BOOTFILES}/sega.s")
   endif()
 
-  ## Create target using given name, linking with chosen mdlib.
+  get_target_property(mdlib_is_mdlib ${mdlib} SGDK_IS_MDLIB)
+  if(NOT ${mdlib_is_mdlib})
+    message(FATAL_ERROR "md_add_rom(target mdlib): Invalid mdlib - valid options are SGDK::md SGDK::md_with_newlib SGDK::md_with_cpp")
+  endif()
+
+  ## Create target using given name, linking with all configuration and optional libraries.
   # This will generate the .elf and then finalise it into a .bin, although the setup for that is further below.
   # This target can be added to by the user, with sources, options, properties etc.
   add_executable(${target})
   SGDK_add_default_props(${target})
-  set(md_link_targets
-    ${mdlib}
-
-    # Configuration libraries
-    SGDK::md.newlib.$<IF:$<OR:$<BOOL:$<TARGET_PROPERTY:${target},SGDK_NEWLIB>>,$<BOOL:$<TARGET_PROPERTY:${mdlib},SGDK_NEWLIB>>>,enabled,disabled>
-    SGDK::md.bank_switch_default.$<IF:$<TARGET_PROPERTY:${target},SGDK_BANK_SWITCH>,enabled,disabled>
-
-    # Optional libraries
-    $<$<TARGET_PROPERTY:${target},SGDK_EXT_EVERDRIVE>:SGDK::md.ext.everdrive>
-    $<$<TARGET_PROPERTY:${target},SGDK_EXT_EVERDRIVE_FAT16>:SGDK::md.ext.everdrive_fat16>
-    $<$<TARGET_PROPERTY:${target},SGDK_EXT_MEGAWIFI>:SGDK::md.ext.megawifi$<$<TARGET_PROPERTY:SGDK_EXT_EVERDRIVE>:.everdrive>>
-    $<$<TARGET_PROPERTY:${target},SGDK_EXT_MINIMUSIC>:SGDK::md.ext.minimusic>
-    $<$<TARGET_PROPERTY:${target},SGDK_EXT_FLASHSAVE>:SGDK::md.ext.flashsave>
-    $<$<TARGET_PROPERTY:${target},SGDK_EXT_CONSOLE>:SGDK::md.ext.console>
-    $<$<TARGET_PROPERTY:${target},SGDK_EXT_LINKCABLE>:SGDK::md.ext.linkcable>
-  )
-  target_link_libraries(${target} PUBLIC ${md_link_targets})
+  set(md_link_target ${mdlib} SGDK::auto_bank_switch$<$<NOT:$<BOOL:$<TARGET_PROPERTY:${target},SGDK_ENABLE_AUTO_BANK_SWITCH>>>:.off>)
+  target_link_libraries(${target} PUBLIC ${md_link_target})
 
   ## Set up the boot files
   # Create rom_head.c
@@ -43,8 +33,8 @@ function(md_add_rom target mdlib) # [sega_s]
   add_custom_command(
     OUTPUT ${out_rom_head_c}
     COMMAND "${CMAKE_COMMAND}"
-      -D enable_bank_switch=$<TARGET_PROPERTY:${target},SGDK_BANK_SWITCH>
-      -D enable_mega_wifi=$<TARGET_PROPERTY:${target},SGDK_EXT_MEGAWIFI>
+      -D enable_bank_switch=$<BOOL:$<TARGET_PROPERTY:${target},SGDK_AUTO_BANK_SWITCH>>
+      -D enable_mega_wifi=$<BOOL:$<TARGET_PROPERTY:${target},SGDK_EXT_MEGAWIFI>>
       -D copyright_release_date="$<TARGET_PROPERTY:${target},SGDK_HEAD_COPYRIGHT>"
       -D japan_title="$<TARGET_PROPERTY:${target},SGDK_HEAD_JPTITLE>"
       -D overseas_title="$<TARGET_PROPERTY:${target},SGDK_HEAD_OSTITLE>"
@@ -66,7 +56,7 @@ function(md_add_rom target mdlib) # [sega_s]
   # Build rom_head.c into an object
   set(target_rom_head "${target}.rom_head")
   add_library(${target_rom_head} OBJECT ${out_rom_head_c})
-  target_link_libraries(${target_rom_head} PRIVATE ${md_link_targets})
+  target_link_libraries(${target_rom_head} PRIVATE ${md_link_target})
 
   # Generate rom_head.bin. Because sega.s will try to include "out/rom_head.bin", the bin
   # needs to be created within a folder called "out", and the root of that folder will be passed
@@ -84,7 +74,7 @@ function(md_add_rom target mdlib) # [sega_s]
   # Build sega.s into an object
   set(target_boot "${target}.boot")
   add_library(${target_boot} OBJECT ${sega_s})
-  target_link_libraries(${target_boot} PUBLIC ${md_link_targets})
+  target_link_libraries(${target_boot} PUBLIC ${md_link_target})
   add_dependencies(${target_boot} ${target_out_rom_head})
   # Allow "out/rom_head.bin" to be found, by using this include directory.
   target_compile_options(${target_boot} PRIVATE "-Wa,-I${out_rom_head_dir}")

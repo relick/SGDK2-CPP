@@ -3,41 +3,8 @@ include_guard(GLOBAL)
 include("${SGDK_CMAKE_SUPPORT}/Private.cmake")
 
 ## Config
-function(md_rom_enable_newlib target)
-  set_target_properties(${target} PROPERTIES SGDK_NEWLIB 1)
-endfunction()
-
-function(md_rom_enable_bank_switch target)
-  set_target_properties(${target} PROPERTIES SGDK_BANK_SWITCH 1)
-endfunction()
-
-function(md_rom_enable_ext_everdrive target)
-  set_target_properties(${target} PROPERTIES SGDK_EXT_EVERDRIVE 1)
-endfunction()
-
-function(md_rom_enable_ext_everdrive_fat16 target)
-  md_rom_enable_everdrive(${target})
-  set_target_properties(${target} PROPERTIES SGDK_EXT_EVERDRIVE_FAT16 1)
-endfunction()
-
-function(md_rom_enable_ext_megawifi target)
-  set_target_properties(${target} PROPERTIES SGDK_EXT_MEGAWIFI 1)
-endfunction()
-
-function(md_rom_enable_ext_minimusic target)
-  set_target_properties(${target} PROPERTIES SGDK_EXT_MINIMUSIC 1)
-endfunction()
-
-function(md_rom_enable_ext_flashsave target)
-  set_target_properties(${target} PROPERTIES SGDK_EXT_FLASHSAVE 1)
-endfunction()
-
-function(md_rom_enable_ext_console target)
-  set_target_properties(${target} PROPERTIES SGDK_EXT_CONSOLE 1)
-endfunction()
-
-function(md_rom_enable_ext_linkcable target)
-  set_target_properties(${target} PROPERTIES SGDK_EXT_LINKCABLE 1)
+function(md_rom_enable_auto_bank_switch target)
+  set_target_properties(${target} PROPERTIES SGDK_ENABLE_AUTO_BANK_SWITCH 1)
 endfunction()
 
 ## Titles
