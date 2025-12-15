@@ -7,6 +7,7 @@ set(SGDK_ALL_PROPERTIES
   SGDK_IS_MDLIB
   SGDK_IS_MDLIB_WITH_NEWLIB
   SGDK_IS_MDLIB_WITH_CPP
+  SGDK_MDLIB_TYPE # Used to prevent adding different types of the library at once.
 
   # configuration targets
   SGDK_ENABLE_AUTO_BANK_SWITCH
@@ -27,9 +28,9 @@ macro(SGDK_export_properties_on_target target)
   endforeach()
 endmacro()
 
-macro(SGDK_set_exportable_INTERFACE_property target property value)
+macro(SGDK_set_exportable_INTERFACE_property target property type value)
   set_target_properties(${target} PROPERTIES INTERFACE_${property} ${value})
   
   # Need to do this to make CMake actually export the property:
-  set_property(TARGET ${target} APPEND PROPERTY COMPATIBLE_INTERFACE_BOOL ${property})
+  set_property(TARGET ${target} APPEND PROPERTY COMPATIBLE_INTERFACE_${type} ${property})
 endmacro()

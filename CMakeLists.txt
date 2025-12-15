@@ -319,29 +319,38 @@ ensure_no_newlib_bankswitch(md.cpp)
 
 ## User targets
 add_SGDK_interface(md)
-target_link_libraries(md INTERFACE md.core md.newlib.off)
-set_target_properties(md PROPERTIES SGDK_IS_MDLIB ON SGDK_IS_MDLIB_WITH_NEWLIB OFF SGDK_IS_MDLIB_WITH_CPP OFF)
+if(${SGDK_BUILD_WITH_NEWLIB})
+  target_link_libraries(md INTERFACE md.core md.newlib)
+  set_target_properties(md PROPERTIES SGDK_IS_MDLIB ON SGDK_IS_MDLIB_WITH_NEWLIB ON SGDK_IS_MDLIB_WITH_CPP OFF)
+  SGDK_set_exportable_INTERFACE_property(md SGDK_MDLIB_TYPE STRING mdlib_with_newlib)
+else()
+  target_link_libraries(md INTERFACE md.core md.newlib.off)
+  set_target_properties(md PROPERTIES SGDK_IS_MDLIB ON SGDK_IS_MDLIB_WITH_NEWLIB OFF SGDK_IS_MDLIB_WITH_CPP OFF)
+  SGDK_set_exportable_INTERFACE_property(md SGDK_MDLIB_TYPE STRING mdlib)
+endif()
 
 add_SGDK_interface(md_with_newlib)
 target_link_libraries(md_with_newlib INTERFACE md.core md.newlib)
 set_target_properties(md_with_newlib PROPERTIES SGDK_IS_MDLIB ON SGDK_IS_MDLIB_WITH_NEWLIB ON SGDK_IS_MDLIB_WITH_CPP OFF)
+SGDK_set_exportable_INTERFACE_property(md_with_newlib SGDK_MDLIB_TYPE STRING mdlib_with_newlib)
 
 add_SGDK_interface(md_with_cpp)
 target_link_libraries(md_with_cpp INTERFACE md.core md.newlib md.cpp)
 set_target_properties(md_with_cpp PROPERTIES SGDK_IS_MDLIB ON SGDK_IS_MDLIB_WITH_NEWLIB ON SGDK_IS_MDLIB_WITH_CPP ON)
+SGDK_set_exportable_INTERFACE_property(md_with_cpp SGDK_MDLIB_TYPE STRING mdlib_with_cpp)
 
 ## Configuration libraries:
 # Automatically switching bank when needed (using FAR/FAR_SAFE)
 add_SGDK_library(auto_bank_switch)
 target_link_libraries(auto_bank_switch PUBLIC SGDK::md.core)
 target_compile_definitions(auto_bank_switch PUBLIC ENABLE_BANK_SWITCH=1)
-SGDK_set_exportable_INTERFACE_property(auto_bank_switch SGDK_AUTO_BANK_SWITCH ON)
+SGDK_set_exportable_INTERFACE_property(auto_bank_switch SGDK_AUTO_BANK_SWITCH BOOL ON)
 target_sources(auto_bank_switch PRIVATE src/config/bank_switch.c)
 
 add_SGDK_library(auto_bank_switch.off)
 target_link_libraries(auto_bank_switch.off PUBLIC SGDK::md.core)
 target_compile_definitions(auto_bank_switch.off PUBLIC ENABLE_BANK_SWITCH=0)
-SGDK_set_exportable_INTERFACE_property(auto_bank_switch.off SGDK_AUTO_BANK_SWITCH OFF)
+SGDK_set_exportable_INTERFACE_property(auto_bank_switch.off SGDK_AUTO_BANK_SWITCH BOOL OFF)
 target_sources(auto_bank_switch.off PRIVATE src/config/bank_switch.c)
 
 ## Optional libraries:
@@ -351,7 +360,7 @@ target_link_libraries(everdrive PUBLIC SGDK::md.core)
 target_compile_definitions(everdrive PUBLIC MODULE_EVERDRIVE=1)
 target_sources(everdrive PUBLIC FILE_SET HEADERS BASE_DIRS ${SGDK_INC_DIR} FILES inc/SGDK/ext/everdrive.h)
 target_sources(everdrive PRIVATE src/ext/everdrive.c)
-SGDK_set_exportable_INTERFACE_property(everdrive SGDK_EXT_EVERDRIVE ON)
+SGDK_set_exportable_INTERFACE_property(everdrive SGDK_EXT_EVERDRIVE BOOL ON)
 ensure_no_newlib_bankswitch(everdrive)
 
 add_SGDK_optional_library(everdrive_fat16)
@@ -374,14 +383,14 @@ target_sources(megawifi.shared PUBLIC FILE_SET HEADERS BASE_DIRS ${SGDK_INC_DIR}
 )
 target_compile_definitions(megawifi.shared PUBLIC MODULE_MEGAWIFI=1)
 target_sources(megawifi.shared PRIVATE src/ext/mw/gamejolt.c src/ext/mw/json.c src/ext/mw/megawifi.c)
-SGDK_set_exportable_INTERFACE_property(megawifi.shared SGDK_EXT_MEGAWIFI ON)
+SGDK_set_exportable_INTERFACE_property(megawifi.shared SGDK_EXT_MEGAWIFI BOOL ON)
 ensure_no_newlib_bankswitch(megawifi.shared)
 
 add_SGDK_optional_library(megawifi_default)
 target_link_libraries(megawifi_default PUBLIC SGDK::Extra::megawifi.shared)
 target_sources(megawifi_default PUBLIC FILE_SET HEADERS BASE_DIRS ${SGDK_INC_DIR} FILES inc/SGDK/ext/mw/16c550.h)
 target_sources(megawifi_default PRIVATE src/ext/mw/lsd.c src/ext/mw/16c550.c)
-SGDK_set_exportable_INTERFACE_property(megawifi_default SGDK_EXT_EVERDRIVE OFF)
+SGDK_set_exportable_INTERFACE_property(megawifi_default SGDK_EXT_EVERDRIVE BOOL OFF)
 ensure_no_newlib_bankswitch(megawifi_default)
 
 add_SGDK_optional_library(megawifi_everdrive)

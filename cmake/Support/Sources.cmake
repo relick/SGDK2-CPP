@@ -74,7 +74,7 @@ function(md_target_z80_sources target) # ARGN: [PUBLIC/PRIVATE/INTERFACE] [BASE_
 endfunction()
 
 # Rules to build resources
-function(md_target_resources target header_scope) # ARGN: [BASE_DIRECTORY base_dir] [PREFIX prefix] [PREFIX_OPTIONAL_FOR_TARGET] [.res files]
+function(md_target_resources target) # ARGN: [PUBLIC/PRIVATE/INTERFACE] [BASE_DIRECTORY base_dir] [PREFIX prefix] [PREFIX_OPTIONAL_FOR_TARGET] [.res files]
   # Sets res_PUBLIC, etc...
   set(arg_options PUBLIC PRIVATE INTERFACE PREFIX_OPTIONAL_FOR_TARGET)
   set(arg_values BASE_DIRECTORY PREFIX)
